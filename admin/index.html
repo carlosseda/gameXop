@@ -8,30 +8,25 @@
     <title>Título</title>
     <meta name="description" content="descripción de la web, se recomienda 90 caracteres">
     <meta name="keywords" 	 content="palabras clave, separadas, por comas">
-    
+
     <link rel="stylesheet" href="style/app.css">
     <script type="module" src="src/index.js"></script>
   </head>
+  
   <body>
-    <modal-checkout-component></modal-checkout-component>
+    <message-component></message-component>
+    <overlayer-component></overlayer-component>
+    <delete-element-modal-component></delete-element-modal-component>
 
     <header>
-      <div class="header-group">
-        <logo-component></logo-component>
-      </div>
-      <div class="header-group">
-        <search-component></search-component>
-        <cart-component></cart-component>
-      </div>
+      <logo-component title="GameXop"></logo-component>
+      <menu-component></menu-component>
     </header>
 
     <main>
       <page-component></page-component>
     </main>
-
-    <footer>
-        <faqs-component></faqs-component>
-        <social-networks-component></social-networks-component>
-    </footer>
   </body>
 </html>
+
+

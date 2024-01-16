@@ -30,7 +30,7 @@ exports.findAll = (req, res) => {
 
   User.findAndCountAll({
     where: condition,
-    attributes: ['id', 'name', 'email'],
+    attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -44,6 +44,8 @@ exports.findAll = (req, res) => {
 
       res.status(200).send(result)
     }).catch(err => {
+      console.log(err)
+
       res.status(500).send({
         message: err.errors || 'Algún error ha surgido al recuperar los datos.'
       })
@@ -53,7 +55,9 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  User.findByPk(id).then(data => {
+  User.findByPk(id, {
+    attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
+  }).then(data => {
     if (data) {
       res.status(200).send(data)
     } else {
@@ -69,7 +73,12 @@ exports.findOne = (req, res) => {
 }
 
 exports.update = (req, res) => {
+
   const id = req.params.id
+
+  if (req.body.password === '') {
+    delete req.body.password
+  }
 
   User.update(req.body, {
     where: { id }

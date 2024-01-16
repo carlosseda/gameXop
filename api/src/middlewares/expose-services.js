@@ -1,12 +1,10 @@
 const TrackingService = require('../services/tracking-service') 
 const ImageService = require('../services/image-service') 
 const LocaleService = require('../services/locale-service')
-const CacheService = require('../services/cache-service')
 
 const trackingService = new TrackingService()
 const imageService = new ImageService()
 const localeService = new LocaleService()
-const cacheService = new CacheService()
 
 const trackingServiceMiddleware = (req, res, next) => {
   req.trackingService = trackingService; 
@@ -23,16 +21,10 @@ const localeMiddleware = (req, res, next) => {
   next()
 }
 
-const cacheMiddleware = (req, res, next) => {
-  req.cacheService = cacheService;
-  next()
-}
-
 module.exports = {
   trackingServiceMiddleware,
   imageServiceMiddleware,
   localeMiddleware,
-  cacheMiddleware
 }
 
     

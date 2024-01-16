@@ -23,14 +23,23 @@ class PageComponent extends HTMLElement {
 
     let filename;
 
-    if (path === "/") {
-      filename = '/pages/faqs.html';
-    } else if (path.startsWith("/usuarios")) {
-      filename = '/pages/users.html';
-    } else {
-      filename = '/pages/404.html';
+    switch (true) {
+      case path === "/":
+        filename = '/pages/home.html';
+        break;
+        
+      case path.startsWith("/usuarios"):
+        filename = '/pages/users.html';
+        break;
+
+      case path.startsWith("/faqs"):
+        filename = '/pages/faqs.html';
+        break;
+
+      default:
+        filename = '/pages/404.html';
     }
-    
+
     await this.loadPage(filename);
   }
 

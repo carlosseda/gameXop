@@ -8,6 +8,7 @@ class Table extends HTMLElement {
     this.total
     this.currentPage
     this.lastPage
+    this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     if (!this.eventsAdded.has('refreshTable')) {
       document.addEventListener('refreshTable', this.handleRefreshTable.bind(this))
@@ -30,7 +31,6 @@ class Table extends HTMLElement {
   }
 
   async handleRefreshTable (event) {
-    alert("hola")
     if(event.detail.url === this.getAttribute('url')){
       this.loadData(event.detail.data).then(() => this.render())
     }
@@ -113,21 +113,21 @@ class Table extends HTMLElement {
           padding: 0 0.5rem;
         }
 
-        .table-filter-button{
+        .table-button{
           align-items: center;
           display: flex;
           padding: 0.2rem;
         }
 
-        .table-filter-button button svg {
+        .table-button svg {
           width: 1.7rem;
         }
 
-        .table-filter-button button svg path {
+        .table-button svg path {
           fill: hsl(236 55% 25%);
         }
 
-        .table-filter-button button:hover svg path {
+        .table-button:hover svg path {
           fill: hsl(272 40% 35%);
         }
 
@@ -262,16 +262,31 @@ class Table extends HTMLElement {
 
       </style>
 
-      <section class="table-buttons">
-        <div class="table-filter-button">
-          <button>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 11L16.76 3.62A1 1 0 0 0 16.59 2.22A1 1 0 0 0 16 2H2A1 1 0 0 0 1.38 2.22A1 1 0 0 0 1.21 3.62L7 11V16.87A1 1 0 0 0 7.29 17.7L9.29 19.7A1 1 0 0 0 10.7 19.7A1 1 0 0 0 11 18.87V11M13 16L18 21L23 16Z" /></svg>
-          </button>
-        </div>
-      </section>
-      <div class="table">
-        
-      </div>`
+      <section class="table-buttons"></section>
+      <div class="table"></div>
+    `
+
+    if(this.structure.tableButtons){
+
+      const tableButtons = this.shadow.querySelector('.table-buttons')
+      
+      Object.keys(this.structure.tableButtons).forEach(tableButton => {
+
+        const tableButtonElement = document.createElement('button')
+        tableButtonElement.classList.add('table-button')
+
+        console.log(this.structure.tableButtons[tableButton])
+
+        if(this.structure.tableButtons[tableButton] == 'filterButton'){
+          tableButtonElement.classList.add('table-filter-button')
+          tableButtonElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 11L16.76 3.62A1 1 0 0 0 16.59 2.22A1 1 0 0 0 16 2H2A1 1 0 0 0 1.38 2.22A1 1 0 0 0 1.21 3.62L7 11V16.87A1 1 0 0 0 7.29 17.7L9.29 19.7A1 1 0 0 0 10.7 19.7A1 1 0 0 0 11 18.87V11M13 16L18 21L23 16Z" /></svg>
+          `
+        }
+
+        tableButtons.appendChild(tableButtonElement)
+      })
+    }
 
     if(!this.getAttribute('subtable')){
       this.shadow.innerHTML +=
@@ -349,7 +364,8 @@ class Table extends HTMLElement {
       tableRowData.classList.add('table-data')
       tableRow.appendChild(tableRowData)
 
-      const headers = JSON.parse(this.getAttribute('headers').replaceAll("'", '"'))
+      const headers = this.structure.headers
+      const recordButtons =  this.structure.recordButtons
 
       Object.keys(headers).forEach(key => {
 
@@ -366,8 +382,6 @@ class Table extends HTMLElement {
 
         tableRowData.appendChild(tableElementData)
       })
-
-      const recordButtons = JSON.parse(this.getAttribute('recordButtons').replaceAll("'", '"'))
 
       Object.keys(recordButtons).forEach((recordButton) => {
 

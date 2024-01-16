@@ -18,6 +18,22 @@ module.exports = function (sequelize, DataTypes) {
     order: {
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get() {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null;
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get() {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null;
+      }
     }
   }, {
     sequelize,

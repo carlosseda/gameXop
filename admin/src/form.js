@@ -2,43 +2,43 @@ class Form extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.eventsAdded = new Set();
+    this.eventsAdded = new Set()
     this.images = []
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
   }
 
   connectedCallback () {
     if (!this.eventsAdded.has('showElement')) {
-      document.addEventListener('showElement', this.handleShowElement.bind(this));
-      this.eventsAdded.add('showElement');
+      document.addEventListener('showElement', this.handleShowElement.bind(this))
+      this.eventsAdded.add('showElement')
     }
 
     if (!this.eventsAdded.has('refreshForm')) {
-      document.addEventListener('refreshForm', this.handleRefreshForm.bind(this));
-      this.eventsAdded.add('refreshForm');
+      document.addEventListener('refreshForm', this.handleRefreshForm.bind(this))
+      this.eventsAdded.add('refreshForm')
     }
 
     if (!this.eventsAdded.has('showSubform')) {
-      document.addEventListener('showSubform', this.handleShowSubform.bind(this));
-      this.eventsAdded.add('showSubform');
+      document.addEventListener('showSubform', this.handleShowSubform.bind(this))
+      this.eventsAdded.add('showSubform')
     }
 
     if (!this.eventsAdded.has('attachImageToForm')) {
-      document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this));
-      this.eventsAdded.add('attachImageToForm');
+      document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
+      this.eventsAdded.add('attachImageToForm')
     }
 
     this.render()
   }
 
   handleShowElement = event => {
-    if(event.detail.url === this.getAttribute('url')){
+    if (event.detail.url === this.getAttribute('url')) {
       this.showElement(event.detail.element)
     }
   }
 
   handleRefreshForm = event => {
-    if(event.detail.subtable === this.getAttribute('subtable')){
+    if (event.detail.subtable === this.getAttribute('subtable')) {
       this.render()
     }
   }
@@ -49,12 +49,11 @@ class Form extends HTMLElement {
 
   handleAttachImageToForm = event => {
     this.attachImageToForm(event.detail.image)
-  } 
+  }
 
   render = async () => {
-
     this.shadow.innerHTML =
-        /*html*/`
+      /* html */`
         <style>
           .tabs-container-menu{
             background-color: hsl(100, 100%, 100%);
@@ -348,8 +347,7 @@ class Form extends HTMLElement {
     const tabsContainerContent = this.shadow.querySelector('.tabs-container-content')
 
     for (const tab in this.structure.tabs) {
-
-      const tabName = this.structure.tabs[tab].name;
+      const tabName = this.structure.tabs[tab].name
 
       const tabElement = document.createElement('li')
       tabElement.classList.add('tab-item')
@@ -363,12 +361,11 @@ class Form extends HTMLElement {
       tabsContainerContent.append(tabPanel)
 
       for (const field in this.structure.inputs[tabName].noLocale) {
-
-        const formElement = this.structure.inputs[tabName].noLocale[field] 
+        const formElement = this.structure.inputs[tabName].noLocale[field]
         const formElementContainer = document.createElement('div')
         formElementContainer.classList.add('form-element', formElement.width || 'full-width')
-        
-        if(formElement.label) {
+
+        if (formElement.label) {
           const formElementLabel = document.createElement('div')
           formElementContainer.append(formElementLabel)
           formElementLabel.classList.add('form-element-label')
@@ -649,7 +646,7 @@ class Form extends HTMLElement {
         })
       }
 
-      if(this.parentFormId) {
+      if (this.parentFormId) {
         formData.append('parentFormId', this.parentFormId)
       }
 
@@ -662,7 +659,7 @@ class Form extends HTMLElement {
         formDataJson.images = this.images
       }
 
-      try{
+      try {
         const response = await fetch(url, {
           method,
           headers: {
@@ -675,21 +672,20 @@ class Form extends HTMLElement {
         if (response.status === 500) {
           throw response
         }
-  
+
         if (response.status === 200) {
-  
           const data = await response.json()
-  
+
           document.dispatchEvent(new CustomEvent('message', {
             detail: {
               message: 'Datos guardados correctamente',
               type: 'success'
             }
           }))
-  
+
           this.images = []
           this.render()
-  
+
           document.dispatchEvent(new CustomEvent('refreshTable', {
             detail: {
               subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null,
@@ -697,9 +693,9 @@ class Form extends HTMLElement {
               data: data.rows ? data.rows : null
             }
           }))
-        } 
-      }catch(error){
-        const data = await response.json()
+        }
+      } catch (error) {
+        const data = await error.json()
 
         if (data.errors) {
           data.errors.forEach(error => {
@@ -892,13 +888,11 @@ class Form extends HTMLElement {
   }
 
   showElement = element => {
-
     this.render()
     this.images = []
     this.shadow.querySelectorAll('.dependant').forEach(tab => tab.classList.remove('dependant'))
 
     Object.entries(element).forEach(([key, value]) => {
-      
       if (Array.isArray(value)) {
         document.dispatchEvent(new CustomEvent('showSubtable', {
           detail: {
@@ -912,48 +906,47 @@ class Form extends HTMLElement {
             parentFormId: element.id
           }
         }))
-      } 
+      }
 
       if (this.shadow.querySelector(`[name="${key}"]`)) {
-
         if (typeof value === 'object') {
           value = JSON.stringify(value, null, 2)
         }
 
         this.shadow.querySelector(`[name="${key}"]`).value = value
 
-        if (this.shadow.querySelector(`[name="${key}"]`).tagName == 'SELECT') {
+        if (this.shadow.querySelector(`[name="${key}"]`).tagName === 'SELECT') {
           const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
 
           options.forEach(option => {
-            if (option.value == value) {
+            if (option.value === value) {
               option.setAttribute('selected', true)
             }
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type == 'radio') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type === 'radio') {
           const radios = this.shadow.querySelector(`[name="${key}"]`).closest('.form-element').querySelectorAll('input[type="radio"]')
 
           radios.forEach(radio => {
-            if (radio.value == value) {
+            if (radio.value === value) {
               radio.setAttribute('checked', true)
             }
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type == 'checkbox') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type === 'checkbox') {
           const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
 
           checkbox.forEach(check => {
-            if (check.value == value) {
+            if (check.value === value) {
               check.setAttribute('checked', true)
             }
           })
         }
       }
 
-      if (key == 'images') {
+      if (key === 'images') {
         document.dispatchEvent(new CustomEvent('showThumbnails', {
           detail: {
             images: value
@@ -970,7 +963,7 @@ class Form extends HTMLElement {
       image.name === attachedImage.name
     )
 
-    if (index == -1) {
+    if (index === -1) {
       this.images.push(attachedImage)
     } else {
       if (attachedImage.delete && attachedImage.create) {

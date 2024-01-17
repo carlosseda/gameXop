@@ -1,5 +1,4 @@
 class socialNetworks extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -15,32 +14,32 @@ class socialNetworks extends HTMLElement {
         socialNetwork: 'Facebook',
         url: 'https://www.facebook.com/game_xop',
         image: {
-          url: "http://localhost:5173/public/facebook.svg",
-          alt: "Logo de Facebook"
+          url: 'http://localhost:5173/public/facebook.svg',
+          alt: 'Logo de Facebook'
         }
       },
       {
         socialNetwork: 'Instagram',
         url: 'https://www.instagram.com/game_xop',
         image: {
-          url: "http://localhost:5173/public/instagram.svg",
-          alt: "Logo de Instagram"
+          url: 'http://localhost:5173/public/instagram.svg',
+          alt: 'Logo de Instagram'
         }
       },
       {
         socialNetwork: 'Twitter',
         url: 'https://twitter.com/game_xop',
         image: {
-          url: "http://localhost:5173/public/twitter.svg",
-          alt: "Logo de Twitter"
+          url: 'http://localhost:5173/public/twitter.svg',
+          alt: 'Logo de Twitter'
         }
       },
       {
         socialNetwork: 'TikTok',
         url: 'https://www.tiktok.com/game_xop',
         image: {
-          url: "http://localhost:5173/public/tiktok.svg",
-          alt: "Logo de TikTok"
+          url: 'http://localhost:5173/public/tiktok.svg',
+          alt: 'Logo de TikTok'
         }
       }
     ]
@@ -48,7 +47,7 @@ class socialNetworks extends HTMLElement {
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       img {
         filter: hue-rotate(90deg);
@@ -79,7 +78,7 @@ class socialNetworks extends HTMLElement {
       const socialNetworkLink = document.createElement('a')
       socialNetworkLink.href = socialNetwork.url
       socialNetworkLink.target = '_blank'
-  
+
       const socialNetworkImage = document.createElement('img')
       socialNetworkImage.src = socialNetwork.image.url
       socialNetworkImage.alt = socialNetwork.image.alt
@@ -87,7 +86,7 @@ class socialNetworks extends HTMLElement {
       socialNetworkLink.appendChild(socialNetworkImage)
       socialNetworkContainer.appendChild(socialNetworkLink)
       socialNetworksContainer.appendChild(socialNetworkContainer)
-    });
+    })
   }
 }
 

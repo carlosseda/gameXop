@@ -109,8 +109,7 @@ class DeleteElementModal extends HTMLElement {
       }).then(response => {
         return response.json()
       }).then(data => {
-
-        if(this.subtable){
+        if (this.subtable) {
           document.dispatchEvent(new CustomEvent('refreshTable', {
             detail: {
               url: this.url,
@@ -121,7 +120,7 @@ class DeleteElementModal extends HTMLElement {
 
         document.dispatchEvent(new CustomEvent('refreshForm', {
           detail: {
-            url: this.url,
+            url: this.url
           }
         }))
 

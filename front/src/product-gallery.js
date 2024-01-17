@@ -1,5 +1,4 @@
 class ProductGallery extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -11,107 +10,106 @@ class ProductGallery extends HTMLElement {
   }
 
   handleFilterByCategory (event) {
-    const categoryId = event.detail.categoryId;
-    const products = categoryId === "null" ? this.products : this.products.filter(product => product.categoryId === Number(categoryId));
-    this.render(products);
+    const categoryId = event.detail.categoryId
+    const products = categoryId === 'null' ? this.products : this.products.filter(product => product.categoryId === Number(categoryId))
+    this.render(products)
   }
 
   async loadData () {
-    
     this.products = [
       {
         id: 1,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         categoryId: 1,
         price: 100,
         priceBeforeDiscount: 120,
         percentage: 20,
-        endOfDiscount: "31 de diciembre",
-        platforms: ["windows", "apple"],
+        endOfDiscount: '31 de diciembre',
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Call of Duty Modern Warfare 3",
+          title: 'Call of Duty Modern Warfare 3'
         },
         image: {
-          url: "http://localhost:5173/public/call-of-duty.jpg",
-          alt: "Call of Duty"
+          url: 'http://localhost:5173/public/call-of-duty.jpg',
+          alt: 'Call of Duty'
         }
       },
       {
         id: 2,
-        path: "/juegos/payday-3",
+        path: '/juegos/payday-3',
         categoryId: 1,
         price: 100,
-        platforms: ["windows", "apple"],
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Payday 3",
+          title: 'Payday 3'
         },
         image: {
-          url: "http://localhost:5173/public/payday-3.jpg",
-          alt: "Payday 3"
+          url: 'http://localhost:5173/public/payday-3.jpg',
+          alt: 'Payday 3'
         }
       },
       {
         id: 3,
-        path: "/juegos/persona-5",
+        path: '/juegos/persona-5',
         categoryId: 2,
         price: 100,
-        platforms: ["windows", "apple"],
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Persona 5",
+          title: 'Persona 5'
         },
         image: {
-          url: "http://localhost:5173/public/persona-5.jpg",
-          alt: "Persona 5"
+          url: 'http://localhost:5173/public/persona-5.jpg',
+          alt: 'Persona 5'
         }
       },
       {
         id: 4,
-        path: "/juegos/red-dead-redemption-2",
+        path: '/juegos/red-dead-redemption-2',
         categoryId: 2,
         price: 100,
-        platforms: ["windows", "apple"],
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Red Dead Redemption 2",
+          title: 'Red Dead Redemption 2'
         },
         image: {
-          url: "http://localhost:5173/public/red-dead.jpg",
-          alt: "Red Dead Redemption 2"
+          url: 'http://localhost:5173/public/red-dead.jpg',
+          alt: 'Red Dead Redemption 2'
         }
       },
       {
         id: 5,
-        path: "/juegos/starfield",
+        path: '/juegos/starfield',
         categoryId: 3,
         price: 100,
-        platforms: ["windows", "apple"],
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Starfield",
+          title: 'Starfield'
         },
         image: {
-          url: "http://localhost:5173/public/starfield.jpg",
-          alt: "Starfield"
+          url: 'http://localhost:5173/public/starfield.jpg',
+          alt: 'Starfield'
         }
       },
       {
         id: 6,
-        path: "/juegos/street-fighter-6",
+        path: '/juegos/street-fighter-6',
         categoryId: 3,
         price: 100,
-        platforms: ["windows", "apple"],
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Street Fighter 6",
+          title: 'Street Fighter 6'
         },
         image: {
-          url: "http://localhost:5173/public/street-fighter.jpg",
-          alt: "Street Fighter 6"
+          url: 'http://localhost:5173/public/street-fighter.jpg',
+          alt: 'Street Fighter 6'
         }
       }
-    ];
+    ]
   }
 
   render (products = this.products) {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       a{
         text-decoration: none;
@@ -277,7 +275,7 @@ class ProductGallery extends HTMLElement {
 
       const productElement = document.createElement('div')
       productElementLink.appendChild(productElement)
-     
+
       productElement.classList.add('product')
       productElement.dataset.endpoint = product.id
       productElement.dataset.categoryId = product.categoryId
@@ -303,8 +301,7 @@ class ProductGallery extends HTMLElement {
       const productDetails = document.createElement('div')
       productDetails.classList.add('product-details')
 
-      if(product.priceBeforeDiscount){
-
+      if (product.priceBeforeDiscount) {
         const productInfoContainer = document.createElement('div')
         productInfoContainer.classList.add('product-info')
 
@@ -315,7 +312,7 @@ class ProductGallery extends HTMLElement {
         productInfoContainer.appendChild(productDiscountPercentage)
 
         const productDiscountEnd = document.createElement('span')
-        productDiscountEnd.innerText = `hasta el ${product.endOfDiscount}`;
+        productDiscountEnd.innerText = `hasta el ${product.endOfDiscount}`
         productInfoContainer.appendChild(productDiscountEnd)
 
         productDetails.appendChild(productInfoContainer)
@@ -353,9 +350,7 @@ class ProductGallery extends HTMLElement {
         productPriceContainer.appendChild(productPrice)
 
         productSpecifications.appendChild(productPriceContainer)
-
-      }else{
-
+      } else {
         const productSpecifications = document.createElement('div')
         productSpecifications.classList.add('product-specifications')
         productDetails.appendChild(productSpecifications)
@@ -374,7 +369,7 @@ class ProductGallery extends HTMLElement {
 
         const productPriceContainer = document.createElement('div')
         productPriceContainer.classList.add('product-price')
-        
+
         const productPrice = document.createElement('span')
         productPrice.classList.add('product-price')
         productPrice.innerText = `${product.price} €`
@@ -402,12 +397,11 @@ class ProductGallery extends HTMLElement {
     })
   }
 
-  async loadPreview (element) {  
-
+  async loadPreview (element) {
     this.video = {
-      url: "http://localhost:5173/public/call-of-duty.webm",
-      alt: "Call of Duty",
-      cover: "http://localhost:5173/public/call-of-duty-modern-warfare-3-xl.jpg"
+      url: 'http://localhost:5173/public/call-of-duty.webm',
+      alt: 'Call of Duty',
+      cover: 'http://localhost:5173/public/call-of-duty-modern-warfare-3-xl.jpg'
     }
 
     const videoElement = document.createElement('video')

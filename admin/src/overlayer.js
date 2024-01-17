@@ -4,7 +4,6 @@ class Overlayer extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
     document.addEventListener('showOverlayer', this.handleShowOverlayer.bind(this))
     document.addEventListener('hideOverlayer', this.handleHideOverlayer.bind(this))
-
   }
 
   connectedCallback () {

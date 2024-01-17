@@ -1,5 +1,4 @@
 class NotFound extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -11,17 +10,17 @@ class NotFound extends HTMLElement {
 
   async loadData () {
     this.data = {
-      title: "GameXop",
+      title: 'GameXop',
       image: {
-        url: "http://localhost:5173/public/logo.svg",
-        alt: "Logo de GameXop"
+        url: 'http://localhost:5173/public/logo.svg',
+        alt: 'Logo de GameXop'
       }
     }
   }
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       .not-found{
         align-items: center;

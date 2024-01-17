@@ -1,5 +1,4 @@
 class Cart extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -8,19 +7,17 @@ class Cart extends HTMLElement {
   }
 
   async connectedCallback () {
-
-    if(!document.setFingerprint){
+    if (!document.setFingerprint) {
       document.addEventListener('setFingerprint', this.handleSetFingerprint.bind(this))
       document.setFingerprint = true
     }
 
-    if(!document.addToCart){
+    if (!document.addToCart) {
       document.addEventListener('addToCart', this.handleAddToCart.bind(this))
       document.addToCart = true
     }
 
-    if(!localStorage.getItem('cartUuid')){
-
+    if (!localStorage.getItem('cartUuid')) {
       const json = {
         fingerprint: this.fingerprint
       }
@@ -31,11 +28,10 @@ class Cart extends HTMLElement {
 
       this.uuid = response.uuid
       localStorage.setItem('cartUuid', this.uuid)
-
-    }else{
+    } else {
       this.uuid = localStorage.getItem('cartUuid')
     }
-  }    
+  }
 
   async handleSetFingerprint (event) {
     this.fingerprint = event.detail.fingerprint
@@ -43,22 +39,21 @@ class Cart extends HTMLElement {
   }
 
   async handleAddToCart (event) {
-
     this.shadow.querySelector('.overlay').classList.toggle('active')
     this.shadow.querySelector('.cart').classList.toggle('active')
-    document.body.classList.toggle('block-scroll');
-    this.shadow.querySelector(`.waiting`).classList.add('active')
+    document.body.classList.toggle('block-scroll')
+    this.shadow.querySelector('.waiting').classList.add('active')
 
     const json = {
       productId: event.detail.productId,
-      cartUuid: JSON.parse(localStorage.getItem('cartUuid')),
+      cartUuid: JSON.parse(localStorage.getItem('cartUuid'))
     }
 
     setTimeout(() => {
       const response = {
         id: 7,
         productId: 1,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 7',
         price: 100,
         priceBeforeDiscount: 120,
@@ -68,7 +63,7 @@ class Cart extends HTMLElement {
         }
       }
 
-      if(!localStorage.getItem('cart')){
+      if (!localStorage.getItem('cart')) {
         localStorage.setItem('cart', JSON.stringify([]))
       }
 
@@ -77,17 +72,16 @@ class Cart extends HTMLElement {
       localStorage.setItem('cart', JSON.stringify(cart))
 
       this.products.push(response)
-      this.shadow.querySelector(`.waiting`).classList.remove('active')
-      this.render("active")
+      this.shadow.querySelector('.waiting').classList.remove('active')
+      this.render('active')
     }, 1000)
   }
 
   async loadData () {
-
     this.products = [
       {
         id: 1,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 1',
         price: 30,
         priceBeforeDiscount: 40,
@@ -98,7 +92,7 @@ class Cart extends HTMLElement {
       },
       {
         id: 2,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 2',
         price: 30,
         image: {
@@ -108,7 +102,7 @@ class Cart extends HTMLElement {
       },
       {
         id: 3,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 3',
         price: 30,
         image: {
@@ -118,7 +112,7 @@ class Cart extends HTMLElement {
       },
       {
         id: 4,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 4',
         price: 30,
         priceBeforeDiscount: 40,
@@ -129,7 +123,7 @@ class Cart extends HTMLElement {
       },
       {
         id: 5,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 5',
         price: 30,
         image: {
@@ -139,7 +133,7 @@ class Cart extends HTMLElement {
       },
       {
         id: 6,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         title: 'Producto 6',
         price: 30,
         image: {
@@ -152,7 +146,7 @@ class Cart extends HTMLElement {
 
   render (open = null) {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       :host{
         justify-self: flex-end;
@@ -485,7 +479,7 @@ class Cart extends HTMLElement {
     </div>
     `
 
-    if(this.products.length > 0){
+    if (this.products.length > 0) {
       this.shadow.querySelector('.cart-button').classList.add('active')
     }
 
@@ -503,7 +497,7 @@ class Cart extends HTMLElement {
       const productLink = document.createElement('a')
       productLink.setAttribute('href', product.path)
       productLink.target = '_blank'
-     
+
       const productTitle = document.createElement('h5')
       productTitle.textContent = product.title
       productLink.appendChild(productTitle)
@@ -515,7 +509,7 @@ class Cart extends HTMLElement {
 
       productPrice.textContent = `${product.price}€`
 
-      if(product.priceBeforeDiscount){
+      if (product.priceBeforeDiscount) {
         productPriceBeforeDiscount.textContent = `${product.priceBeforeDiscount}€`
       }
 
@@ -527,10 +521,10 @@ class Cart extends HTMLElement {
       productElement.appendChild(productImage)
       productInfo.appendChild(productLink)
 
-      if(product.priceBeforeDiscount){
+      if (product.priceBeforeDiscount) {
         productInfo.appendChild(productPriceBeforeDiscount)
       }
-      
+
       productInfo.appendChild(productPrice)
       productElement.appendChild(productInfo)
       productElement.appendChild(productButton)
@@ -539,27 +533,24 @@ class Cart extends HTMLElement {
     })
 
     this.shadow.querySelector('.cart-container').addEventListener('click', event => {
-
-      if(event.target.closest('.cart-button') || event.target.closest('.close-button') || event.target.closest('.overlay')){
+      if (event.target.closest('.cart-button') || event.target.closest('.close-button') || event.target.closest('.overlay')) {
         this.shadow.querySelector('.overlay').classList.toggle('active')
         this.shadow.querySelector('.cart').classList.toggle('active')
-        document.body.classList.toggle('block-scroll');
+        document.body.classList.toggle('block-scroll')
       }
 
-      if(event.target.closest('.remove-button')){
-        
+      if (event.target.closest('.remove-button')) {
         const id = parseInt(event.target.closest('.remove-button').dataset.id)
-        this.shadow.querySelector(`.waiting`).classList.add('active')
+        this.shadow.querySelector('.waiting').classList.add('active')
 
         setTimeout(() => {
           this.products = this.products.filter(product => product.id !== id)
-          this.shadow.querySelector(`.waiting`).classList.remove('active')
-          this.render("active")
+          this.shadow.querySelector('.waiting').classList.remove('active')
+          this.render('active')
         }, 1000)
       }
 
-      if(event.target.closest('.checkout-button')){
-
+      if (event.target.closest('.checkout-button')) {
         this.shadow.querySelector('.overlay').classList.toggle('active')
         this.shadow.querySelector('.cart').classList.toggle('active')
 

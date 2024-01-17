@@ -1,5 +1,4 @@
 class Search extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -12,7 +11,7 @@ class Search extends HTMLElement {
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       :host {
         max-width: 300px;
@@ -158,13 +157,12 @@ class Search extends HTMLElement {
     })
   }
 
-  submitForm() {
+  submitForm () {
     console.log('submit')
   }
 
-  handleKeyUp(event) {
-
-    const search = event.target.value;
+  handleKeyUp (event) {
+    const search = event.target.value
     const searchResults = this.shadow.querySelector('.search-results')
 
     if (search.length == 0) {
@@ -174,63 +172,62 @@ class Search extends HTMLElement {
     }
 
     if (search.length > 1 && !this.open) {
-      
       this.open = true
 
       const response = [
         {
-          path: "/juegos/call-of-duty",
-          price: 100,      
+          path: '/juegos/call-of-duty',
+          price: 100,
           locale: {
-            title: "Call of Duty Modern Warfare 3",
+            title: 'Call of Duty Modern Warfare 3'
           },
           image: {
-            url: "http://localhost:5173/public/call-of-duty.jpg",
-            alt: "Call of Duty"
+            url: 'http://localhost:5173/public/call-of-duty.jpg',
+            alt: 'Call of Duty'
           }
         },
         {
-          path: "/juegos/call-of-duty",
-          price: 100,      
+          path: '/juegos/call-of-duty',
+          price: 100,
           locale: {
-            title: "Call of Duty Modern Warfare 3",
+            title: 'Call of Duty Modern Warfare 3'
           },
           image: {
-            url: "http://localhost:5173/public/call-of-duty.jpg",
-            alt: "Call of Duty"
+            url: 'http://localhost:5173/public/call-of-duty.jpg',
+            alt: 'Call of Duty'
           }
         },
         {
-          path: "/juegos/call-of-duty",
-          price: 100,      
+          path: '/juegos/call-of-duty',
+          price: 100,
           locale: {
-            title: "Call of Duty Modern Warfare 3",
+            title: 'Call of Duty Modern Warfare 3'
           },
           image: {
-            url: "http://localhost:5173/public/call-of-duty.jpg",
-            alt: "Call of Duty"
+            url: 'http://localhost:5173/public/call-of-duty.jpg',
+            alt: 'Call of Duty'
           }
         },
         {
-          path: "/juegos/call-of-duty",
-          price: 100,      
+          path: '/juegos/call-of-duty',
+          price: 100,
           locale: {
-            title: "Call of Duty Modern Warfare 3",
+            title: 'Call of Duty Modern Warfare 3'
           },
           image: {
-            url: "http://localhost:5173/public/call-of-duty.jpg",
-            alt: "Call of Duty"
+            url: 'http://localhost:5173/public/call-of-duty.jpg',
+            alt: 'Call of Duty'
           }
         },
         {
-          path: "/juegos/call-of-duty",
-          price: 100,      
+          path: '/juegos/call-of-duty',
+          price: 100,
           locale: {
-            title: "Call of Duty Modern Warfare 3",
+            title: 'Call of Duty Modern Warfare 3'
           },
           image: {
-            url: "http://localhost:5173/public/call-of-duty.jpg",
-            alt: "Call of Duty"
+            url: 'http://localhost:5173/public/call-of-duty.jpg',
+            alt: 'Call of Duty'
           }
         }
       ]
@@ -238,8 +235,8 @@ class Search extends HTMLElement {
       searchResults.innerHTML = ''
 
       response.forEach(item => {
-        searchResults.innerHTML += 
-        /*html*/`
+        searchResults.innerHTML +=
+        /* html */`
         <a href="${item.path}">
           <div class="search-result">
             <div class="search-result-image">
@@ -255,7 +252,6 @@ class Search extends HTMLElement {
       })
 
       searchResults.classList.add('active')
-
     }
   }
 }

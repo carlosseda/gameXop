@@ -11,8 +11,6 @@ exports.create = (req, res) => {
         message: err.errors
       })
     } else {
-      console.log(err)
-
       res.status(500).send({
         message: 'Algún error ha surgido al recuperar los datos.'
       })

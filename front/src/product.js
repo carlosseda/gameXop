@@ -1,5 +1,4 @@
 class Product extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -12,7 +11,7 @@ class Product extends HTMLElement {
   async loadData () {
     this.product = {
       id: 1,
-      title: "Call of Duty Modern Warfare 3",
+      title: 'Call of Duty Modern Warfare 3',
       description: `
         Consigue puntos Call of Duty®* y contenido de juego en Call of Duty®: Modern Warfare® III y Call of Duty®: Warzone™.<br>
         <br>
@@ -34,33 +33,33 @@ class Product extends HTMLElement {
         Activision puede actualizar, sustituir o eliminar este contenido del juego en cualquier momento.`,
       price: 100,
       priceBeforeDiscount: 120,
-      category: "Shooter",
-      platforms: ["windows", "apple"],
-      releaseDate: "8 de noviembre de 2011",
-      developer: "Infinity Ward",
+      category: 'Shooter',
+      platforms: ['windows', 'apple'],
+      releaseDate: '8 de noviembre de 2011',
+      developer: 'Infinity Ward',
       thumbnails: [
         {
-          url: "http://localhost:5173/public/call-of-duty-gameplay.jpg",
-          alt: "Call of Duty",
-          cover: "http://localhost:5173/public/call-of-duty-gameplay.jpg"
+          url: 'http://localhost:5173/public/call-of-duty-gameplay.jpg',
+          alt: 'Call of Duty',
+          cover: 'http://localhost:5173/public/call-of-duty-gameplay.jpg'
         },
         {
-          url: "http://localhost:5173/public/call-of-duty-gameplay-2.jpg",
-          alt: "Call of Duty",
-          cover: "http://localhost:5173/public/call-of-duty-gameplay-2.jpg"
+          url: 'http://localhost:5173/public/call-of-duty-gameplay-2.jpg',
+          alt: 'Call of Duty',
+          cover: 'http://localhost:5173/public/call-of-duty-gameplay-2.jpg'
         }
       ],
       video: {
-        url: "http://localhost:5173/public/call-of-duty.webm",
-        alt: "Call of Duty",
-        cover: "http://localhost:5173/public/call-of-duty-modern-warfare-3-xl.jpg"
+        url: 'http://localhost:5173/public/call-of-duty.webm',
+        alt: 'Call of Duty',
+        cover: 'http://localhost:5173/public/call-of-duty-modern-warfare-3-xl.jpg'
       }
     }
   }
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       .product {
         display: flex;
@@ -315,13 +314,12 @@ class Product extends HTMLElement {
 
     const cart = JSON.parse(localStorage.getItem('cart'))
 
-    if(cart && cart.includes(this.product.id)){
+    if (cart && cart.includes(this.product.id)) {
       this.shadow.querySelector('.add-to-cart').classList.add('disabled')
       this.shadow.querySelector('.add-to-cart').disabled = true
     }
 
-    if(this.product.video){
-
+    if (this.product.video) {
       const videoElement = document.createElement('video')
       videoElement.autoplay = true
       videoElement.muted = true
@@ -349,8 +347,7 @@ class Product extends HTMLElement {
       thumbnailElement.appendChild(imageElement)
 
       this.shadow.querySelector('.product-media-thumbnails').appendChild(thumbnailElement)
-
-    }else{
+    } else {
       const coverImage = document.createElement('img')
       coverImage.src = this.product.thumbnails[0].cover
       coverImage.alt = this.product.thumbnails[0].alt
@@ -376,37 +373,34 @@ class Product extends HTMLElement {
     })
 
     this.shadow.querySelector('.product').addEventListener('click', event => {
-
       if (event.target.closest('.add-to-cart')) {
-
         event.target.closest('.add-to-cart').classList.add('disabled')
         event.target.closest('.add-to-cart').disabled = true
         const productId = event.target.dataset.product
-        
+
         document.dispatchEvent(new CustomEvent('addToCart', {
           detail: {
-            productId: productId
+            productId
           }
         }))
       }
 
-      if(event.target.closest('.product-media-thumbnails-item')){
-
-        if(event.target.closest('.product-media-thumbnails-item').querySelector('.play-icon')){
+      if (event.target.closest('.product-media-thumbnails-item')) {
+        if (event.target.closest('.product-media-thumbnails-item').querySelector('.play-icon')) {
           const videoElement = document.createElement('video')
           videoElement.autoplay = true
           videoElement.muted = true
           videoElement.controls = true
           videoElement.poster = this.product.video.cover
-  
+
           const sourceElement = document.createElement('source')
           sourceElement.src = this.product.video.url
           sourceElement.type = 'video/webm'
           videoElement.appendChild(sourceElement)
-  
+
           this.shadow.querySelector('.product-media-cover').innerHTML = ''
           this.shadow.querySelector('.product-media-cover').appendChild(videoElement)
-        }else{
+        } else {
           const coverImage = document.createElement('img')
           coverImage.src = event.target.dataset.cover
           coverImage.alt = event.target.alt

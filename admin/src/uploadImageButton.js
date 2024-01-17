@@ -6,10 +6,10 @@ class UploadImageButton extends HTMLElement {
     this.languageAlias = this.getAttribute('languageAlias') || 'es'
     this.quantity = this.getAttribute('quantity') || 'single'
 
-    document.addEventListener('showThumbnails', handleShowThumbnails.bind(this))
-    document.addEventListener('createThumbnail', handleCreateThumbnail.bind(this))
-    document.addEventListener('updateThumbnail', handleUpdateThumbnail.bind(this))
-    document.addEventListener('deleteThumbnails', handleDeleteThumbnails.bind(this))
+    document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
+    document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
+    document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
+    document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
   }
 
   connectedCallback () {

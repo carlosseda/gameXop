@@ -328,7 +328,7 @@ class TableFilter extends HTMLElement {
     const tabsContainerContent = this.shadow.querySelector('.tabs-container-content')
     const tabs = JSON.parse(this.getAttribute('tabs').replaceAll("'", '"'))
 
-    let index = 0
+    const index = 0
 
     // for (const tab in tabs) {
     //   const tabElement = document.createElement('li')
@@ -589,7 +589,7 @@ class TableFilter extends HTMLElement {
       const method = formDataJson.prompt ? 'POST' : 'GET'
       const url = formDataJson.prompt ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}/openai-filter` : `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?${queryString}`
       const fetchOptions = {
-        method: method,
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
@@ -600,27 +600,26 @@ class TableFilter extends HTMLElement {
         fetchOptions.body = JSON.stringify(formDataJson)
       }
 
-      try{
+      try {
         const response = await fetch(url, fetchOptions)
-        
+
         if (response.status === 500) {
           const error = await response.json()
           throw error
         }
-  
+
         if (response.status === 200) {
-  
           this.data = await response.json()
-  
+
           openFilterButton.classList.add('active')
           applyFilterButton.classList.remove('active')
           tableFilter.classList.remove('active')
           form.reset()
-  
+
           document.dispatchEvent(new CustomEvent('newFilter', {
             detail: {
               url: this.getAttribute('url'),
-              queryString: queryString,
+              queryString,
               rows: this.data.rows,
               total: this.data.meta.total,
               currentPage: this.data.meta.currentPage,
@@ -628,8 +627,7 @@ class TableFilter extends HTMLElement {
             }
           }))
         }
-      }catch(error){
-        
+      } catch (error) {
         document.dispatchEvent(new CustomEvent('message', {
           detail: {
             message: error.message || 'Fallo al filtrar los datos',

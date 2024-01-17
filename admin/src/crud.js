@@ -3,14 +3,14 @@ class Crud extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
   }
-  
+
   connectedCallback () {
     this.render()
   }
 
   render () {
     this.shadow.innerHTML =
-      /*html*/`
+      /* html */`
       <style>
         .crud {
           display: flex;

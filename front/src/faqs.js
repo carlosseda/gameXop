@@ -1,5 +1,4 @@
 class Faqs extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -12,35 +11,35 @@ class Faqs extends HTMLElement {
   async loadData () {
     this.faqs = [
       {
-        title: "¿Qué es GameXop?",
+        title: '¿Qué es GameXop?',
         description: `
           GameXop es una tienda de videojuegos online. En ella podrás encontrar los últimos lanzamientos, preventas y juegos en oferta.
         `
       },
       {
-        title: "¿Puedo hacer devoluciones de juegos?",
+        title: '¿Puedo hacer devoluciones de juegos?',
         description: `
           Sí, puedes hacer devoluciones de juegos siempre y cuando no hayan pasado más de 7 días desde la compra.
         `
       },
       {
-        title: "¿Cuánto tarda en llegar mi pedido?",
+        title: '¿Cuánto tarda en llegar mi pedido?',
         description: `
           El tiempo de entrega de los pedidos es instantáneo. Una vez realizada la compra, podrás descargar el juego en tu consola o PC.
         `
       },
       {
-        title: "¿Cómo puedo pagar mi pedido?",
+        title: '¿Cómo puedo pagar mi pedido?',
         description: `
           Puedes pagar tu pedido con tarjeta de crédito o débito, PayPal o MercadoPago.
         `
       }
-    ];
+    ]
   }
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
 
       .faqs-container {
@@ -75,12 +74,12 @@ class Faqs extends HTMLElement {
     this.faqs.forEach(faq => {
       const faqElement = document.createElement('details')
       const faqElementSummary = document.createElement('summary')
-      faqElement.name = "faq"
+      faqElement.name = 'faq'
       faqElementSummary.textContent = faq.title
       faqElement.appendChild(faqElementSummary)
       faqElement.innerHTML += faq.description
       faqsContainer.appendChild(faqElement)
-    });
+    })
   }
 }
 

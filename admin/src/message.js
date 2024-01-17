@@ -12,7 +12,7 @@ class AlertMessage extends HTMLElement {
   }
 
   attributeChangedCallback (name, oldValue, newValue) {
-    if (name == 'message') {
+    if (name === 'message') {
       const message = this.shadow.querySelector('#alert-message')
       message.classList.add('active')
 
@@ -23,7 +23,7 @@ class AlertMessage extends HTMLElement {
       }, 7000)
     }
 
-    if (name == 'type') {
+    if (name === 'type') {
       const message = this.shadow.querySelector('#alert-message')
       message.classList.add(newValue)
     }

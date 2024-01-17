@@ -1,15 +1,13 @@
 class ModalCheckout extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
   }
 
   connectedCallback () {
-    
     this.loadData()
 
-    if(!document.openCheckoutEvent){
+    if (!document.openCheckoutEvent) {
       document.addEventListener('openCheckout', this.handleOpenCheckout.bind(this))
       document.openCheckoutEvent = true
     }
@@ -40,7 +38,7 @@ class ModalCheckout extends HTMLElement {
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       .overlay {
         background-color: rgba(0, 0, 0, .5);
@@ -574,13 +572,12 @@ class ModalCheckout extends HTMLElement {
     `
 
     this.products.forEach(product => {
-
       const productElement = document.createElement('div')
       productElement.classList.add('product')
 
       const productInfoContainer = document.createElement('div')
       productInfoContainer.classList.add('product-info-container')
-      
+
       const productPriceContainer = document.createElement('div')
       productPriceContainer.classList.add('product-price-container')
 
@@ -600,24 +597,23 @@ class ModalCheckout extends HTMLElement {
       productPriceBeforeDiscount.classList.add('product-price-before-discount')
       productPrice.textContent = `${product.price}€`
 
-      if(product.priceBeforeDiscount){
+      if (product.priceBeforeDiscount) {
         productPriceBeforeDiscount.textContent = `${product.priceBeforeDiscount}€`
         productPriceContainer.appendChild(productPriceBeforeDiscount)
       }
 
       productPriceContainer.appendChild(productPrice)
-      
+
       productElement.appendChild(productInfoContainer)
       productElement.appendChild(productPriceContainer)
 
       this.shadow.querySelector('.products').appendChild(productElement)
-    });
+    })
 
     this.paymentMethods.forEach(paymentMethod => {
-
       const paymentMethodElement = document.createElement('button')
 
-      paymentMethodElement.classList.add('pay-button', 'disabled');
+      paymentMethodElement.classList.add('pay-button', 'disabled')
       paymentMethodElement.dataset.paymentMethod = paymentMethod.name
       paymentMethodElement.textContent = `Pagar con ${paymentMethod.name.charAt(0).toUpperCase() + paymentMethod.name.slice(1)}`
 
@@ -625,54 +621,50 @@ class ModalCheckout extends HTMLElement {
     })
 
     this.shadow.querySelector('.modal-checkout').addEventListener('click', event => {
-
       if (event.target.closest('.close-button')) {
         this.shadow.querySelector('.overlay').classList.remove('active')
-        document.body.classList.remove('block-scroll');
+        document.body.classList.remove('block-scroll')
       }
 
       if (event.target.closest('.login-button')) {
-
-        this.shadow.querySelector(`.waiting`).classList.add('active')
+        this.shadow.querySelector('.waiting').classList.add('active')
 
         setTimeout(() => {
           this.customerId = 1
-          this.shadow.querySelector(`.waiting`).classList.remove('active')
+          this.shadow.querySelector('.waiting').classList.remove('active')
           // this.shadow.querySelector('.costumer-name').textContent = this.shadow.querySelector('[name="name"]').value
           this.showNextStep()
         }, 1000)
       }
 
       if (event.target.closest('.register-button')) {
-
-        this.shadow.querySelector(`.waiting`).classList.add('active')
+        this.shadow.querySelector('.waiting').classList.add('active')
 
         setTimeout(() => {
           this.customerId = 1
-          this.shadow.querySelector(`.waiting`).classList.remove('active')
+          this.shadow.querySelector('.waiting').classList.remove('active')
           this.shadow.querySelector('.costumer-name').textContent = this.shadow.querySelector('[name="name"]').value
           this.showNextStep()
         }, 1000)
       }
 
       if (event.target.closest('.apply-coupon')) {
-
         const applyCoupon = event.target.closest('.apply-coupon')
         const endpoint = applyCoupon.dataset.endpoint
-        const code = this.shadow.querySelector('[name="code"]').value 
+        const code = this.shadow.querySelector('[name="code"]').value
 
         const json = {
-          "code": code
+          code
         }
 
-        this.shadow.querySelector(`.waiting`).classList.add('active')
+        this.shadow.querySelector('.waiting').classList.add('active')
 
         setTimeout(() => {
           this.couponId = 1
           const multiplier = 1.15
           const totalPrice = this.shadow.querySelector('.total-price')
           totalPrice.textContent = `${(parseInt(totalPrice.textContent) / multiplier).toFixed(2)}€`
-          this.shadow.querySelector(`.waiting`).classList.remove('active')
+          this.shadow.querySelector('.waiting').classList.remove('active')
           applyCoupon.classList.add('disabled')
           this.shadow.querySelector('[name="code"]').disabled = true
         }, 1000)
@@ -680,21 +672,19 @@ class ModalCheckout extends HTMLElement {
 
       if (event.target.closest('input[name="terms"]')) {
         this.shadow.querySelectorAll('.pay-button').forEach(payButton => {
-          payButton.classList.toggle('disabled', !event.target.checked);
-        });
+          payButton.classList.toggle('disabled', !event.target.checked)
+        })
       }
 
       if (event.target.closest('.pay-button')) {
-
         const payButton = event.target.closest('.pay-button')
 
         if (!payButton.classList.contains('disabled')) {
-
-          this.shadow.querySelector(`.waiting`).classList.add('active')
+          this.shadow.querySelector('.waiting').classList.add('active')
 
           setTimeout(() => {
             localStorage.setItem('cart', JSON.stringify([]))
-            this.shadow.querySelector(`.waiting`).classList.remove('active')
+            this.shadow.querySelector('.waiting').classList.remove('active')
             this.shadow.querySelector('.payment').innerHTML = `
               <div class="step-group">
                 <div class="info-message">
@@ -704,15 +694,15 @@ class ModalCheckout extends HTMLElement {
                   <p>Recibirás un correo electrónico con los detalles de tu compra.</p>
                 </div>
               </div>
-            `           
+            `
           }, 1000)
         }
       }
     })
   }
 
-  showNextStep () {    
-    const steps = this.shadow.querySelector('.steps');
+  showNextStep () {
+    const steps = this.shadow.querySelector('.steps')
     steps.scrollBy({ left: steps.offsetWidth, behavior: 'smooth' })
   }
 }

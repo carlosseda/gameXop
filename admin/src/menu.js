@@ -182,11 +182,9 @@ class Menu extends HTMLElement {
       const li = document.createElement('li')
       const link = document.createElement('a')
 
-      if (menuItem.localeSeo.url) 
-        link.setAttribute('href', `${menuItem.localeSeo.url}`)
+      if (menuItem.localeSeo.url) { link.setAttribute('href', `${menuItem.localeSeo.url}`) }
 
-      if (menuItem.customUrl)
-        link.setAttribute('href', `${menuItem.customUrl}`)
+      if (menuItem.customUrl) { link.setAttribute('href', `${menuItem.customUrl}`) }
 
       link.textContent = menuItem.name
 
@@ -203,7 +201,7 @@ class Menu extends HTMLElement {
 
         menuButton.classList.toggle('active')
         menu.classList.toggle('active')
-        
+
         document.dispatchEvent(new CustomEvent('newUrl', {
           detail: {
             url: link.getAttribute('href'),

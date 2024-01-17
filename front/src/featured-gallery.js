@@ -1,5 +1,4 @@
 class FeaturedGallery extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -13,51 +12,50 @@ class FeaturedGallery extends HTMLElement {
     this.featured = [
       {
         id: 1,
-        image: 'http://localhost:5173/public/minecraft.webp',
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         price: 100,
         priceBeforeDiscount: 120,
         percentage: 40,
-        endOfDiscount: "31 de diciembre",
-        platforms: ["windows", "apple"],
+        endOfDiscount: '31 de diciembre',
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Minecraft",
+          title: 'Minecraft'
         },
         image: {
-          url: "http://localhost:5173/public/minecraft.webp",
-          alt: "Minecraft"
+          url: 'http://localhost:5173/public/minecraft.webp',
+          alt: 'Minecraft'
         }
       },
       {
         id: 2,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         price: 100,
         priceBeforeDiscount: 120,
         percentage: 60,
-        endOfDiscount: "31 de diciembre",
-        platforms: ["windows", "apple"],
+        endOfDiscount: '31 de diciembre',
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "League of Legends",
+          title: 'League of Legends'
         },
         image: {
-          url: "http://localhost:5173/public/league-of-legends.jpg",
-          alt: "League of Legends"
+          url: 'http://localhost:5173/public/league-of-legends.jpg',
+          alt: 'League of Legends'
         }
       },
       {
         id: 3,
-        path: "/juegos/call-of-duty",
+        path: '/juegos/call-of-duty',
         price: 100,
         priceBeforeDiscount: 120,
         percentage: 30,
-        endOfDiscount: "31 de diciembre",
-        platforms: ["windows", "apple"],
+        endOfDiscount: '31 de diciembre',
+        platforms: ['windows', 'apple'],
         locale: {
-          title: "Clash Royale",
+          title: 'Clash Royale'
         },
         image: {
-          url: "http://localhost:5173/public/clash-royale.webp",
-          alt: "Clash Royale"
+          url: 'http://localhost:5173/public/clash-royale.webp',
+          alt: 'Clash Royale'
         }
       }
     ]
@@ -65,7 +63,7 @@ class FeaturedGallery extends HTMLElement {
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       :host {
         height: 40vh;
@@ -196,7 +194,6 @@ class FeaturedGallery extends HTMLElement {
     const featuredGallery = this.shadow.querySelector('.featured-gallery')
 
     this.featured.forEach(featured => {
-
       const featuredElement = document.createElement('a')
       featuredElement.href = featured.path
       featuredElement.className = 'featured-element'
@@ -221,7 +218,7 @@ class FeaturedGallery extends HTMLElement {
       featuredDiscountPercentage.innerText = `- ${featured.percentage}%`
       featuredInfoContainer.appendChild(featuredDiscountPercentage)
       const featuredDiscountEnd = document.createElement('span')
-      featuredDiscountEnd.innerText = `hasta el ${featured.endOfDiscount}`;
+      featuredDiscountEnd.innerText = `hasta el ${featured.endOfDiscount}`
       featuredInfoContainer.appendChild(featuredDiscountEnd)
 
       const featuredPriceContainer = document.createElement('div')

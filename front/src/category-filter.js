@@ -1,5 +1,4 @@
 class CategoryFilter extends HTMLElement {
-
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -8,99 +7,99 @@ class CategoryFilter extends HTMLElement {
   async connectedCallback () {
     await this.loadData()
     await this.render()
-    await this.updateArrowVisibility();
+    await this.updateArrowVisibility()
   }
 
   async loadData () {
     this.categories = [
       {
         id: 1,
-        title: "Acción",
-        backgroundColor: "#ff5c6b",
+        title: 'Acción',
+        backgroundColor: '#ff5c6b'
       },
       {
         id: 2,
-        title: "Arcade",
-        backgroundColor: "#d59040",
+        title: 'Arcade',
+        backgroundColor: '#d59040'
       },
       {
         id: 3,
-        title: "Aventura",
-        backgroundColor: "#8d8d34",
+        title: 'Aventura',
+        backgroundColor: '#8d8d34'
       },
       {
         id: 4,
-        title: "Puzzles",
-        backgroundColor: "#6bc57f",
+        title: 'Puzzles',
+        backgroundColor: '#6bc57f'
       },
       {
         id: 5,
-        title: "Rol",
-        backgroundColor: "#ff8590",
+        title: 'Rol',
+        backgroundColor: '#ff8590'
       },
       {
         id: 6,
-        title: "Construcción",
-        backgroundColor: "#843a3a",
+        title: 'Construcción',
+        backgroundColor: '#843a3a'
       },
       {
         id: 7,
-        title: "Deportes",
-        backgroundColor: "#64b4d8",
+        title: 'Deportes',
+        backgroundColor: '#64b4d8'
       },
       {
         id: 8,
-        title: "Simuladores de carrera",
-        backgroundColor: "#8e50bc",
+        title: 'Simuladores de carrera',
+        backgroundColor: '#8e50bc'
       },
       {
         id: 9,
-        title: "Lucha",
-        backgroundColor: "#4246cb",
+        title: 'Lucha',
+        backgroundColor: '#4246cb'
       },
       {
         id: 10,
-        title: "Terror",
-        backgroundColor: "#208240",
+        title: 'Terror',
+        backgroundColor: '#208240'
       },
       {
         id: 11,
-        title: "Cooperativos",
-        backgroundColor: "#b36215",
+        title: 'Cooperativos',
+        backgroundColor: '#b36215'
       },
       {
         id: 12,
-        title: "Shooter",
-        backgroundColor: "#ff5c6b",
+        title: 'Shooter',
+        backgroundColor: '#ff5c6b'
       },
       {
         id: 13,
-        title: "Terror",
-        backgroundColor: "#208240",
+        title: 'Terror',
+        backgroundColor: '#208240'
       },
       {
         id: 14,
-        title: "Cooperativos",
-        backgroundColor: "#b36215",
+        title: 'Cooperativos',
+        backgroundColor: '#b36215'
       }
-    ];
+    ]
   }
 
-  updateArrowVisibility() {
-    const slider = this.shadow.querySelector('.slider');
-    const leftArrow = this.shadow.querySelector('.left-arrow');
-    const rightArrow = this.shadow.querySelector('.right-arrow');
+  updateArrowVisibility () {
+    const slider = this.shadow.querySelector('.slider')
+    const leftArrow = this.shadow.querySelector('.left-arrow')
+    const rightArrow = this.shadow.querySelector('.right-arrow')
 
-    const isScrollable = slider.scrollWidth > slider.clientWidth;
+    const isScrollable = slider.scrollWidth > slider.clientWidth
 
-    slider.style.justifyContent = isScrollable ? 'flex-start' : 'center';
-    leftArrow.style.display = isScrollable ? 'block' : 'none';
-    rightArrow.style.display = isScrollable ? 'block' : 'none';
+    slider.style.justifyContent = isScrollable ? 'flex-start' : 'center'
+    leftArrow.style.display = isScrollable ? 'block' : 'none'
+    rightArrow.style.display = isScrollable ? 'block' : 'none'
   }
 
   render () {
     this.shadow.innerHTML =
-    /*html*/`
+    /* html */`
     <style>
       :host {
         margin: 0 2rem;
@@ -195,57 +194,56 @@ class CategoryFilter extends HTMLElement {
     </div>
     `
 
-    const sliderContainer = this.shadow.querySelector('.slider-container');
-    const slider = this.shadow.querySelector('.slider');
+    const sliderContainer = this.shadow.querySelector('.slider-container')
+    const slider = this.shadow.querySelector('.slider')
 
-    const categoryElement = document.createElement('div');
-    categoryElement.classList.add('category');
-    categoryElement.dataset.categoryId = null;
+    const categoryElement = document.createElement('div')
+    categoryElement.classList.add('category')
+    categoryElement.dataset.categoryId = null
 
-    const categoryTitle = document.createElement('h3');
-    categoryTitle.textContent = "Todos";
-    categoryElement.appendChild(categoryTitle);
-    slider.appendChild(categoryElement);
+    const categoryTitle = document.createElement('h3')
+    categoryTitle.textContent = 'Todos'
+    categoryElement.appendChild(categoryTitle)
+    slider.appendChild(categoryElement)
 
     this.categories.forEach(category => {
-      const categoryElement = document.createElement('div');
-      categoryElement.classList.add('category');
-      categoryElement.dataset.categoryId = category.id;
+      const categoryElement = document.createElement('div')
+      categoryElement.classList.add('category')
+      categoryElement.dataset.categoryId = category.id
 
-      const categoryTitle = document.createElement('h3');
-      categoryTitle.textContent = category.title;
-      categoryElement.appendChild(categoryTitle);
-      slider.appendChild(categoryElement);
-    });
+      const categoryTitle = document.createElement('h3')
+      categoryTitle.textContent = category.title
+      categoryElement.appendChild(categoryTitle)
+      slider.appendChild(categoryElement)
+    })
 
     sliderContainer.addEventListener('click', event => {
-
-      if(event.target.closest('.left-arrow')) {
-        this.slideLeft();
+      if (event.target.closest('.left-arrow')) {
+        this.slideLeft()
       }
 
-      if(event.target.closest('.right-arrow')) {
-        this.slideRight();
+      if (event.target.closest('.right-arrow')) {
+        this.slideRight()
       }
 
-      if(event.target.closest('.category')) {
+      if (event.target.closest('.category')) {
         document.dispatchEvent(new CustomEvent('filterByCategory', {
           detail: {
             categoryId: event.target.closest('.category').dataset.categoryId
           }
-        }));
+        }))
       }
-    });
+    })
   }
 
-  slideLeft() {
-    const slider = this.shadow.querySelector('.slider');
-    slider.scrollBy({ left: -600, behavior: 'smooth' });
+  slideLeft () {
+    const slider = this.shadow.querySelector('.slider')
+    slider.scrollBy({ left: -600, behavior: 'smooth' })
   }
 
-  slideRight() {
-    const slider = this.shadow.querySelector('.slider');
-    slider.scrollBy({ left: 600, behavior: 'smooth' });
+  slideRight () {
+    const slider = this.shadow.querySelector('.slider')
+    slider.scrollBy({ left: 600, behavior: 'smooth' })
   }
 }
 

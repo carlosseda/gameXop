@@ -2,7 +2,7 @@ class Table extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.eventsAdded = new Set();
+    this.eventsAdded = new Set()
     this.data = []
     this.queryString
     this.total
@@ -30,14 +30,13 @@ class Table extends HTMLElement {
   }
 
   async handleRefreshTable (event) {
-    alert("hola")
-    if(event.detail.url === this.getAttribute('url')){
+    if (event.detail.url === this.getAttribute('url')) {
       this.loadData(event.detail.data).then(() => this.render())
     }
   }
 
   async handleNewFilter (event) {
-    if(event.detail.url === this.getAttribute('url')){
+    if (event.detail.url === this.getAttribute('url')) {
       this.data = event.detail.rows
       this.total = event.detail.total
       this.currentPage = event.detail.currentPage
@@ -49,14 +48,13 @@ class Table extends HTMLElement {
   }
 
   async handleShowSubtable (event) {
-    if(event.detail.subtable == this.getAttribute('subtable')){
+    if (event.detail.subtable === this.getAttribute('subtable')) {
       this.tableStructure = await this.setTableStructure()
       this.loadData(event.detail.data).then(() => this.render())
     }
   }
 
   async loadData (data = null) {
-
     if (data) {
       this.data = data
       return
@@ -71,15 +69,13 @@ class Table extends HTMLElement {
         }
       })
 
-      if(response.status == 200) {
+      if (response.status === 200) {
         const data = await response.json()
         this.data = data.rows
         this.total = data.meta.total
         this.currentPage = data.meta.currentPage
         this.lastPage = data.meta.pages
-      }
-
-      else if(response.status == 500) {
+      } else if (response.status === 500) {
         throw response
       }
     } catch (error) {
@@ -88,9 +84,8 @@ class Table extends HTMLElement {
   }
 
   async render () {
-
     this.shadow.innerHTML =
-      /*html*/`
+      /* html */`
       <style>
 
         button {
@@ -273,7 +268,7 @@ class Table extends HTMLElement {
         
       </div>`
 
-    if(!this.getAttribute('subtable')){
+    if (!this.getAttribute('subtable')) {
       this.shadow.innerHTML +=
       `
         <div class="table-pagination">
@@ -314,20 +309,19 @@ class Table extends HTMLElement {
         </div>
       `
     }
-      
+
     await this.getTableData()
     await this.renderTableButtons()
     await this.renderPaginationButtons()
   }
 
   async getTableData () {
-
     const table = this.shadow.querySelector('.table')
     const tableRecords = document.createElement('div')
     tableRecords.classList.add('table-records')
     table.appendChild(tableRecords)
 
-    if (this.data.length == 0) {
+    if (this.data.length === 0) {
       const tableNoRecords = document.createElement('div')
       tableNoRecords.classList.add('table-no-records')
       const message = document.createElement('p')
@@ -352,7 +346,6 @@ class Table extends HTMLElement {
       const headers = JSON.parse(this.getAttribute('headers').replaceAll("'", '"'))
 
       Object.keys(headers).forEach(key => {
-
         const tableElementData = document.createElement('li')
         const tableDataHeader = document.createElement('span')
 
@@ -370,11 +363,10 @@ class Table extends HTMLElement {
       const recordButtons = JSON.parse(this.getAttribute('recordButtons').replaceAll("'", '"'))
 
       Object.keys(recordButtons).forEach((recordButton) => {
-
         const tableButton = document.createElement('button')
         tableButton.classList.add('table-button')
 
-        if (recordButtons[recordButton] == 'edit') {
+        if (recordButtons[recordButton] === 'edit') {
           tableButton.classList.add('edit-button')
           tableButton.dataset.id = element.id
           tableButton.innerHTML = `
@@ -383,7 +375,7 @@ class Table extends HTMLElement {
                         </svg>`
         }
 
-        if (recordButtons[recordButton] == 'remove') {
+        if (recordButtons[recordButton] === 'remove') {
           tableButton.classList.add('remove-button')
           tableButton.dataset.id = element.id
           tableButton.innerHTML = `
@@ -400,17 +392,14 @@ class Table extends HTMLElement {
   }
 
   async renderTableButtons () {
-
     const editButtons = this.shadow.querySelectorAll('.edit-button')
     const removeButtons = this.shadow.querySelectorAll('.remove-button')
 
     editButtons.forEach(editButton => {
-
       editButton.addEventListener('click', async () => {
-
         const url = import.meta.env.VITE_API_URL + this.getAttribute('url') + '/' + editButton.dataset.id
 
-        try{
+        try {
           const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -418,11 +407,11 @@ class Table extends HTMLElement {
             }
           })
 
-          if(response.status == 500 || response.status == 404) {
+          if (response.status === 500 || response.status === 404) {
             throw response
           }
 
-          if(response.status == 200) {
+          if (response.status === 200) {
             const data = await response.json()
             document.dispatchEvent(new CustomEvent('showElement', {
               detail: {
@@ -431,8 +420,7 @@ class Table extends HTMLElement {
               }
             }))
           }
-        }
-        catch(error){
+        } catch (error) {
           const data = await error.json()
 
           document.dispatchEvent(new CustomEvent('message', {
@@ -440,20 +428,19 @@ class Table extends HTMLElement {
               message: data.message || 'Fallo al cargar el elemento',
               type: 'error'
             }
-          })) 
+          }))
         }
       })
     })
 
     removeButtons.forEach(removeButton => {
       removeButton.addEventListener('click', () => {
-
         const endPoint = import.meta.env.VITE_API_URL + this.getAttribute('url') + '/' + removeButton.dataset.id
 
         document.dispatchEvent(new CustomEvent('showOverlayer'))
         document.dispatchEvent(new CustomEvent('showDeleteModal', {
           detail: {
-            endPoint: endPoint,
+            endPoint,
             url: this.getAttribute('url'),
             subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null
           }
@@ -463,13 +450,10 @@ class Table extends HTMLElement {
   }
 
   async renderPaginationButtons () {
-
     const tablePaginationButtons = this.shadow.querySelectorAll('.table-pagination-button')
 
     tablePaginationButtons.forEach(tablePaginationButton => {
-
       tablePaginationButton.addEventListener('click', async () => {
-
         let page
 
         switch (tablePaginationButton.id) {
@@ -478,12 +462,12 @@ class Table extends HTMLElement {
             break
 
           case 'previousPageUrl':
-            if (this.currentPage == 1) return
+            if (this.currentPage === 1) return
             page = parseInt(this.currentPage) - 1
             break
 
           case 'nextPageUrl':
-            if (this.currentPage == this.lastPage) return
+            if (this.currentPage === this.lastPage) return
             page = parseInt(this.currentPage) + 1
             break
 
@@ -492,7 +476,7 @@ class Table extends HTMLElement {
             break
         }
 
-        const url = this.queryString ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}&${this.queryString}`:`${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}`
+        const url = this.queryString ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}&${this.queryString}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}`
 
         try {
           const response = await fetch(url, {
@@ -501,23 +485,21 @@ class Table extends HTMLElement {
             }
           })
 
-          if (response.status == 500) {
+          if (response.status === 500) {
             throw response
           }
 
-          if(response.status == 200) {
+          if (response.status === 200) {
             const data = await response.json()
             this.data = data.rows
             this.total = data.meta.total
             this.currentPage = data.meta.currentPage
             this.lastPage = data.meta.pages
-  
+
             this.render()
           }
-
         } catch (error) {
-
-          data = await error.json()
+          const data = await error.json()
 
           document.dispatchEvent(new CustomEvent('message', {
             detail: {

@@ -4,10 +4,6 @@ class Table extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
     this.eventsAdded = new Set()
     this.data = []
-    this.queryString
-    this.total
-    this.currentPage
-    this.lastPage
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     if (!this.eventsAdded.has('refreshTable')) {
@@ -271,7 +267,7 @@ class Table extends HTMLElement {
 
         console.log(this.structure.tableButtons[tableButton])
 
-        if (this.structure.tableButtons[tableButton] == 'filterButton') {
+        if (this.structure.tableButtons[tableButton] === 'filterButton') {
           tableButtonElement.classList.add('table-filter-button')
           tableButtonElement.innerHTML = `
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 11L16.76 3.62A1 1 0 0 0 16.59 2.22A1 1 0 0 0 16 2H2A1 1 0 0 0 1.38 2.22A1 1 0 0 0 1.21 3.62L7 11V16.87A1 1 0 0 0 7.29 17.7L9.29 19.7A1 1 0 0 0 10.7 19.7A1 1 0 0 0 11 18.87V11M13 16L18 21L23 16Z" /></svg>

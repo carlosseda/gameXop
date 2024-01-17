@@ -16,8 +16,5 @@
     "bowser": "^2.11.0",
     "get-browser-fingerprint": "^3.2.0",
     "webfontloader": "^1.6.28"
-  },
-  "eslintConfig": {
-    "extends": "./node_modules/standard/eslintrc.json"
   }
 }

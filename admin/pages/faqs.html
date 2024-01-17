@@ -1,12 +1,12 @@
 <crud-component>
-  <!-- <table-filter 
-    slot="filter"
-    url="/api/admin/users">
-  </table-filter> -->
+  <table-filter
+    slot='filter'
+    url='/api/admin/users'
+  />
 
-  <table-component 
-    slot="table"
-    url="/api/admin/faqs"
+  <table-component
+    slot='table'
+    url='/api/admin/faqs'
     structure="{
       'headers': [
         {'label': 'Nombre', 'field': 'name'},
@@ -16,12 +16,11 @@
       'recordButtons': ['edit', 'remove'],
       'tableButtons': ['filterButton']
     }"
-  >
-  </table-component>
+  />
 
-  <form-component 
-    slot="form"
-    url="/api/admin/faqs"
+  <form-component
+    slot='form'
+    url='/api/admin/faqs'
     structure="{
       'tabs': [
         {'name': 'general', 'label': 'General'}
@@ -38,6 +37,6 @@
           ]
         }
       }
-    }">
-  </form-component>
+    }"
+  />
 </crud-component>

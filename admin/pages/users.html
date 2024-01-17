@@ -6,13 +6,16 @@
 
   <table-component 
     slot="table"
-    headers="[
-      {'label': 'Nombre', 'field': 'name'},
-      {'label': 'Email', 'field': 'email'},
-      {'label': 'Fecha de creación', 'field': 'createdAt'},
-      {'label': 'Fecha de actualización', 'field': 'updatedAt'}
-    ]"
-    recordButtons="['edit', 'remove']"
+    structure="{
+      'headers': [
+        {'label': 'Nombre', 'field': 'name'},
+        {'label': 'Email', 'field': 'email'},
+        {'label': 'Fecha de creación', 'field': 'createdAt'},
+        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+      ],
+      'recordButtons': ['edit', 'remove'],
+      'tableButtons': ['filterButton']
+    }"
     url="/api/admin/users">
   </table-component>
 

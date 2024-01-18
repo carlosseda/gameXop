@@ -17,7 +17,7 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'NO ACTION'
       },
       cityId: {
         allowNull: false,
@@ -27,7 +27,7 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'NO ACTION'
       },
       dialCodeId: {
         allowNull: false,
@@ -37,7 +37,7 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'NO ACTION'
       },
       name: {
         allowNull: false,

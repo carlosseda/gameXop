@@ -38,11 +38,11 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('product_category_relations', ['product_category_relations', 'productId'], {
+    await queryInterface.addIndex('product_category_relations', ['productId'], {
       name: 'product_category_relations_productId_fk'
     })
 
-    await queryInterface.addIndex('product_category_relations', ['product_category_relations', 'productCategoryId'], {
+    await queryInterface.addIndex('product_category_relations', ['productCategoryId'], {
       name: 'product_category_relations_productCategoryId_fk'
     })
   },

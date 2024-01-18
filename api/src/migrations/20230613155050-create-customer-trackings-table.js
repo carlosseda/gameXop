@@ -72,10 +72,6 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('customer_trackings', ['customerId'], {
-      name: 'customer_trackings_customerId_fk'
-    })
-
     await queryInterface.addIndex('customer_trackings', ['localeSeoId'], {
       name: 'customer_trackings_localeSeoId_fk'
     })

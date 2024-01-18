@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true
     },
     name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     email: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       unique: {
         args: true,
@@ -35,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     password: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {

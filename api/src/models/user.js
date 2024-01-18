@@ -1,5 +1,5 @@
 // const useBcrypt = require('sequelize-bcrypt')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
 
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define('User', {
@@ -45,56 +45,56 @@ module.exports = function (sequelize, DataTypes) {
     },
     createdAt: {
       type: DataTypes.DATE,
-      get() {
+      get () {
         return this.getDataValue('createdAt')
           ? this.getDataValue('createdAt').toISOString().split('T')[0]
-          : null;
+          : null
       }
     },
     updatedAt: {
       type: DataTypes.DATE,
-      get() {
+      get () {
         return this.getDataValue('updatedAt')
           ? this.getDataValue('updatedAt').toISOString().split('T')[0]
-          : null;
+          : null
       }
     }
   }, {
-      sequelize,
-      tableName: 'users',
-      timestamps: true,
-      paranoid: true,
-      indexes: [
-        {
-          name: 'PRIMARY',
-          unique: true,
-          using: 'BTREE',
-          fields: [
-            { name: 'id' }
-          ]
-        },
-        {
-          name: 'user_email_index',
-          unique: true,
-          using: 'BTREE',
-          fields: [
-            { name: 'email' }
-          ]
-        }
-      ],
-      hooks: {
-        beforeSave: async (user) => {
-          console.log('beforeSave hook called')
-          const salt = await bcrypt.genSaltSync(10);
-          user.password = bcrypt.hashSync(user.password, salt);
-        }
+    sequelize,
+    tableName: 'users',
+    timestamps: true,
+    paranoid: true,
+    indexes: [
+      {
+        name: 'PRIMARY',
+        unique: true,
+        using: 'BTREE',
+        fields: [
+          { name: 'id' }
+        ]
+      },
+      {
+        name: 'user_email_index',
+        unique: true,
+        using: 'BTREE',
+        fields: [
+          { name: 'email' }
+        ]
+      }
+    ],
+    hooks: {
+      beforeSave: async (user) => {
+        console.log('beforeSave hook called')
+        const salt = await bcrypt.genSaltSync(10)
+        user.password = bcrypt.hashSync(user.password, salt)
       }
     }
+  }
   )
 
   User.prototype.validPassword = function (password) {
-    return bcrypt.compareSync(password, this.password);
-  };
+    return bcrypt.compareSync(password, this.password)
+  }
 
   User.associate = function (models) {
 

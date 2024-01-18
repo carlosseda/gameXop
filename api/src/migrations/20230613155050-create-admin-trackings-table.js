@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('customer_trackings', {
+    await queryInterface.createTable('admin_trackings', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -44,16 +44,16 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('customer_trackings', ['userId'], {
-      name: 'customer_trackings_userId_fk'
+    await queryInterface.addIndex('admin_trackings', ['userId'], {
+      name: 'admin_trackings_userId_fk'
     })
 
-    await queryInterface.addIndex('customer_trackings', ['entity', 'entityId'], {
-      name: 'customer_trackings_entity_entityId_index'
+    await queryInterface.addIndex('admin_trackings', ['entity', 'entityId'], {
+      name: 'admin_trackings_entity_entityId_index'
     })
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('customer_trackings')
+    await queryInterface.dropTable('admin_trackings')
   }
 }

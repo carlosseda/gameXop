@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'carts',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       productId: {
         type: Sequelize.INTEGER,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'products',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       localeId: {
         type: Sequelize.INTEGER,
@@ -31,7 +35,9 @@ module.exports = {
         references: {
           model: 'locales',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       priceId: {
         type: Sequelize.INTEGER,
@@ -39,14 +45,18 @@ module.exports = {
         references: {
           model: 'prices',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       priceDiscountId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'price_discounts',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       taxId: {
         type: Sequelize.INTEGER,
@@ -54,7 +64,9 @@ module.exports = {
         references: {
           model: 'taxes',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       basePrice: {
         type: Sequelize.DECIMAL(6, 2),
@@ -79,21 +91,26 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('cart_details', ['cartId'], {
-        name: 'cartDetail_cartId_fk'
-      }))
-      .then(() => queryInterface.addIndex('cart_details', ['productId'], {
-        name: 'cartDetail_productId_fk'
-      }))
-      .then(() => queryInterface.addIndex('cart_details', ['localeId'], {
-        name: 'cartDetail_localeId_fk'
-      }))
-      .then(() => queryInterface.addIndex('cart_details', ['priceId'], {
-        name: 'cartDetail_priceId_fk'
-      }))
-      .then(() => queryInterface.addIndex('cart_details', ['taxId'], {
-        name: 'cartDetail_taxId_fk'
-      }))
+
+    await queryInterface.addIndex('cart_details', ['cartId'], {
+      name: 'cart_details_cartId_fk'
+    })
+
+    await queryInterface.addIndex('cart_details', ['productId'], {
+      name: 'cart_details_productId_fk'
+    })
+
+    await queryInterface.addIndex('cart_details', ['localeId'], {
+      name: 'cart_details_localeId_fk'
+    })
+
+    await queryInterface.addIndex('cart_details', ['priceId'], {
+      name: 'cartDetail_priceId_fk'
+    })
+
+    await queryInterface.addIndex('cart_details', ['taxId'], {
+      name: 'cartDetail_taxId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

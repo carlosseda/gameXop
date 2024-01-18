@@ -35,10 +35,11 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE
       }
-    }).then(() => queryInterface.addIndex('users', ['email'], {
-      unique: true,
-      name: 'user_email_index'
-    }))
+    })
+
+    await queryInterface.addIndex('users', ['email'], {
+      name: 'users_email_index'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

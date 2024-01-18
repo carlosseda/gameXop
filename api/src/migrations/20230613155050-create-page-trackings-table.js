@@ -1,22 +1,14 @@
 'use strict'
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('sales', {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable('page_trackings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
-      },
-      cartId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'carts',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'NO ACTION'
       },
       customerId: {
         type: Sequelize.INTEGER,
@@ -27,47 +19,56 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      paymentMethodId: {
+      fingerprintId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'payment_methods',
+          model: 'fingerprints',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      couponId: {
+      localeSeoId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'coupons',
+          model: 'locale_seos',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      reference: {
+      localeSlugSeoId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'locale_slug_seos',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
+      },
+      path: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      totalPrice: {
+      ip: {
         allowNull: false,
-        type: Sequelize.DECIMAL(10, 2)
+        type: Sequelize.STRING
       },
-      totalBasePrice: {
+      isRobot: {
         allowNull: false,
-        type: Sequelize.DECIMAL(10, 2)
+        type: Sequelize.BOOLEAN
       },
-      totalTaxPrice: {
+      startTime: {
         allowNull: false,
-        type: Sequelize.DECIMAL(10, 2)
+        type: Sequelize.DOUBLE
       },
-      saleDate: {
+      endTime: {
         allowNull: false,
-        type: Sequelize.DATEONLY
+        type: Sequelize.DOUBLE
       },
-      saleTime: {
+      latencyMS: {
         allowNull: false,
-        type: Sequelize.TIME
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -82,24 +83,24 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('sales', ['cartId'], {
-      name: 'sales_cartId_fk'
+    await queryInterface.addIndex('page_trackings', ['customerId'], {
+      name: 'page_trackings_customerId_fk'
     })
 
-    await queryInterface.addIndex('sales', ['customerId'], {
-      name: 'sales_customerId_fk'
+    await queryInterface.addIndex('page_trackings', ['fingerprintId'], {
+      name: 'page_trackings_fingerprintId_fk'
     })
 
-    await queryInterface.addIndex('sales', ['paymentMethodId'], {
-      name: 'sales_paymentMethodId_fk'
+    await queryInterface.addIndex('page_trackings', ['localeSeoId'], {
+      name: 'page_trackings_localeSeoId_fk'
     })
 
-    await queryInterface.addIndex('sales', ['couponId'], {
-      name: 'sales_couponId_fk'
+    await queryInterface.addIndex('page_trackings', ['localeSlugSeoId'], {
+      name: 'page_trackings_localeSlugSeoId_fk'
     })
   },
 
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('sales')
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable('page_trackings')
   }
 }

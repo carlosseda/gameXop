@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'payment_methods',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       customerId: {
         allowNull: false,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'customers',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       returnId: {
         allowNull: false,
@@ -31,7 +35,9 @@ module.exports = {
         references: {
           model: 'returns',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       errorCode: {
         allowNull: false,
@@ -52,15 +58,18 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('return_errors', ['paymentMethodId'], {
-        name: 'returnError_paymentMethodId_fk'
-      }))
-      .then(() => queryInterface.addIndex('return_errors', ['customerId'], {
-        name: 'returnError_customerId_fk'
-      }))
-      .then(() => queryInterface.addIndex('return_errors', ['returnId'], {
-        name: 'returnError_returnId_fk'
-      }))
+
+    await queryInterface.addIndex('return_errors', ['paymentMethodId'], {
+      name: 'return_errors_paymentMethodId_fk'
+    })
+
+    await queryInterface.addIndex('return_errors', ['customerId'], {
+      name: 'return_errors_customerId_fk'
+    })
+
+    await queryInterface.addIndex('return_errors', ['returnId'], {
+      name: 'return_errors_returnId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

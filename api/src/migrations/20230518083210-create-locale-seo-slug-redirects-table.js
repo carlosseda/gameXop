@@ -2,36 +2,27 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('price_discounts', {
+    await queryInterface.createTable('locale_seo_slug_redirects', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      priceId: {
+      localeSeoSlugId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'prices',
+          model: 'locale_seo_slugs',
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      percentage: {
-        type: Sequelize.DECIMAL
+      languageAlias: {
+        type: Sequelize.STRING
       },
-      multiplier: {
-        type: Sequelize.DECIMAL
-      },
-      current: {
-        type: Sequelize.BOOLEAN
-      },
-      startsAt: {
-        type: Sequelize.DATE
-      },
-      endsAt: {
-        type: Sequelize.DATE
+      oldUrl: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -46,12 +37,12 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('price_discounts', ['priceId'], {
-      name: 'price_discounts_priceId_fk'
+    await queryInterface.addIndex('locale_seo_slug_redirects', ['localeSeoSlugId'], {
+      name: 'locale_seo_slug_redirects_localeSeoId_fk'
     })
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('price_discounts')
+    await queryInterface.dropTable('locale_seo_slug_redirects')
   }
 }

@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'countries',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       cityId: {
         allowNull: false,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'cities',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       dialCodeId: {
         allowNull: false,
@@ -31,7 +35,9 @@ module.exports = {
         references: {
           model: 'dial_codes',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       name: {
         allowNull: false,
@@ -73,10 +79,23 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE
       }
-    }).then(() => queryInterface.addIndex('customers', ['email'], {
-      unique: true,
+    })
+
+    await queryInterface.addIndex('customers', ['email'], {
       name: 'customer_email_index'
-    }))
+    })
+
+    await queryInterface.addIndex('customers', ['countryId'], {
+      name: 'customers_countryId_fk'
+    })
+
+    await queryInterface.addIndex('customers', ['cityId'], {
+      name: 'customers_cityId_fk'
+    })
+
+    await queryInterface.addIndex('customers', ['dialCodeId'], {
+      name: 'customers_dialCodeId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

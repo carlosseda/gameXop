@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'image_configurations',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       entityId: {
         type: Sequelize.INTEGER
@@ -63,12 +65,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('images', ['imageConfigurationId'], {
-        name: 'image_imageConfigurationId_fk'
-      }))
-      .then(() => queryInterface.addIndex('images', ['entityId', 'entity'], {
-        name: 'image_entityId_entity_idx'
-      }))
+
+    await queryInterface.addIndex('images', ['imageConfigurationId'], {
+      name: 'images_imageConfigurationId_fk'
+    })
+
+    await queryInterface.addIndex('images', ['entityId', 'entity'], {
+      name: 'images_entityId_entity_index'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

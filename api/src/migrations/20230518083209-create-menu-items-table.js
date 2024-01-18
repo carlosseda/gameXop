@@ -15,23 +15,29 @@ module.exports = {
         references: {
           model: 'menus',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       localeSeoId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'locale_seos',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       localeSeoSlugId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'locale_seo_slugs',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      parentId: {
+      parent: {
         type: Sequelize.INTEGER
       },
       name: {
@@ -64,15 +70,18 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('menu_items', ['menuId'], {
-        name: 'menuItem_menuId_fk'
-      }))
-      .then(() => queryInterface.addIndex('menu_items', ['localeSeoId'], {
-        name: 'menuItem_localeSeoId_fk'
-      }))
-      .then(() => queryInterface.addIndex('menu_items', ['localeSeoSlugId'], {
-        name: 'menuItem_localeSlugSeoId_fk'
-      }))
+
+    await queryInterface.addIndex('menu_items', ['menuId'], {
+      name: 'menu_items_menuId_fk'
+    })
+
+    await queryInterface.addIndex('menu_items', ['localeSeoId'], {
+      name: 'menu_items_localeSeoId_fk'
+    })
+
+    await queryInterface.addIndex('menu_items', ['localeSeoSlugId'], {
+      name: 'menu_items_localeSlugSeoId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'customers',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       saleId: {
         allowNull: false,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'sales',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       returnId: {
         allowNull: true,
@@ -31,7 +35,9 @@ module.exports = {
         references: {
           model: 'returns',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       reference: {
         allowNull: false,
@@ -53,15 +59,18 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('tickets', ['customerId'], {
-        name: 'ticket_customerId_fk'
-      }))
-      .then(() => queryInterface.addIndex('tickets', ['saleId'], {
-        name: 'ticket_saleId_fk'
-      }))
-      .then(() => queryInterface.addIndex('tickets', ['returnId'], {
-        name: 'ticket_returnId_fk'
-      }))
+
+    await queryInterface.addIndex('tickets', ['customerId'], {
+      name: 'tickets_customerId_fk'
+    })
+
+    await queryInterface.addIndex('tickets', ['saleId'], {
+      name: 'tickets_saleId_fk'
+    })
+
+    await queryInterface.addIndex('tickets', ['returnId'], {
+      name: 'tickets_returnId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

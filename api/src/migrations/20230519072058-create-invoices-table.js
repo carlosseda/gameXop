@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'customers',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       saleId: {
         allowNull: false,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'sales',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       returnId: {
         allowNull: true,
@@ -31,7 +35,9 @@ module.exports = {
         references: {
           model: 'returns',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       reference: {
         allowNull: false,
@@ -53,15 +59,18 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('invoices', ['customerId'], {
-        name: 'invoice_customerId_fk'
-      }))
-      .then(() => queryInterface.addIndex('invoices', ['saleId'], {
-        name: 'invoice_saleId_fk'
-      }))
-      .then(() => queryInterface.addIndex('invoices', ['returnId'], {
-        name: 'invoice_returnId_fk'
-      }))
+
+    await queryInterface.addIndex('invoices', ['customerId'], {
+      name: 'invoices_customerId_fk'
+    })
+
+    await queryInterface.addIndex('invoices', ['saleId'], {
+      name: 'invoices_saleId_fk'
+    })
+
+    await queryInterface.addIndex('invoices', ['returnId'], {
+      name: 'invoices_returnId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

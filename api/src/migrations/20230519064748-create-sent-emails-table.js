@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'customers',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       emailId: {
         type: Sequelize.INTEGER,
@@ -23,7 +25,9 @@ module.exports = {
         references: {
           model: 'emails',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       createdAt: {
         allowNull: false,
@@ -37,12 +41,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('sent_emails', ['customerId'], {
-        name: 'sentEmail_customerId_fk'
-      }))
-      .then(() => queryInterface.addIndex('sent_emails', ['emailId'], {
-        name: 'sentEmail_emailId_fk'
-      }))
+
+    await queryInterface.addIndex('sent_emails', ['customerId'], {
+      name: 'sent_emails_customerId_fk'
+    })
+
+    await queryInterface.addIndex('sent_emails', ['emailId'], {
+      name: 'sent_emails_emailId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

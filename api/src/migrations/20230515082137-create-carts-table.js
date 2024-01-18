@@ -19,14 +19,18 @@ module.exports = {
         references: {
           model: 'customers',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       fingerprintId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'fingerprints',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       createdAt: {
         allowNull: false,
@@ -40,12 +44,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('carts', ['customerId'], {
-        name: 'cart_customerId_fk'
-      }))
-      .then(() => queryInterface.addIndex('carts', ['fingerprintId'], {
-        name: 'cart_fingerprintId_fk'
-      }))
+
+    await queryInterface.addIndex('carts', ['customerId'], {
+      name: 'cart_customerId_fk'
+    })
+
+    await queryInterface.addIndex('carts', ['fingerprintId'], {
+      name: 'cart_fingerprintId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

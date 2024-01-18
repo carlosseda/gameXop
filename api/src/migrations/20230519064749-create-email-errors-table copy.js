@@ -1,32 +1,37 @@
 'use strict'
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('product_category_relations', {
+    await queryInterface.createTable('email_errors', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      productId: {
-        allowNull: false,
+      customerId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: 'products',
+          model: 'customers',
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'NO ACTION'
       },
-      productCategoryId: {
-        allowNull: false,
+      emailId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: 'product_categories',
+          model: 'emails',
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'NO ACTION'
+      },
+      error: {
+        type: Sequelize.TEXT,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -35,18 +40,22 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {
+        type: Sequelize.DATE
       }
     })
 
-    await queryInterface.addIndex('product_category_relations', ['product_category_relations', 'productId'], {
-      name: 'product_category_relations_productId_fk'
+    await queryInterface.addIndex('sent_emails', ['customerId'], {
+      name: 'email_errors_customerId_fk'
     })
 
-    await queryInterface.addIndex('product_category_relations', ['product_category_relations', 'productCategoryId'], {
-      name: 'product_category_relations_productCategoryId_fk'
+    await queryInterface.addIndex('sent_emails', ['emailId'], {
+      name: 'email_errors_emailId_fk'
     })
   },
+
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('product_category_relations')
+    await queryInterface.dropTable('email_errors')
   }
 }

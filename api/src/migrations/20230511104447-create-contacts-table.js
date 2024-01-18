@@ -16,7 +16,9 @@ module.exports = {
         references: {
           model: 'fingerprints',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       name: {
         allowNull: false,
@@ -46,12 +48,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('contacts', ['fingerprintId'], {
-        name: 'contacts_fingerprintId_index'
-      }))
-      .then(() => queryInterface.addIndex('contacts', ['email'], {
-        name: 'contact_email'
-      }))
+
+    await queryInterface.addIndex('contacts', ['fingerprintId'], {
+      name: 'contacts_fingerprintId_fk'
+    })
+
+    await queryInterface.addIndex('contacts', ['email'], {
+      name: 'contacts_email_index'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

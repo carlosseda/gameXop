@@ -15,7 +15,9 @@ module.exports = {
         references: {
           model: 'countries',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       type: {
         allowNull: false,
@@ -44,6 +46,10 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE
       }
+    })
+
+    await queryInterface.addIndex('taxes', ['countryId'], {
+      name: 'taxes_countryId_fk'
     })
   },
 

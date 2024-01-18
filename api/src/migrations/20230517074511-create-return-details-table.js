@@ -14,14 +14,18 @@ module.exports = {
         references: {
           model: 'returns',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       productId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'products',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       localeId: {
         type: Sequelize.INTEGER,
@@ -29,7 +33,9 @@ module.exports = {
         references: {
           model: 'locales',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       priceId: {
         type: Sequelize.INTEGER,
@@ -37,7 +43,9 @@ module.exports = {
         references: {
           model: 'prices',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       taxId: {
         type: Sequelize.INTEGER,
@@ -45,14 +53,18 @@ module.exports = {
         references: {
           model: 'taxes',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       priceDiscountId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'price_discounts',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       productName: {
         allowNull: false,
@@ -86,12 +98,30 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('return_details', ['returnId'], {
-        name: 'returnDetail_returnId_fk'
-      }))
-      .then(() => queryInterface.addIndex('return_details', ['productId'], {
-        name: 'returnDetail_productId_fk'
-      }))
+
+    await queryInterface.addIndex('return_details', ['returnId'], {
+      name: 'return_details_returnId_fk'
+    })
+
+    await queryInterface.addIndex('return_details', ['productId'], {
+      name: 'return_details_productId_fk'
+    })
+
+    await queryInterface.addIndex('return_details', ['localeId'], {
+      name: 'return_details_localeId_fk'
+    })
+
+    await queryInterface.addIndex('return_details', ['priceId'], {
+      name: 'return_details_priceId_fk'
+    })
+
+    await queryInterface.addIndex('return_details', ['taxId'], {
+      name: 'return_details_taxId_fk'
+    })
+
+    await queryInterface.addIndex('return_details', ['priceDiscountId'], {
+      name: 'return_details_priceDiscountId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

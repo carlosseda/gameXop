@@ -17,7 +17,9 @@ module.exports = {
         references: {
           model: 'countries',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       cityId: {
         allowNull: false,
@@ -25,7 +27,9 @@ module.exports = {
         references: {
           model: 'cities',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       dialCodeId: {
         allowNull: false,
@@ -33,7 +37,9 @@ module.exports = {
         references: {
           model: 'dial_codes',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       fiscalName: {
         allowNull: false,
@@ -81,6 +87,18 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE
       }
+    })
+
+    await queryInterface.addIndex('companies', ['countryId'], {
+      name: 'companies_countryId_fk'
+    })
+
+    await queryInterface.addIndex('companies', ['cityId'], {
+      name: 'companies_cityId_fk'
+    })
+
+    await queryInterface.addIndex('companies', ['dialCodeId'], {
+      name: 'companies_dialCodeId_fk'
     })
   },
 

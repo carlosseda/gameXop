@@ -14,14 +14,18 @@ module.exports = {
         references: {
           model: 'products',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       taxId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'taxes',
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       basePrice: {
         type: Sequelize.DECIMAL
@@ -41,12 +45,14 @@ module.exports = {
         type: Sequelize.DATE
       }
     })
-      .then(() => queryInterface.addIndex('prices', ['productId'], {
-        name: 'price_productId_fk'
-      }))
-      .then(() => queryInterface.addIndex('prices', ['taxId'], {
-        name: 'price_taxId_fk'
-      }))
+
+    await queryInterface.addIndex('prices', ['productId'], {
+      name: 'prices_productId_fk'
+    })
+
+    await queryInterface.addIndex('prices', ['taxId'], {
+      name: 'prices_taxId_fk'
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

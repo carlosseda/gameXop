@@ -1,18 +1,23 @@
 'use strict'
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('locales', {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable('customer_trackings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      languageAlias: {
-        allowNull: false,
-        type: Sequelize.CHAR(2)
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
       },
       entity: {
         allowNull: false,
@@ -20,14 +25,9 @@ module.exports = {
       },
       entityId: {
         allowNull: false,
-        unsigned: true,
         type: Sequelize.INTEGER
       },
-      key: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      value: {
+      action: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -44,12 +44,16 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('locales', ['languageAlias', 'entity', 'entityId', 'key'], {
-      name: 'locales_languageAlias_entity_entityId_key_index'
+    await queryInterface.addIndex('customer_trackings', ['userId'], {
+      name: 'customer_trackings_userId_fk'
+    })
+
+    await queryInterface.addIndex('customer_trackings', ['entity', 'entityId'], {
+      name: 'customer_trackings_entity_entityId_index'
     })
   },
 
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('locales')
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable('customer_trackings')
   }
 }

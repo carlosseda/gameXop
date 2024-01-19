@@ -37,10 +37,10 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      localeSlugSeoId: {
+      localeSeoSlugId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'locale_slug_seos',
+          model: 'locale_seo_slugs',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -95,8 +95,8 @@ module.exports = {
       name: 'page_trackings_localeSeoId_fk'
     })
 
-    await queryInterface.addIndex('page_trackings', ['localeSlugSeoId'], {
-      name: 'page_trackings_localeSlugSeoId_fk'
+    await queryInterface.addIndex('page_trackings', ['localeSeoSlugId'], {
+      name: 'page_trackings_localeSeoSlugId_fk'
     })
   },
 

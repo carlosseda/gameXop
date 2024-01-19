@@ -81,7 +81,7 @@ module.exports = {
     })
 
     await queryInterface.addIndex('menu_items', ['localeSeoSlugId'], {
-      name: 'menu_items_localeSlugSeoId_fk'
+      name: 'menu_items_localeSeoSlugId_fk'
     })
   },
 

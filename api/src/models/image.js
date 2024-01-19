@@ -1,18 +1,14 @@
 module.exports = function (sequelize, DataTypes) {
   const Image = sequelize.define('Image', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     imageConfigurationId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'ImageConfiguration',
-        key: 'id'
-      }
+      allowNull: false
     },
     entityId: {
       type: DataTypes.INTEGER
@@ -47,6 +43,22 @@ module.exports = function (sequelize, DataTypes) {
     latencyMs: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -63,18 +75,19 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'image_imageConfigurationId_fk',
+        name: 'images_imageConfigurationId_fk',
         using: 'BTREE',
         fields: [
           { name: 'imageConfigurationId' }
         ]
       },
       {
-        name: 'image_entityId_entity_idx',
+        name: 'images_entityId_entity_mediaQuery_index',
         using: 'BTREE',
         fields: [
           { name: 'entityId' },
-          { name: 'entity' }
+          { name: 'entity' },
+          { name: 'mediaQuery' }
         ]
       }
     ]

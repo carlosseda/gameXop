@@ -1,23 +1,36 @@
 module.exports = function (sequelize, DataTypes) {
   const Cart = sequelize.define('Cart', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
+    },
+    uuid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
     },
     customerId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Customer',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     fingerprintId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Fingerprint',
-        key: 'id'
+      type: DataTypes.INTEGER
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
       }
     }
   }, {
@@ -35,14 +48,14 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'cart_customerId_fk',
+        name: 'carts_customerId_fk',
         using: 'BTREE',
         fields: [
           { name: 'customerId' }
         ]
       },
       {
-        name: 'cart_fingerprintId_fk',
+        name: 'carts_fingerprintId_fk',
         using: 'BTREE',
         fields: [
           { name: 'fingerprintId' }
@@ -52,12 +65,12 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Cart.associate = function (models) {
-    Cart.hasMany(models.CartDetail, { as: 'details', foreignKey: 'cartId' })
     Cart.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
     Cart.belongsTo(models.Fingerprint, { as: 'fingerprint', foreignKey: 'fingerprintId' })
-    Cart.hasMany(models.SaleError, { as: 'saleErrors', foreignKey: 'cartId' })
     Cart.hasOne(models.Sale, { as: 'sale', foreignKey: 'cartId' })
-    Cart.belongsToMany(models.Product, { as: 'products', through: 'CartDetail', foreignKey: 'cartId' })
+    Cart.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'cartId' })
+    Cart.hasMany(models.SaleError, { as: 'saleErrors', foreignKey: 'cartId' })
+    Cart.belongsToMany(models.Product, { through: models.CartDetail, as: 'products', foreignKey: 'cartId' })
   }
 
   return Cart

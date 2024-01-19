@@ -1,10 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
   const Price = sequelize.define('Price', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     productId: {
       type: DataTypes.INTEGER,
@@ -25,6 +25,22 @@ module.exports = function (sequelize, DataTypes) {
     },
     current: {
       type: DataTypes.BOOLEAN
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -41,14 +57,14 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'price_productId_fk',
+        name: 'prices_productId_fk',
         using: 'BTREE',
         fields: [
           { name: 'productId' }
         ]
       },
       {
-        name: 'price_taxId_fk',
+        name: 'prices_taxId_fk',
         using: 'BTREE',
         fields: [
           { name: 'taxId' }
@@ -58,8 +74,12 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Price.associate = function (models) {
-    Price.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' }),
+    Price.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' })
     Price.belongsTo(models.Tax, { as: 'tax', foreignKey: 'taxId' })
+    Price.hasMany(models.PriceDiscount, { as: 'priceDiscounts', foreignKey: 'priceId' })
+    Price.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'priceId' })
+    Price.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'priceId' })
+    Price.hasMany(models.ReturnDetail, { as: 'returnDetails', foreignKey: 'priceId' })
   }
 
   return Price

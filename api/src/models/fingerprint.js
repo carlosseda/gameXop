@@ -1,22 +1,34 @@
 module.exports = function (sequelize, DataTypes) {
   const Fingerprint = sequelize.define('Fingerprint', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     customerId: {
-      allowNull: true,
       type: DataTypes.INTEGER,
-      references: {
-        model: 'Customer',
-        key: 'id'
-      }
+      allowNull: true
     },
     fingerprint: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -33,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'fingerprint_customerId_fk',
+        name: 'fingerprints_customerId_fk',
         using: 'BTREE',
         fields: [
           { name: 'customerId' }
@@ -44,6 +56,9 @@ module.exports = function (sequelize, DataTypes) {
 
   Fingerprint.associate = function (models) {
     Fingerprint.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
+    Fingerprint.hasMany(models.ApiTracking, { as: 'apiTrackings', foreignKey: 'fingerprintId' })
+    Fingerprint.hasMany(models.PageTracking, { as: 'pageTrackings', foreignKey: 'fingerprintId' })
+    Fingerprint.hasMany(models.CustomerTracking, { as: 'customerTrackings', foreignKey: 'fingerprintId' })
     Fingerprint.hasMany(models.Cart, { as: 'carts', foreignKey: 'fingerprintId' })
     Fingerprint.hasMany(models.Contact, { as: 'contacts', foreignKey: 'fingerprintId' })
   }

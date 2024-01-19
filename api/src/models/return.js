@@ -1,10 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
   const Return = sequelize.define('Return', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     saleId: {
       type: DataTypes.INTEGER,
@@ -28,39 +28,44 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     reference: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
     },
     totalPrice: {
-      allowNull: false,
-      type: DataTypes.DECIMAL(10, 2)
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
     },
     totalBasePrice: {
-      allowNull: false,
-      type: DataTypes.DECIMAL(10, 2)
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
     },
     totalTaxPrice: {
-      allowNull: false,
-      type: DataTypes.DECIMAL(10, 2)
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
     },
-    issueDate: {
-      allowNull: false,
-      type: DataTypes.DATEONLY
+    returnDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     },
-    issueTime: {
-      allowNull: false,
-      type: DataTypes.TIME
+    returnTime: {
+      type: DataTypes.TIME,
+      allowNull: false
     },
     createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
     },
     updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE
-    },
-    deletedAt: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -101,11 +106,14 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Return.associate = function (models) {
-    Return.belongsTo(models.Sale, { as: 'sale', foreignKey: 'saleId' }),
-    Return.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' }),
+    Return.belongsTo(models.Sale, { as: 'sale', foreignKey: 'saleId' })
+    Return.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
     Return.belongsTo(models.PaymentMethod, { as: 'paymentMethod', foreignKey: 'paymentMethodId' })
-    Return.hasMany(models.ReturnDetail, { as: 'details', foreignKey: 'returnId' })
-    Return.belongsToMany(models.Product, { as: 'products', through: 'ReturnDetail', foreignKey: 'returnId' })
+    Return.hasOne(models.Invoice, { as: 'invoices', foreignKey: 'returnId' })
+    Return.hasOne(models.Ticket, { as: 'tickets', foreignKey: 'returnId' })
+    Return.hasMany(models.ReturnDetail, { as: 'returnDetails', foreignKey: 'returnId' })
+    Return.hasMany(models.ReturnError, { as: 'returnErrors', foreignKey: 'returnId' })
+    Return.belongsToMany(models.Product, { through: models.ReturnDetail, as: 'products', foreignKey: 'returnId' })
   }
 
   return Return

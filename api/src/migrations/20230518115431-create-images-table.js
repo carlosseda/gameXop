@@ -71,8 +71,8 @@ module.exports = {
       name: 'images_imageConfigurationId_fk'
     })
 
-    await queryInterface.addIndex('images', ['entityId', 'entity'], {
-      name: 'images_entityId_entity_index'
+    await queryInterface.addIndex('images', ['entityId', 'entity', 'mediaQuery'], {
+      name: 'images_entityId_entity_mediaQuery_index'
     })
   },
 

@@ -10,16 +10,6 @@ module.exports = {
         autoIncrement: true,
         allowNull: false
       },
-      paymentMethodId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'payment_methods',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'NO ACTION'
-      },
       customerId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -35,6 +25,16 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'returns',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
+      },
+      paymentMethodId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'payment_methods',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -60,16 +60,16 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('return_errors', ['paymentMethodId'], {
-      name: 'return_errors_paymentMethodId_fk'
-    })
-
     await queryInterface.addIndex('return_errors', ['customerId'], {
       name: 'return_errors_customerId_fk'
     })
 
     await queryInterface.addIndex('return_errors', ['returnId'], {
       name: 'return_errors_returnId_fk'
+    })
+
+    await queryInterface.addIndex('return_errors', ['paymentMethodId'], {
+      name: 'return_errors_paymentMethodId_fk'
     })
   },
 

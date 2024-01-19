@@ -1,10 +1,22 @@
 module.exports = function (sequelize, DataTypes) {
   const Company = sequelize.define('Company', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
+    },
+    countryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    cityId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    dialCodeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     fiscalName: {
       type: DataTypes.STRING(255),
@@ -24,7 +36,7 @@ module.exports = function (sequelize, DataTypes) {
         }
       }
     },
-    nif: {
+    vat: {
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
@@ -87,6 +99,22 @@ module.exports = function (sequelize, DataTypes) {
     },
     telephone: {
       type: DataTypes.STRING(255)
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -101,13 +129,35 @@ module.exports = function (sequelize, DataTypes) {
         fields: [
           { name: 'id' }
         ]
+      },
+      {
+        name: 'companies_countryId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'countryId' }
+        ]
+      },
+      {
+        name: 'companies_cityId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'cityId' }
+        ]
+      },
+      {
+        name: 'companies_dialCodeId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'dialCodeId' }
+        ]
       }
     ]
   })
 
   Company.associate = function (models) {
-    Company.hasMany(models.Employee, { as: 'employees', foreignKey: 'companyId' })
-    Company.belongsToMany(models.SocialNetwork, { through: 'SocialNetworkCompany', as: 'socialNetworks', foreignKey: 'companyId' })
+    Company.belongsTo(models.Country, { as: 'country', foreignKey: 'countryId' })
+    Company.belongsTo(models.City, { as: 'city', foreignKey: 'cityId' })
+    Company.belongsTo(models.DialCode, { as: 'dialCode', foreignKey: 'dialCodeId' })
   }
 
   return Company

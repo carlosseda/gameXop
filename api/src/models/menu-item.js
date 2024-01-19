@@ -1,14 +1,14 @@
 module.exports = function (sequelize, DataTypes) {
   const MenuItem = sequelize.define('MenuItem', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     menuId: {
-      allowNull: false,
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: 'Menu',
         key: 'id'
@@ -28,7 +28,7 @@ module.exports = function (sequelize, DataTypes) {
         key: 'id'
       }
     },
-    parentId: {
+    parent: {
       type: DataTypes.INTEGER
     },
     name: {
@@ -48,6 +48,22 @@ module.exports = function (sequelize, DataTypes) {
     order: {
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -64,21 +80,21 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'menuItem_menuId_fk',
+        name: 'menu_items_menuId_fk',
         using: 'BTREE',
         fields: [
           { name: 'menuId' }
         ]
       },
       {
-        name: 'menuItem_localeSeoId_fk',
+        name: 'menu_items_localeSeoId_fk',
         using: 'BTREE',
         fields: [
           { name: 'localeSeoId' }
         ]
       },
       {
-        name: 'menuItem_localeSeoSlugId_fk',
+        name: 'menu_items_localeSeoSlugId_fk',
         using: 'BTREE',
         fields: [
           { name: 'localeSeoSlugId' }

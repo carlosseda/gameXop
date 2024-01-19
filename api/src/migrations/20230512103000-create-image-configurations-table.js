@@ -41,8 +41,8 @@ module.exports = {
       }
     })
 
-    await queryInterface.addIndex('image_configurations', ['entity', 'name'], {
-      name: 'image_configurations_entity_name_index'
+    await queryInterface.addIndex('image_configurations', ['entity', 'name', 'mediaQuery'], {
+      name: 'image_configurations_entity_name_mediaQuery_index'
     })
   },
 

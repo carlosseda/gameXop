@@ -2,31 +2,22 @@ module.exports = function (sequelize, DataTypes) {
   const Sale = sequelize.define('Sale',
     {
       id: {
-        allowNull: false,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER
+        allowNull: false
       },
       cartId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Cart',
-          key: 'id'
-        }
+        type: DataTypes.INTEGER
       },
       customerId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Customer',
-          key: 'id'
-        }
+        type: DataTypes.INTEGER
       },
       paymentMethodId: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'PaymentMethod',
-          key: 'id'
-        }
+        type: DataTypes.INTEGER
+      },
+      couponId: {
+        type: DataTypes.INTEGER
       },
       reference: {
         type: DataTypes.STRING,
@@ -44,13 +35,29 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
       },
-      issueDate: {
+      saleDate: {
         type: DataTypes.DATEONLY,
         allowNull: false
       },
-      issueTime: {
+      saleTime: {
         type: DataTypes.TIME,
         allowNull: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        get () {
+          return this.getDataValue('createdAt')
+            ? this.getDataValue('createdAt').toISOString().split('T')[0]
+            : null
+        }
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        get () {
+          return this.getDataValue('updatedAt')
+            ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+            : null
+        }
       }
     }, {
       sequelize,
@@ -67,24 +74,31 @@ module.exports = function (sequelize, DataTypes) {
           ]
         },
         {
-          name: 'sale_cartId_fk',
+          name: 'sales_cartId_fk',
           using: 'BTREE',
           fields: [
             { name: 'cartId' }
           ]
         },
         {
-          name: 'sale_customerId_fk',
+          name: 'sales_customerId_fk',
           using: 'BTREE',
           fields: [
             { name: 'customerId' }
           ]
         },
         {
-          name: 'sale_paymentMethodId_fk',
+          name: 'sales_paymentMethodId_fk',
           using: 'BTREE',
           fields: [
             { name: 'paymentMethodId' }
+          ]
+        },
+        {
+          name: 'sales_couponId_fk',
+          using: 'BTREE',
+          fields: [
+            { name: 'couponId' }
           ]
         }
       ]
@@ -92,12 +106,15 @@ module.exports = function (sequelize, DataTypes) {
   )
 
   Sale.associate = function (models) {
-    Sale.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cartId' }),
-    Sale.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' }),
+    Sale.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cartId' })
+    Sale.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
     Sale.belongsTo(models.PaymentMethod, { as: 'paymentMethod', foreignKey: 'paymentMethodId' })
-    Sale.hasMany(models.SaleDetail, { as: 'details', foreignKey: 'saleId' })
-    Sale.hasMany(models.Return, { as: 'returns', foreignKey: 'saleId' })
-    Sale.belongsToMany(models.Product, { as: 'products', through: 'SaleDetail', foreignKey: 'saleId' })
+    Sale.belongsTo(models.Coupon, { as: 'coupon', foreignKey: 'couponId' })
+    Sale.hasOne(models.Return, { as: 'return', foreignKey: 'saleId' })
+    Sale.hasOne(models.Invoice, { as: 'invoices', foreignKey: 'saleId' })
+    Sale.hasOne(models.Ticket, { as: 'tickets', foreignKey: 'saleId' })
+    Sale.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'saleId' })
+    Sale.belongsToMany(models.Product, { through: models.SaleDetail, as: 'products', foreignKey: 'saleId' })
   }
 
   return Sale

@@ -1,27 +1,24 @@
 module.exports = function (sequelize, DataTypes) {
   const LocaleSeo = sequelize.define('LocaleSeo', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
-    language: {
-      allowNull: false,
-      type: DataTypes.STRING
+    languageAlias: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     url: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
     },
     title: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
     },
     description: {
-      type: DataTypes.STRING
-    },
-    keywords: {
       type: DataTypes.STRING
     },
     redirection: {
@@ -41,6 +38,22 @@ module.exports = function (sequelize, DataTypes) {
     sitemap: {
       type: DataTypes.BOOLEAN,
       defaultValue: 1
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -60,8 +73,10 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   LocaleSeo.associate = function (models) {
-    LocaleSeo.hasMany(models.LocaleSeoRedirect, { as: 'redirects', foreignKey: 'localeSeoId' })
-    LocaleSeo.hasMany(models.LocaleSeoSlug, { as: 'slugs', foreignKey: 'localeSeoId' })
+    LocaleSeo.hasMany(models.PageTrackings, { as: 'pageTrackings', foreignKey: 'localeSeoId' })
+    LocaleSeo.hasMany(models.CustomerTrackings, { as: 'customerTrackings', foreignKey: 'localeSeoId' })
+    LocaleSeo.hasMany(models.LocaleSeoRedirect, { as: 'localeSeoRedirects', foreignKey: 'localeSeoId' })
+    LocaleSeo.hasMany(models.LocaleSeoSlug, { as: 'localeSeoSlugs', foreignKey: 'localeSeoId' })
     LocaleSeo.hasMany(models.MenuItem, { as: 'menuItems', foreignKey: 'localeSeoId' })
   }
 

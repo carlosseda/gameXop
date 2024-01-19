@@ -12,6 +12,7 @@ module.exports = {
       },
       priceId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'prices',
           key: 'id'

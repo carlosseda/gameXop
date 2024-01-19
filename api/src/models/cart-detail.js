@@ -2,25 +2,32 @@ module.exports = (sequelize, DataTypes) => {
   const CartDetail = sequelize.define('CartDetail', {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       autoIncrement: true,
+      primaryKey: true,
       allowNull: false
     },
     cartId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Cart',
-        key: 'id'
-      }
+      allowNull: false
     },
     productId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Product',
-        key: 'id'
-      }
+      allowNull: false
+    },
+    localeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    priceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    priceDiscountId: {
+      type: DataTypes.INTEGER
+    },
+    taxId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     productName: {
       type: DataTypes.STRING,
@@ -33,17 +40,29 @@ module.exports = (sequelize, DataTypes) => {
     taxPrice: {
       type: DataTypes.DECIMAL(6, 2)
     },
-    unitOfMeasurement: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
-    tableName: 'carts',
+    tableName: 'cart_details',
     timestamps: true,
     paranoid: true,
     indexes: [
@@ -56,19 +75,38 @@ module.exports = (sequelize, DataTypes) => {
         ]
       },
       {
-        name: 'cartDetail_cartId_fk',
-        unique: true,
+        name: 'cart_details_cartId_fk',
         using: 'BTREE',
         fields: [
           { name: 'cartId' }
         ]
       },
       {
-        name: 'cartDetail_productId_fk',
-        unique: true,
+        name: 'cart_details_productId_fk',
         using: 'BTREE',
         fields: [
           { name: 'productId' }
+        ]
+      },
+      {
+        name: 'cart_details_localeId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'localeId' }
+        ]
+      },
+      {
+        name: 'cart_details_priceId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'priceId' }
+        ]
+      },
+      {
+        name: 'cart_details_taxId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'taxId' }
         ]
       }
     ]
@@ -77,6 +115,10 @@ module.exports = (sequelize, DataTypes) => {
   CartDetail.associate = function (models) {
     CartDetail.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cartId' })
     CartDetail.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' })
+    CartDetail.belongsTo(models.Locale, { as: 'locale', foreignKey: 'localeId' })
+    CartDetail.belongsTo(models.Price, { as: 'price', foreignKey: 'priceId' })
+    CartDetail.belongsTo(models.PriceDiscount, { as: 'priceDiscount', foreignKey: 'priceDiscountId' })
+    CartDetail.belongsTo(models.Tax, { as: 'tax', foreignKey: 'taxId' })
   }
 
   return CartDetail

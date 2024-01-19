@@ -1,10 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
   const LocaleSeoRedirect = sequelize.define('LocaleSeoRedirect', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     localeSeoId: {
       type: DataTypes.INTEGER,
@@ -13,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
         key: 'id'
       }
     },
-    language: {
+    languageAlias: {
       type: DataTypes.STRING
     },
     group: {
@@ -27,6 +27,22 @@ module.exports = function (sequelize, DataTypes) {
     },
     oldUrl: {
       type: DataTypes.STRING
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -43,7 +59,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'localeSeoRedirect_localeSeoId_fk',
+        name: 'locale_seo_redirects_localeSeoId_fk',
         using: 'BTREE',
         fields: [
           { name: 'localeSeoId' }

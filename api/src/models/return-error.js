@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-  const SentEmail = sequelize.define('SentEmail', {
+  const ReturnError = sequelize.define('ReturnError', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -10,9 +10,20 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    emailId: {
+    returnId: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    paymentMethodId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    errorCode: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    errorMessage: {
+      type: DataTypes.STRING
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -32,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'sent_emails',
+    tableName: 'returns',
     timestamps: true,
     paranoid: true,
     indexes: [
@@ -45,26 +56,34 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'sent_emails_customerId_fk',
+        name: 'return_errors_customerId_fk',
         using: 'BTREE',
         fields: [
           { name: 'customerId' }
         ]
       },
       {
-        name: 'sent_emails_emailId_fk',
+        name: 'return_errors_returnId_fk',
         using: 'BTREE',
         fields: [
-          { name: 'emailId' }
+          { name: 'returnId' }
+        ]
+      },
+      {
+        name: 'return_paymentMethodId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'paymentMethodId' }
         ]
       }
     ]
   })
 
-  SentEmail.associate = function (models) {
-    SentEmail.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
-    SentEmail.belongsTo(models.Email, { as: 'email', foreignKey: 'emailId' })
+  ReturnError.associate = function (models) {
+    ReturnError.belongsTo(models.Customer, { as: 'customer', foreignKey: 'customerId' })
+    ReturnError.belongsTo(models.Return, { as: 'return', foreignKey: 'returnId' })
+    ReturnError.belongsTo(models.PaymentMethod, { as: 'paymentMethod', foreignKey: 'paymentMethodId' })
   }
 
-  return SentEmail
+  return ReturnError
 }

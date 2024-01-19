@@ -41,8 +41,7 @@ module.exports = {
         allowNull: false
       },
       resourceElement: {
-        type: Sequelize.INTEGER,
-        allowNull: true
+        type: Sequelize.INTEGER
       },
       method: {
         allowNull: false,

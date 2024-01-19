@@ -69,6 +69,10 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
+      productName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       basePrice: {
         type: Sequelize.DECIMAL(6, 2),
         allowNull: false
@@ -106,11 +110,11 @@ module.exports = {
     })
 
     await queryInterface.addIndex('cart_details', ['priceId'], {
-      name: 'cartDetail_priceId_fk'
+      name: 'cart_details_priceId_fk'
     })
 
     await queryInterface.addIndex('cart_details', ['taxId'], {
-      name: 'cartDetail_taxId_fk'
+      name: 'cart_details_taxId_fk'
     })
   },
 

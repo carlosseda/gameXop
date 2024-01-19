@@ -69,6 +69,10 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
+      productName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       basePrice: {
         type: Sequelize.DECIMAL(6, 2),
         allowNull: false

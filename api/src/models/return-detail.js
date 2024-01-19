@@ -1,44 +1,60 @@
 module.exports = function (sequelize, DataTypes) {
   const ReturnDetail = sequelize.define('ReturnDetail', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     returnId: {
-      type: DataTypes.INTEGER,
-      refence: {
-        model: 'Return',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     productId: {
-      type: DataTypes.INTEGER,
-      refence: {
-        model: 'Product',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
+    },
+    localeId: {
+      type: DataTypes.INTEGER
+    },
+    priceId: {
+      type: DataTypes.INTEGER
+    },
+    taxId: {
+      type: DataTypes.INTEGER
+    },
+    priceDiscountId: {
+      type: DataTypes.INTEGER
     },
     productName: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
     },
     basePrice: {
-      allowNull: false,
-      type: DataTypes.DECIMAL(6, 2)
+      type: DataTypes.DECIMAL(6, 2),
+      allowNull: false
     },
     taxPrice: {
-      allowNull: false,
-      type: DataTypes.DECIMAL(6, 2)
-    },
-    unitOfMeasurement: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.DECIMAL(6, 2),
+      allowNull: false
     },
     quantity: {
-      allowNull: false,
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -55,17 +71,45 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'returnDetail_returnId_fk',
+        name: 'return_details_returnId_fk',
         using: 'BTREE',
         fields: [
           { name: 'returnId' }
         ]
       },
       {
-        name: 'returnDetail_productId_fk',
+        name: 'return_details_productId_fk',
         using: 'BTREE',
         fields: [
           { name: 'productId' }
+        ]
+      },
+      {
+        name: 'return_details_localeId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'localeId' }
+        ]
+      },
+      {
+        name: 'return_details_priceId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'priceId' }
+        ]
+      },
+      {
+        name: 'return_details_taxId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'taxId' }
+        ]
+      },
+      {
+        name: 'return_details_priceDiscountId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'priceDiscountId' }
         ]
       }
     ]
@@ -74,6 +118,10 @@ module.exports = function (sequelize, DataTypes) {
   ReturnDetail.associate = function (models) {
     ReturnDetail.belongsTo(models.Return, { as: 'return', foreignKey: 'returnId' })
     ReturnDetail.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' })
+    ReturnDetail.belongsTo(models.Locale, { as: 'locale', foreignKey: 'localeId' })
+    ReturnDetail.belongsTo(models.Price, { as: 'price', foreignKey: 'priceId' })
+    ReturnDetail.belongsTo(models.Tax, { as: 'tax', foreignKey: 'taxId' })
+    ReturnDetail.belongsTo(models.PriceDiscount, { as: 'priceDiscount', foreignKey: 'priceDiscountId' })
   }
 
   return ReturnDetail

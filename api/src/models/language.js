@@ -1,10 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
   const Language = sequelize.define('Language', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     name: {
       type: DataTypes.STRING(255),
@@ -26,6 +26,22 @@ module.exports = function (sequelize, DataTypes) {
       unique: {
         args: true,
         msg: 'Ya existe ese alias.'
+      }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
       }
     }
   }, {

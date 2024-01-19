@@ -1,14 +1,14 @@
 module.exports = function (sequelize, DataTypes) {
   const Faq = sequelize.define('Faq', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     name: {
-      allowNull: false,
       type: DataTypes.STRING,
+      allowNull: false,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre".'

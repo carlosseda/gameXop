@@ -1,13 +1,13 @@
 module.exports = function (sequelize, DataTypes) {
   const Locale = sequelize.define('Locale', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     languageAlias: {
-      type: DataTypes.CHAR(2),
+      type: DataTypes.STRING,
       allowNull: false
     },
     entity: {
@@ -26,6 +26,22 @@ module.exports = function (sequelize, DataTypes) {
     value: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -42,7 +58,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'locale_languageAlias_entity_entityKey_key_idx',
+        name: 'locales_languageAlias_entity_entityId_key_index',
         using: 'BTREE',
         fields: [
           { name: 'languageAlias' },
@@ -55,7 +71,9 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Locale.associate = function (models) {
-
+    Locale.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'localeId' })
+    Locale.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'localeId' })
+    Locale.hasMany(models.ReturnDetail, { as: 'returnDetails', foreignKey: 'localeId' })
   }
 
   return Locale

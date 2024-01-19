@@ -1,10 +1,10 @@
 module.exports = function (sequelize, DataTypes) {
   const Contact = sequelize.define('Contact', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     fingerprintId: {
       type: DataTypes.INTEGER,
@@ -51,10 +51,26 @@ module.exports = function (sequelize, DataTypes) {
           msg: 'Por favor, rellena el campo "Mensaje".'
         }
       }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
-    tableName: 'Contacts',
+    tableName: 'contacts',
     timestamps: true,
     paranoid: true,
     indexes: [
@@ -67,14 +83,14 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'contact_fingerprintId_fk',
+        name: 'contacts_fingerprintId_fk',
         using: 'BTREE',
         fields: [
           { name: 'fingerprintId' }
         ]
       },
       {
-        name: 'contact_email',
+        name: 'contacts_email_index',
         using: 'BTREE',
         fields: [
           { name: 'email' }

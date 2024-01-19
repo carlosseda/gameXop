@@ -1,10 +1,22 @@
 module.exports = function (sequelize, DataTypes) {
   const Customer = sequelize.define('Customer', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
+    },
+    countryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    cityId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    dialCodeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     name: {
       type: DataTypes.STRING,
@@ -59,15 +71,6 @@ module.exports = function (sequelize, DataTypes) {
         }
       }
     },
-    town: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: 'Por favor, rellena el campo "Localidad".'
-        }
-      }
-    },
     postalCode: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -85,6 +88,31 @@ module.exports = function (sequelize, DataTypes) {
           msg: 'Por favor, rellena el campo "Dirección".'
         }
       }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "Contraseña".'
+        }
+      }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -101,23 +129,54 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'customer_email_fk',
+        name: 'customer_email_index',
         unique: true,
         using: 'BTREE',
         fields: [
           { name: 'email' }
+        ]
+      },
+      {
+        name: 'customers_countryId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'countryId' }
+        ]
+      },
+      {
+        name: 'customers_cityId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'cityId' }
+        ]
+      },
+      {
+        name: 'customers_dialCodeId_fk',
+        using: 'BTREE',
+        fields: [
+          { name: 'dialCodeId' }
         ]
       }
     ]
   })
 
   Customer.associate = function (models) {
-    Customer.hasMany(models.Cart, { as: 'carts', foreignKey: 'customerId' })
+    Customer.belongsTo(models.Country, { as: 'country', foreignKey: 'countryId' })
+    Customer.belongsTo(models.City, { as: 'city', foreignKey: 'cityId' })
+    Customer.belongsTo(models.DialCode, { as: 'dialCode', foreignKey: 'dialCodeId' })
+    Customer.hasMany(models.ApiTracking, { as: 'apiTrackings', foreignKey: 'customerId' })
+    Customer.hasMany(models.PageTracking, { as: 'pageTrackings', foreignKey: 'customerId' })
+    Customer.hasMany(models.CustomerTracking, { as: 'customerTrackings', foreignKey: 'customerId' })
     Customer.hasMany(models.Fingerprint, { as: 'fingerprints', foreignKey: 'customerId' })
-    Customer.hasMany(models.Return, { as: 'returns', foreignKey: 'customerId' })
-    Customer.hasMany(models.SaleError, { as: 'saleErrors', foreignKey: 'customerId' })
+    Customer.hasMany(models.Cart, { as: 'carts', foreignKey: 'customerId' })
     Customer.hasMany(models.Sale, { as: 'sales', foreignKey: 'customerId' })
+    Customer.hasMany(models.SaleError, { as: 'saleErrors', foreignKey: 'customerId' })
+    Customer.hasMany(models.Return, { as: 'returns', foreignKey: 'customerId' })
+    Customer.hasMany(models.ReturnError, { as: 'returnsErrors', foreignKey: 'customerId' })
+    Customer.hasMany(models.Invoice, { as: 'invoices', foreignKey: 'customerId' })
+    Customer.hasMany(models.Ticket, { as: 'tickets', foreignKey: 'customerId' })
     Customer.hasMany(models.SentEmail, { as: 'sentEmails', foreignKey: 'customerId' })
+    Customer.hasMany(models.EmailError, { as: 'emailErrors', foreignKey: 'customerId' })
     Customer.belongsToMany(models.Email, { through: models.SentEmail, as: 'emails', foreignKey: 'customerId' })
   }
 

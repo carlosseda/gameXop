@@ -4,10 +4,10 @@ const bcrypt = require('bcrypt')
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define('User', {
     id: {
-      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
     },
     name: {
       type: DataTypes.STRING,
@@ -74,7 +74,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'user_email_index',
+        name: 'users_email_index',
         unique: true,
         using: 'BTREE',
         fields: [
@@ -84,7 +84,6 @@ module.exports = function (sequelize, DataTypes) {
     ],
     hooks: {
       beforeSave: async (user) => {
-        console.log('beforeSave hook called')
         const salt = await bcrypt.genSaltSync(10)
         user.password = bcrypt.hashSync(user.password, salt)
       }
@@ -97,7 +96,7 @@ module.exports = function (sequelize, DataTypes) {
   }
 
   User.associate = function (models) {
-
+    User.hasMany(models.AdminTracking, { as: 'adminTrackings', foreignKey: 'userId' })
   }
 
   return User

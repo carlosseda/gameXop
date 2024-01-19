@@ -1,20 +1,16 @@
 module.exports = function (sequelize, DataTypes) {
   const LocaleSeoSlug = sequelize.define('LocaleSeoSlug', {
     id: {
-      allowNull: false,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      allowNull: false
     },
     localeSeoId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'LocaleSeo',
-        key: 'id'
-      }
+      allowNull: false
     },
-    language: {
+    languageAlias: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -42,6 +38,22 @@ module.exports = function (sequelize, DataTypes) {
     },
     keywords: {
       type: DataTypes.STRING
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('createdAt')
+          ? this.getDataValue('createdAt').toISOString().split('T')[0]
+          : null
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      get () {
+        return this.getDataValue('updatedAt')
+          ? this.getDataValue('updatedAt').toISOString().split('T')[0]
+          : null
+      }
     }
   }, {
     sequelize,
@@ -58,7 +70,7 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'localeSeoSlug_localeSeoId_fk',
+        name: 'locale_seo_slugs_localeSeoId_fk',
         using: 'BTREE',
         fields: [
           { name: 'localeSeoId' }
@@ -69,6 +81,9 @@ module.exports = function (sequelize, DataTypes) {
 
   LocaleSeoSlug.associate = function (models) {
     LocaleSeoSlug.belongsTo(models.LocaleSeo, { as: 'localeSeo', foreignKey: 'localeSeoId' })
+    LocaleSeoSlug.hasMany(models.PageTracking, { as: 'pageTrackings', foreignKey: 'localeSeoSlugId' })
+    LocaleSeoSlug.hasMany(models.CustomerTracking, { as: 'customerTrackings', foreignKey: 'localeSeoSlugId' })
+    LocaleSeoSlug.hasMany(models.LocaleSeoSlugRedirect, { as: 'localeSeoSlugRedirects', foreignKey: 'localeSeoSlugId' })
     LocaleSeoSlug.hasMany(models.MenuItem, { as: 'menuItems', foreignKey: 'localeSeoSlugId' })
   }
 

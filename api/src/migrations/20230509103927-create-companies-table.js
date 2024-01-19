@@ -2,18 +2,17 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('companies', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+        allowNull: false
       },
       countryId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'countries',
           key: 'id'
@@ -22,8 +21,8 @@ module.exports = {
         onDelete: 'NO ACTION'
       },
       cityId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'cities',
           key: 'id'
@@ -32,8 +31,8 @@ module.exports = {
         onDelete: 'NO ACTION'
       },
       dialCodeId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'dial_codes',
           key: 'id'
@@ -42,33 +41,33 @@ module.exports = {
         onDelete: 'NO ACTION'
       },
       fiscalName: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       comercialName: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       vat: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       comercialAddress: {
-        allowNull: true,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       fiscalAddress: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       postalCode: {
-        allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       email: {
-        unique: true,
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.STRING
+        unique: true
       },
       web: {
         type: Sequelize.STRING
@@ -77,12 +76,12 @@ module.exports = {
         type: Sequelize.STRING
       },
       createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       deletedAt: {
         type: Sequelize.DATE

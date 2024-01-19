@@ -1,16 +1,18 @@
 'use strict'
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('sale_details', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+        allowNull: false
       },
       saleId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'sales',
           key: 'id'
@@ -20,6 +22,7 @@ module.exports = {
       },
       productId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'products',
           key: 'id'
@@ -67,24 +70,24 @@ module.exports = {
         onDelete: 'NO ACTION'
       },
       basePrice: {
-        allowNull: false,
-        type: Sequelize.DECIMAL(6, 2)
+        type: Sequelize.DECIMAL(6, 2),
+        allowNull: false
       },
       taxPrice: {
-        allowNull: false,
-        type: Sequelize.DECIMAL(6, 2)
+        type: Sequelize.DECIMAL(6, 2),
+        allowNull: false
       },
       quantity: {
-        allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       deletedAt: {
         type: Sequelize.DATE

@@ -19,8 +19,42 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
+      cityId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'cities',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION'
+      },
       fingerprint: {
         type: Sequelize.STRING,
+        allowNull: false
+      },
+      browser: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      browserVersion: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      os: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      osVersion: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      screenHeight: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      screenWidth: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {
@@ -38,6 +72,10 @@ module.exports = {
 
     await queryInterface.addIndex('fingerprints', ['customerId'], {
       name: 'fingerprints_customerId_fk'
+    })
+
+    await queryInterface.addIndex('fingerprints', ['cityId'], {
+      name: 'fingerprints_cityId_fk'
     })
   },
 

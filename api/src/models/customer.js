@@ -8,15 +8,30 @@ module.exports = function (sequelize, DataTypes) {
     },
     countryId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "País".'
+        }
+      }
     },
     cityId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "Ciudad".'
+        }
+      }
     },
     dialCodeId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "Prefijo telefónico".'
+        }
+      }
     },
     name: {
       type: DataTypes.STRING,
@@ -24,6 +39,10 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre".'
+        },
+        is: {
+          args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
+          msg: 'Por favor, rellena el campo "Nombre" con un nombre válido, sin caracteres especiales.'
         }
       }
     },
@@ -33,6 +52,10 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Apellido".'
+        },
+        is: {
+          args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
+          msg: 'Por favor, rellena el campo "Apellido" con un apellido válido, sin caracteres especiales.'
         }
       }
     },
@@ -58,16 +81,14 @@ module.exports = function (sequelize, DataTypes) {
         },
         isUnique: function (value, next) {
           const self = this
-          Customer.findOne({ where: { email: value } })
-            .then(function (customer) {
-              if (customer && self.id !== customer.id) {
-                return next('Ya existe un cliente con ese email.')
-              }
-              return next()
-            })
-            .catch(function (err) {
-              return next(err)
-            })
+          Customer.findOne({ where: { email: value } }).then(function (customer) {
+            if (customer && self.id !== customer.id) {
+              return next('Ya existe un cliente con ese email.')
+            }
+            return next()
+          }).catch(function (err) {
+            return next(err)
+          })
         }
       }
     },

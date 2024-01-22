@@ -17,12 +17,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     visible: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: 'Por favor, rellena el campo "Visible".'
-        }
-      }
+      allowNull: false
     },
     createdAt: {
       type: DataTypes.DATE,

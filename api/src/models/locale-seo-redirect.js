@@ -7,11 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     localeSeoId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'LocaleSeo',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     languageAlias: {
       type: DataTypes.STRING

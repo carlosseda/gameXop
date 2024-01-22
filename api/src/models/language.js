@@ -7,7 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -16,7 +16,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     alias: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {

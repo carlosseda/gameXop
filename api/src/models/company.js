@@ -19,34 +19,45 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     fiscalName: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre Fiscal".'
+        },
+        is: {
+          args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
+          msg: 'Por favor, rellena el campo "Nombre Fiscal" con un nombre válido, sin caracteres especiales.'
         }
       }
     },
     comercialName: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre Comercial".'
+        },
+        is: {
+          args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
+          msg: 'Por favor, rellena el campo "Nombre Comercial" con un nombre válido, sin caracteres especiales.'
         }
       }
     },
     vat: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "NIF".'
+        },
+        isAlphanumeric: {
+          msg: 'Por favor, rellena el campo "NIF" con un NIF válido, sin caracteres especiales.'
         }
       }
     },
     comercialAddress: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -55,7 +66,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     fiscalAddress: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -64,32 +75,44 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     postalCode: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Código Postal".'
+        },
+        isNumeric: {
+          msg: 'Por favor, rellena el campo "Código Postal" con un código postal válido.'
         }
       }
     },
     email: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
-      unique: {
-        args: true,
-        msg: 'Ya existe una empresa con ese correo electrónico.'
-      },
+      unique: true,
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Email".'
         },
         isEmail: {
           msg: 'Por favor, rellena el campo "Email" con un email válido.'
+        },
+        isUnique: function (value, next) {
+          const self = this
+
+          Company.findOne({ where: { email: value } }).then(function (company) {
+            if (company && self.id !== company.id) {
+              return next('Ya existe una empresa con este email.')
+            }
+            return next()
+          }).catch(function (err) {
+            return next(err)
+          })
         }
       }
     },
     web: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -98,7 +121,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     telephone: {
-      type: DataTypes.STRING(255)
+      type: DataTypes.STRING
     },
     createdAt: {
       type: DataTypes.DATE,

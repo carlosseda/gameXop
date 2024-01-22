@@ -29,11 +29,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     basePrice: {
-      type: DataTypes.DECIMAL(6, 2),
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     taxPrice: {
-      type: DataTypes.DECIMAL(6, 2),
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     quantity: {

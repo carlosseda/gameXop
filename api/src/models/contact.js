@@ -7,14 +7,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     fingerprintId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Fingerprint',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -23,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     email: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -35,7 +31,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     subject: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {

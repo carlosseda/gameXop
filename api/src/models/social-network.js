@@ -7,7 +7,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -16,11 +16,11 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     baseUrl: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
-          msg: 'Por favor, rellena el campo "Base URL".'
+          msg: 'Por favor, rellena el campo "url".'
         }
       }
     },

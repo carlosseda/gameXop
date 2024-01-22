@@ -24,9 +24,6 @@ module.exports = {
       multiplier: {
         type: Sequelize.DECIMAL
       },
-      current: {
-        type: Sequelize.BOOLEAN
-      },
       startsAt: {
         type: Sequelize.DATE
       },

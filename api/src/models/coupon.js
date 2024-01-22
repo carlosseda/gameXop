@@ -8,20 +8,48 @@ module.exports = function (sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "Nombre".'
+        }
+      }
     },
     code: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Por favor, rellena el campo "Código".'
+        }
+      }
     },
     percentage: {
-      type: DataTypes.DECIMAL
+      type: DataTypes.DECIMAL,
+      validate: {
+        isNumeric: {
+          msg: 'Por favor, rellena el campo "Porcentaje" con un número válido y entero.'
+        }
+      }
     },
     multiplier: {
       type: DataTypes.DECIMAL
     },
-    current: {
-      type: DataTypes.BOOLEAN
+    startsAt: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: {
+          msg: 'Por favor, rellena el campo "Fecha de inicio" con una fecha válida.'
+        }
+      }
+    },
+    endsAt: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: {
+          msg: 'Por favor, rellena el campo "Fecha de inicio" con una fecha válida.'
+        }
+      }
     },
     createdAt: {
       type: DataTypes.DATE,

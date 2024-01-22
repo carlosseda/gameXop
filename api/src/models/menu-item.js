@@ -8,25 +8,13 @@ module.exports = function (sequelize, DataTypes) {
     },
     menuId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Menu',
-        key: 'id'
-      }
+      allowNull: false
     },
     localeSeoId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'LocaleSeo',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     localeSeoSlugId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'LocaleSeoSlug',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     parent: {
       type: DataTypes.INTEGER

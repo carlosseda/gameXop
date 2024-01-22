@@ -7,18 +7,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     productId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Product',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     taxId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Tax',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     basePrice: {
       type: DataTypes.DECIMAL

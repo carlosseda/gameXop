@@ -5,10 +5,10 @@ const Op = db.Sequelize.Op
 exports.create = (req, res) => {
   User.create(req.body).then(data => {
     res.status(200).send(data)
-  }).catch(err => {
-    if (err.errors) {
+  }).catch(error => {
+    if (error.errors) {
       res.status(422).send({
-        message: err.errors
+        message: error.errors
       })
     } else {
       res.status(500).send({
@@ -41,11 +41,9 @@ exports.findAll = (req, res) => {
       }
 
       res.status(200).send(result)
-    }).catch(err => {
-      console.log(err)
-
+    }).catch(error => {
       res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
+        message: error.errors || 'Algún error ha surgido al recuperar los datos.'
       })
     })
 }
@@ -63,7 +61,7 @@ exports.findOne = (req, res) => {
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -71,7 +69,6 @@ exports.findOne = (req, res) => {
 }
 
 exports.update = (req, res) => {
-
   const id = req.params.id
 
   if (req.body.password === '') {
@@ -80,8 +77,8 @@ exports.update = (req, res) => {
 
   User.update(req.body, {
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -90,7 +87,7 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al actualiazar la id=' + id
     })
@@ -102,8 +99,8 @@ exports.delete = (req, res) => {
 
   User.destroy({
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })
@@ -112,7 +109,7 @@ exports.delete = (req, res) => {
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })

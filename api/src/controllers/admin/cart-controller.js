@@ -66,7 +66,7 @@ exports.update = (req, res) => {
   Cart.update(req.body, {
     where: { id }
   }).then(num => {
-    if (num == 1) {
+    if (num === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -88,7 +88,7 @@ exports.delete = (req, res) => {
   Cart.destroy({
     where: { id }
   }).then(num => {
-    if (num == 1) {
+    if (num === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

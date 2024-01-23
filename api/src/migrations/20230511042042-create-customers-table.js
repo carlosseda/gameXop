@@ -83,7 +83,7 @@ module.exports = {
     })
 
     await queryInterface.addIndex('customers', ['email'], {
-      name: 'customer_email_index'
+      name: 'customers_email_index'
     })
 
     await queryInterface.addIndex('customers', ['countryId'], {

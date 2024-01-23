@@ -20,9 +20,7 @@ class PageComponent extends HTMLElement {
 
   async getTemplate (path) {
     const routes = {
-      '/admin': '/pages/dashboard.html',
-      '/admin/usuarios': '/pages/users.html',
-      '/admin/faqs': '/pages/faqs.html'
+      '/': '/pages/login.html'
     }
 
     const filename = routes[path] || '/pages/404.html'
@@ -41,4 +39,4 @@ class PageComponent extends HTMLElement {
   }
 }
 
-customElements.define('admin-page-component', PageComponent)
+customElements.define('auth-page-component', PageComponent)

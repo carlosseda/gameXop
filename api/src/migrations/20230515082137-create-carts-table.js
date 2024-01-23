@@ -47,11 +47,11 @@ module.exports = {
     })
 
     await queryInterface.addIndex('carts', ['customerId'], {
-      name: 'cart_customerId_fk'
+      name: 'carts_customerId_fk'
     })
 
     await queryInterface.addIndex('carts', ['fingerprintId'], {
-      name: 'cart_fingerprintId_fk'
+      name: 'carts_fingerprintId_fk'
     })
   },
 

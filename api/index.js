@@ -5,7 +5,7 @@ const app = express()
 const multer = require('multer')
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5500', 'http://127.0.0.1:5501']
+  origin: ['http://localhost:5173', 'http://localhost:5174']
 }
 
 app.use(cors(corsOptions))

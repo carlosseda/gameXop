@@ -453,7 +453,7 @@ class Cart extends HTMLElement {
           </button>
         </div>
         <div class="cart-products"></div>
-        <div class="cart-no-products  ${this.products.length == 0 ? 'active' : ''}">
+        <div class="cart-no-products  ${this.products.length === 0 ? 'active' : ''}">
           <p>No hay productos en el carrito</p>
         </div>
         <div class="cart-footer ${this.products.length > 0 ? 'active' : ''}">

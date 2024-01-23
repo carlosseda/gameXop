@@ -32,6 +32,8 @@ exports.signin = (req, res) => {
         expiresIn: 86400
       })
 
+      res.cookie('accessToken', token, { httpOnly: true })
+
       res.status(200).send({
         id: user.id,
         name: user.name,

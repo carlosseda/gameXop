@@ -1,9 +1,9 @@
 const db = require('../../models')
-const Email = db.Email
+const SentEmail = db.SentEmail
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  Email.create(req.body).then(data => {
+  SentEmail.create(req.body).then(data => {
     res.status(200).send(data)
   }).catch(err => {
     res.status(500).send({
@@ -26,7 +26,7 @@ exports.findAll = (req, res) => {
 
   const condition = Object.keys(whereStatement).length > 0 ? { [Op.and]: [whereStatement] } : {}
 
-  Email.findAndCountAll({
+  SentEmail.findAndCountAll({
     where: condition,
     attributes: ['id', 'customerId', 'fingerprintId'],
     limit,
@@ -51,7 +51,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  Email.findByPk(id).then(data => {
+  SentEmail.findByPk(id).then(data => {
     if (data) {
       res.status(200).send(data)
     } else {
@@ -69,7 +69,7 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id
 
-  Email.update(req.body, {
+  SentEmail.update(req.body, {
     where: { id }
   }).then(numberRowsAffected => {
     if (numberRowsAffected === 1) {
@@ -91,7 +91,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id
 
-  Email.destroy({
+  SentEmail.destroy({
     where: { id }
   }).then(numberRowsAffected => {
     if (numberRowsAffected === 1) {

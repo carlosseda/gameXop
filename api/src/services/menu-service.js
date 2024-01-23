@@ -5,9 +5,7 @@ const LocaleSeo = db.LocaleSeo
 const naming = require('../utils/naming')
 
 module.exports = class MenuService {
-
-  async addToAdminMenu(name) {
-
+  async addToAdminMenu (name) {
     const url = `${naming.kebabCase(name)}`
 
     const menu = await Menu.findOne({
@@ -18,7 +16,7 @@ module.exports = class MenuService {
 
     const newLocaleSeo = await LocaleSeo.create({
       language: 'es',
-      url: url,
+      url,
       title: name,
       sitemap: false
     })
@@ -26,7 +24,7 @@ module.exports = class MenuService {
     const newMenuItem = await MenuItem.create({
       menuId: menu.id,
       localeSeoId: newLocaleSeo.id,
-      name: name,
+      name,
       private: false
     })
 

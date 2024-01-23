@@ -8,7 +8,6 @@ module.exports = (app, upload) => {
   router.get('/:id', [authJwt.verifyUserToken], controller.findOne)
   router.put('/:id', [authJwt.verifyUserToken], controller.update)
   router.delete('/:id', [authJwt.verifyUserToken], controller.delete)
-  router.post('/openai-filter', [authJwt.verifyUserToken], controller.openAIFilter)
 
   app.use('/api/admin/customers', router)
 }

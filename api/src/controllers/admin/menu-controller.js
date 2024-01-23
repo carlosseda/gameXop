@@ -3,7 +3,6 @@ const Menu = db.Menu
 const Op = db.Sequelize.Op
 
 exports.create = async (req, res) => {
-
   try {
     const data = await Menu.create(req.body)
     res.status(200).send(data)
@@ -16,14 +15,13 @@ exports.create = async (req, res) => {
 }
 
 exports.findAll = async (req, res) => {
-
   const page = req.query.page || 1
   const limit = parseInt(req.query.size) || 10
   const offset = (page - 1) * limit
   const whereStatement = {}
 
   for (const key in req.query) {
-    if (req.query[key] != '' && key != 'page' && key != 'size') {
+    if (req.query[key] !== '' && key !== 'page' && key !== 'size') {
       whereStatement[key] = { [Op.substring]: req.query[key] }
     }
   }
@@ -37,23 +35,22 @@ exports.findAll = async (req, res) => {
     offset,
     order: [['createdAt', 'DESC']]
   })
-  .then(result => {
-    result.meta = {
-      total: result.count,
-      pages: Math.ceil(result.count / limit),
-      currentPage: page
-    }
+    .then(result => {
+      result.meta = {
+        total: result.count,
+        pages: Math.ceil(result.count / limit),
+        currentPage: page
+      }
 
-    res.status(200).send(result)
-  }).catch(err => {
-    res.status(500).send({
-      message: err.message || 'Algún error ha surgido al recuperar los datos.'
+      res.status(200).send(result)
+    }).catch(err => {
+      res.status(500).send({
+        message: err.message || 'Algún error ha surgido al recuperar los datos.'
+      })
     })
-  })
 }
 
 exports.findOne = (req, res) => {
-
   const id = req.params.id
 
   Menu.findByPk(id, {
@@ -78,7 +75,7 @@ exports.findOne = (req, res) => {
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -86,13 +83,12 @@ exports.findOne = (req, res) => {
 }
 
 exports.update = (req, res) => {
-
   const id = req.params.id
 
   Menu.update(req.body, {
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -101,7 +97,7 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al actualiazar la id=' + id
     })
@@ -109,13 +105,12 @@ exports.update = (req, res) => {
 }
 
 exports.delete = (req, res) => {
-
   const id = req.params.id
 
   Menu.destroy({
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })
@@ -124,7 +119,7 @@ exports.delete = (req, res) => {
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })
@@ -132,7 +127,6 @@ exports.delete = (req, res) => {
 }
 
 exports.getMenuItems = (req, res) => {
-
   const menuName = req.params.name
 
   Menu.findOne({
@@ -168,7 +162,6 @@ exports.getMenuItems = (req, res) => {
 }
 
 exports.nestMenuItems = (data, parentId, menuName) => {
-
   const nestedObject = {}
 
   data.forEach(function (item) {

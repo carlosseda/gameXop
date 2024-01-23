@@ -1,4 +1,3 @@
-const db = require('../../models')
 const ImageService = require('../../services/image-service')
 
 exports.create = async (req, res) => {
@@ -53,7 +52,7 @@ exports.delete = (req, res) => {
   const filename = req.params.filename
 
   new ImageService().deleteImages(filename).then(result => {
-    if (result == 1) {
+    if (result === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })
@@ -62,7 +61,7 @@ exports.delete = (req, res) => {
         message: 'No se puede borrar el elemento'
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar'
     })

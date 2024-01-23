@@ -2,11 +2,10 @@ const db = require('../models')
 const Op = db.Sequelize.Op
 const ApiTracking = db.ApiTracking
 const PageTracking = db.PageTracking
-const UserTracking = db.UserTracking
+const CustomerTracking = db.CustomerTracking
 
 module.exports = class TrackingService {
-
-  async createApiLog(log) {
+  async createApiLog (log) {
     try {
       await ApiTracking.create(log)
     } catch (error) {
@@ -14,7 +13,7 @@ module.exports = class TrackingService {
     }
   }
 
-  async createPageLog(log) {
+  async createPageLog (log) {
     try {
       await PageTracking.create(log)
     } catch (error) {
@@ -30,10 +29,9 @@ module.exports = class TrackingService {
   //   }
   // }
 
-  async findAllLogs() {
-
+  async findAllLogs () {
     try {
-      const tracking = await Tracking.findAll({
+      const customerTracking = await CustomerTracking.findAll({
         order: [['eventTime', 'DESC']]
       })
 
@@ -41,25 +39,23 @@ module.exports = class TrackingService {
         order: [['startTime', 'DESC']]
       })
 
-      const combinedResults = tracking.concat(apiTracking);
+      const combinedResults = customerTracking.concat(apiTracking)
 
       const sortedResults = combinedResults.sort((a, b) => {
-        const eventTimeA = a.eventTime || a.startTime; 
-        const eventTimeB = b.eventTime || b.startTime;
-        return eventTimeB - eventTimeA;
-      });
+        const eventTimeA = a.eventTime || a.startTime
+        const eventTimeB = b.eventTime || b.startTime
+        return eventTimeB - eventTimeA
+      })
 
       return sortedResults
-
     } catch (error) {
       console.log(error)
     }
   }
 
-  async findUserLogs(userId = null, fingerprint = null, order = 'ASC') {
-
+  async findCustomerLogs (userId = null, fingerprint = null, order = 'ASC') {
     try {
-      const userTracking = await UserTracking.findAll({
+      const customerTracking = await CustomerTracking.findAll({
         attributes: ['id', 'eventTime', 'eventName', 'path'],
         order: [['eventTime', 'ASC']],
         [Op.or]: [
@@ -77,23 +73,25 @@ module.exports = class TrackingService {
         ]
       })
 
-      const combinedResults = userTracking.concat(apiTracking);
+      const combinedResults = customerTracking.concat(apiTracking)
 
       const sortedResults = combinedResults.sort((a, b) => {
-        const eventTimeA = a.eventTime || a.startTime; 
-        const eventTimeB = b.eventTime || b.startTime;
+        const eventTimeA = a.eventTime || a.startTime
+        const eventTimeB = b.eventTime || b.startTime
+        let result
 
-        if(order === 'DESC'){
-          return eventTimeB - eventTimeA;
+        if (order === 'DESC') {
+          result = eventTimeB - eventTimeA
         }
 
-        if(order === 'ASC'){
-          return eventTimeA - eventTimeB;
+        if (order === 'ASC') {
+          result = eventTimeA - eventTimeB
         }
-      });
+
+        return result
+      })
 
       return sortedResults
-
     } catch (error) {
       console.log(error)
     }

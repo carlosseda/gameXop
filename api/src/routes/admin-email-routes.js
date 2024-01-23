@@ -4,7 +4,6 @@ module.exports = (app, upload) => {
   const controller = require('../controllers/admin/email-controller.js')
 
   router.post('/', [authJwt.verifyUserToken], controller.create)
-  router.post('/send-email', [authJwt.verifyUserToken], controller.sendEmail)
   router.get('/', [authJwt.verifyUserToken], controller.findAll)
   router.get('/:id', [authJwt.verifyUserToken], controller.findOne)
   router.put('/:id', [authJwt.verifyUserToken], controller.update)

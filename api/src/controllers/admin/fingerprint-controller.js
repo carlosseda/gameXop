@@ -2,35 +2,36 @@ const db = require('../../models')
 const Fingerprint = db.Fingerprint
 const Op = db.Sequelize.Op
 
-exports.create = async (req, res) => {
-  try {
-    const data = await Fingerprint.create(req.body)
+exports.create = (req, res) => {
+  Fingerprint.create(req.body).then(data => {
     res.status(200).send(data)
-  } catch (error) {
+  }).catch(err => {
     res.status(500).send({
-      message: error.message || 'Algún error ha surgido al insertar el dato.',
-      errors: error.errors
+      message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  }
+  })
 }
 
-exports.findAll = async (req, res) => {
+exports.findAll = (req, res) => {
   const page = req.query.page || 1
   const limit = parseInt(req.query.size) || 10
   const offset = (page - 1) * limit
   const whereStatement = {}
+
   for (const key in req.query) {
-    if (req.query[key] != '' && key != 'page' && key != 'size') {
+    if (req.query[key] !== '' && key !== 'page' && key !== 'size') {
       whereStatement[key] = { [Op.substring]: req.query[key] }
     }
   }
+
   const condition = Object.keys(whereStatement).length > 0 ? { [Op.and]: [whereStatement] } : {}
+
   Fingerprint.findAndCountAll({
     where: condition,
+    attributes: ['id', 'FingerprintId', 'fingerprintId'],
     limit,
     offset,
-    order: [['createdAt', 'DESC']],
-    include: [{ model: db.Customer, as: 'Customer' }]
+    order: [['createdAt', 'DESC']]
   })
     .then(result => {
       result.meta = {
@@ -38,54 +39,73 @@ exports.findAll = async (req, res) => {
         pages: Math.ceil(result.count / limit),
         currentPage: page
       }
+
       res.status(200).send(result)
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message || 'Algún error ha surgido al recuperar los datos.' })
+    }).catch(err => {
+      res.status(500).send({
+        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
+      })
     })
 }
 
 exports.findOne = (req, res) => {
   const id = req.params.id
-  Fingerprint.findByPk(id, { include: [{ model: db.Customer, as: 'Customer' }] })
-    .then(data => {
-      if (data) {
-        res.status(200).send(data)
-      } else {
-        res.status(404).send({ message: `No se puede encontrar el elemento con la id=${id}.` })
-      }
+
+  Fingerprint.findByPk(id).then(data => {
+    if (data) {
+      res.status(200).send(data)
+    } else {
+      res.status(404).send({
+        message: `No se puede encontrar el elemento con la id=${id}.`
+      })
+    }
+  }).catch(_ => {
+    res.status(500).send({
+      message: 'Algún error ha surgido al recuperar la id=' + id
     })
-    .catch(err => {
-      res.status(500).send({ message: 'Algún error ha surgido al recuperar la id=' + id })
-    })
+  })
 }
 
 exports.update = (req, res) => {
   const id = req.params.id
-  Fingerprint.update(req.body, { where: { id } })
-    .then(num => {
-      if (num == 1) {
-        res.status(200).send({ message: 'El elemento ha sido actualizado correctamente.' })
-      } else {
-        res.status(404).send({ message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.` })
-      }
+
+  Fingerprint.update(req.body, {
+    where: { id }
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
+      res.status(200).send({
+        message: 'El elemento ha sido actualizado correctamente.'
+      })
+    } else {
+      res.status(404).send({
+        message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
+      })
+    }
+  }).catch(_ => {
+    res.status(500).send({
+      message: 'Algún error ha surgido al actualiazar la id=' + id
     })
-    .catch(err => {
-      res.status(500).send({ message: 'Algún error ha surgido al actualiazar la id=' + id })
-    })
+  })
 }
 
 exports.delete = (req, res) => {
   const id = req.params.id
-  Fingerprint.destroy({ where: { id } })
-    .then(num => {
-      if (num == 1) {
-        res.status(200).send({ message: 'El elemento ha sido borrado correctamente' })
-      } else {
-        res.status(404).send({ message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.` })
-      }
+
+  Fingerprint.destroy({
+    where: { id }
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
+      res.status(200).send({
+        message: 'El elemento ha sido borrado correctamente'
+      })
+    } else {
+      res.status(404).send({
+        message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
+      })
+    }
+  }).catch(_ => {
+    res.status(500).send({
+      message: 'Algún error ha surgido al borrar la id=' + id
     })
-    .catch(err => {
-      res.status(500).send({ message: 'Algún error ha surgido al borrar la id=' + id })
-    })
+  })
 }

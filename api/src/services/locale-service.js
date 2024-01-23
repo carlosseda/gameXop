@@ -1,33 +1,27 @@
-const fs = require('fs/promises')
-const path = require('path')
-const sharp = require('sharp')
 const db = require('../models')
 const Locale = db.Locale
 
 module.exports = class LocaleServiceService {
- 
   create = async (entity, entityId, locale) => {
-
     for (const language in locale) {
-
       for (const key in locale[language]) {
         try {
           await Locale.create({
             languageAlias: language,
-            entity: entity,
-            entityId: entityId,
-            key: key,
+            entity,
+            entityId,
+            key,
             value: locale[language][key]
           })
         } catch (error) {
           console.log(error)
         }
-      } 
+      }
     }
   }
 
   update = async (entity, entityId, locale) => {
-    for (const language in locale) {          
+    for (const language in locale) {
       for (const key in locale[language]) {
         try {
           await Locale.update({
@@ -35,47 +29,45 @@ module.exports = class LocaleServiceService {
           }, {
             where: {
               languageAlias: language,
-              entity: entity,
-              entityId: entityId,
-              key: key
+              entity,
+              entityId,
+              key
             }
           })
         } catch (error) {
           console.log(error)
         }
-      } 
+      }
     }
   }
 
-  delete = async (entity, entityId) => {  
+  delete = async (entity, entityId) => {
     await Locale.destroy({
       where: {
-        entity: entity,
-        entityId: entityId
+        entity,
+        entityId
       }
     })
   }
 
   parseColletionWithLocales = async (collection) => {
-
     const parseData = {
-      ['locales']: [] 
-    };
+      locales: []
+    }
 
     for (const locale of collection) {
-
-      const languageAlias = locale.dataValues.languageAlias;
+      const languageAlias = locale.dataValues.languageAlias
       delete locale.dataValues.languageAlias
-      
+
       for (const key of Object.keys(locale.dataValues)) {
-        parseData['locales'].push({ 
-          languageAlias: languageAlias, 
-          key: key,
+        parseData.locales.push({
+          languageAlias,
+          key,
           value: locale.dataValues[key]
-        }); 
+        })
       }
     }
 
-    return parseData;
+    return parseData
   }
 }

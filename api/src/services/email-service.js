@@ -1,7 +1,7 @@
+require('dotenv').config()
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const OAuth2 = google.auth.OAuth2
-const dotenv = require('dotenv').config()
 const process = require('process')
 const db = require('../models')
 const SentEmail = db.SentEmail
@@ -58,9 +58,6 @@ module.exports = class EmailService {
   }
 
   sendEmail (email, customer) {
-    
-    console.log(emailValidator.validate(customer.email))
-
     const mailOptions = {
       from: this.email,
       to: customer.email,

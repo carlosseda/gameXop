@@ -1,9 +1,9 @@
 const db = require('../../models')
-const SocialNetworksCompanies = db.SocialNetworksCompanies
+const SaleError = db.SaleError
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  SocialNetworksCompanies.create(req.body).then(data => {
+  SaleError.create(req.body).then(data => {
     res.status(200).send(data)
   }).catch(err => {
     res.status(500).send({
@@ -16,13 +16,19 @@ exports.findAll = (req, res) => {
   const page = req.query.page || 1
   const limit = parseInt(req.query.size) || 10
   const offset = (page - 1) * limit
-
   const whereStatement = {}
+
+  for (const key in req.query) {
+    if (req.query[key] !== '' && key !== 'page' && key !== 'size') {
+      whereStatement[key] = { [Op.substring]: req.query[key] }
+    }
+  }
+
   const condition = Object.keys(whereStatement).length > 0 ? { [Op.and]: [whereStatement] } : {}
 
-  SocialNetworksCompanies.findAndCountAll({
+  SaleError.findAndCountAll({
     where: condition,
-    attributes: ['id', 'companyId', 'socialNetworkId'],
+    attributes: ['id', 'customerId', 'fingerprintId'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -45,7 +51,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  SocialNetworksCompanies.findByPk(id).then(data => {
+  SaleError.findByPk(id).then(data => {
     if (data) {
       res.status(200).send(data)
     } else {
@@ -53,7 +59,7 @@ exports.findOne = (req, res) => {
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -63,10 +69,10 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id
 
-  SocialNetworksCompanies.update(req.body, {
+  SaleError.update(req.body, {
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -75,9 +81,9 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
-      message: 'Algún error ha surgido al actualizar la id=' + id
+      message: 'Algún error ha surgido al actualiazar la id=' + id
     })
   })
 }
@@ -85,10 +91,10 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id
 
-  SocialNetworksCompanies.destroy({
+  SaleError.destroy({
     where: { id }
-  }).then(num => {
-    if (num == 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })
@@ -97,7 +103,7 @@ exports.delete = (req, res) => {
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })

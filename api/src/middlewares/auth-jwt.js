@@ -1,9 +1,8 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv').config()
 const process = require('process')
 
-verifyUserToken = (req, res, next) => {
-
+const verifyUserToken = (req, res, next) => {
   if (!req.headers.authorization && !req.cookies.accessToken) {
     return res.status(403).send({
       message: 'No se ha entregado el token.'

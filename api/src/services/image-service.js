@@ -12,8 +12,7 @@ module.exports = class ImageService {
     for (const key in images) {
       for (const image of images[key]) {
         try {
-
-          let filename = image.originalname;
+          let filename = image.originalname
 
           if (filename.includes(' ')) {
             filename = image.originalname.replace(/ |_|/g, '-')
@@ -22,7 +21,7 @@ module.exports = class ImageService {
           const tmpPath = path.join(__dirname, `../storage/tmp/${image.originalname}`)
 
           const newFilename = await fs.access(path.join(__dirname, `../storage/images/gallery/original/${path.parse(filename).name}.webp`)).then(async () => {
-            //TODO Dar al usuario la opción de sobreescribir la imagen
+            // TODO Dar al usuario la opción de sobreescribir la imagen
             return `${path.parse(filename).name}-${new Date().getTime()}.webp`
           }).catch(async () => {
             return `${path.parse(filename).name}.webp`
@@ -50,7 +49,6 @@ module.exports = class ImageService {
   }
 
   resizeImages = async (entity, entityId, images) => {
-
     try {
       for (const image in images) {
         const imageConfigurations = await ImageConfiguration.findAll({
@@ -79,7 +77,7 @@ module.exports = class ImageService {
             const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
             const previousResizedFilename = `${path.parse(images[image].previousImage).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
 
-            if (images[image].filename != images[image].previousImage) {
+            if (images[image].filename !== images[image].previousImage) {
               let imageResize = {}
 
               await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
@@ -193,8 +191,7 @@ module.exports = class ImageService {
   }
 
   deleteImages = async filename => {
-
-    //TODO: Comprobar si algún elemento de la base de datos está usando la imagen
+    // TODO: Comprobar si algún elemento de la base de datos está usando la imagen
     try {
       await fs.unlink(path.join(__dirname, `../storage/images/gallery/original/${filename}`))
       await fs.unlink(path.join(__dirname, `../storage/images/gallery/thumbnail/${filename}`))

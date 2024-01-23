@@ -1,13 +1,24 @@
+require('dotenv').config()
+const process = require('process')
 const express = require('express')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
 const cors = require('cors')
 const fs = require('fs')
 const app = express()
 const multer = require('multer')
 
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174']
-}
+app.use(cookieParser())
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, httpOnly: true, domain: 'localhost', path: '/', sameSite: 'Lax' }
+}))
 
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175']
+}
 app.use(cors(corsOptions))
 app.use(express.json({ limit: '10mb', extended: true }))
 app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 50000 }))

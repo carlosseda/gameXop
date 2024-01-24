@@ -33,8 +33,6 @@ class PageComponent extends HTMLElement {
     const response = await fetch(`${this.basePath}/pages/${filename}`)
     const html = await response.text()
 
-    console.log(html)
-
     document.startViewTransition(() => {
       this.shadowRoot.innerHTML = html
       document.documentElement.scrollTop = 0

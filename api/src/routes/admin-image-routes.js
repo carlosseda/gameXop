@@ -7,7 +7,7 @@ module.exports = (app, upload) => {
     { name: 'file', maxCount: 1 }
   ])
 
-  router.post('/', [authJwt.verifyUserToken, uploadFields], controller.create)
+  router.post('/', [authCookie.verifyUserCookie, uploadFields], controller.create)
   router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:filename', controller.findOne)
   router.delete('/:filename', [authCookie.verifyUserCookie], controller.delete)

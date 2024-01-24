@@ -1,3 +1,6 @@
 export default {
-  base: '/login'
+  base: '/login',
+  server: {
+    port: 5174
+  }
 }

@@ -1,6 +1,5 @@
-require('dotenv').config()
-
 const verifyUserCookie = (req, res, next) => {
+  console.log('req.session.user', req.session)
   if (req.session.user) {
     next()
   } else {
@@ -8,8 +7,8 @@ const verifyUserCookie = (req, res, next) => {
   }
 }
 
-const authJwt = {
+const authCookie = {
   verifyUserCookie
 }
 
-module.exports = authJwt
+module.exports = authCookie

@@ -265,8 +265,6 @@ class Table extends HTMLElement {
         const tableButtonElement = document.createElement('button')
         tableButtonElement.classList.add('table-button')
 
-        console.log(this.structure.tableButtons[tableButton])
-
         if (this.structure.tableButtons[tableButton] === 'filterButton') {
           tableButtonElement.classList.add('table-filter-button')
           tableButtonElement.innerHTML = `

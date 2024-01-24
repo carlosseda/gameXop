@@ -1,3 +1,6 @@
 export default {
-  base: './'
+  base: './',
+  server: {
+    port: 5175
+  }
 }

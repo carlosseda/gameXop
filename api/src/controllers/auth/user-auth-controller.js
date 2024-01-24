@@ -1,12 +1,17 @@
-require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
 const User = db.User
 
 exports.signin = (req, res) => {
+  const email = req.body.email
+
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    return res.status(400).send({ message: 'La dirección de correo electrónico no es válida.' })
+  }
+
   User.findOne({
     where: {
-      email: req.body.email
+      email
     }
   })
     .then(user => {
@@ -25,9 +30,11 @@ exports.signin = (req, res) => {
         })
       }
 
-      req.session.user = user
+      req.session.user = user.id
 
-      res.status(200)
+      res.status(200).send({
+        email: user.email
+      })
     })
     .catch(err => {
       res.status(500).send({ message: err.message })

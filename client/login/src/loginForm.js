@@ -128,8 +128,6 @@ class LoginForm extends HTMLElement {
       })
 
       if (result.ok) {
-        const data = await result.json()
-        sessionStorage.setItem('accessToken', data.accessToken)
         window.location.href = '/admin'
       } else {
         const error = await result.json()

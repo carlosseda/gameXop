@@ -1,3 +1,6 @@
 export default {
-  base: '/admin'
+  base: '/admin',
+  server: {
+    port: 5173
+  }
 }

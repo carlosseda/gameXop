@@ -1,14 +1,14 @@
 module.exports = (app, upload) => {
   const router = require('express').Router()
-  const authJwt = require('../middlewares/auth-jwt.js')
+  const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/menu-controller.js')
 
-  router.post('/', [authJwt.verifyUserToken], controller.create)
-  router.get('/', [authJwt.verifyUserToken], controller.findAll)
-  router.get('/:id', [authJwt.verifyUserToken], controller.findOne)
-  router.put('/:id', [authJwt.verifyUserToken], controller.update)
-  router.delete('/:id', [authJwt.verifyUserToken], controller.delete)
-  router.get('/display/:name', [authJwt.verifyUserToken], controller.getMenuItems)
+  router.post('/', [authCookie.verifyUserToken], controller.create)
+  router.get('/', [authCookie.verifyUserToken], controller.findAll)
+  router.get('/:id', [authCookie.verifyUserToken], controller.findOne)
+  router.put('/:id', [authCookie.verifyUserToken], controller.update)
+  router.delete('/:id', [authCookie.verifyUserToken], controller.delete)
+  router.get('/display/:name', [authCookie.verifyUserToken], controller.getMenuItems)
 
   app.use('/api/admin/menus', router)
 }

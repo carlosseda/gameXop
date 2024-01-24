@@ -1,11 +1,11 @@
 module.exports = (app, upload) => {
   const router = require('express').Router()
-  const authJwt = require('../middlewares/auth-jwt.js')
+  const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/image-configuration-controller.js')
 
-  router.post('/', [authJwt.verifyUserToken], controller.create)
-  router.put('/:id', [authJwt.verifyUserToken], controller.update)
-  router.delete('/:id', [authJwt.verifyUserToken], controller.delete)
+  router.post('/', [authCookie.verifyUserToken], controller.create)
+  router.put('/:id', [authCookie.verifyUserToken], controller.update)
+  router.delete('/:id', [authCookie.verifyUserToken], controller.delete)
 
   app.use('/api/admin/image-configurations', router)
 }

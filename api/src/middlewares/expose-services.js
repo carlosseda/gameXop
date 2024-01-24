@@ -16,7 +16,7 @@ const imageServiceMiddleware = (req, res, next) => {
   next()
 }
 
-const localeMiddleware = (req, res, next) => {
+const localeServiceMiddleware = (req, res, next) => {
   req.localeService = localeService
   next()
 }
@@ -24,5 +24,5 @@ const localeMiddleware = (req, res, next) => {
 module.exports = {
   trackingServiceMiddleware,
   imageServiceMiddleware,
-  localeMiddleware
+  localeServiceMiddleware
 }

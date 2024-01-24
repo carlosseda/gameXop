@@ -326,7 +326,7 @@ class ProductGallery extends HTMLElement {
 
         product.platforms.forEach(platform => {
           const productPlatform = document.createElement('img')
-          productPlatform.src = `http://localhost:5173/public/${platform}.svg`
+          productPlatform.src = `http://localhost:5175/public/${platform}.svg`
           productPlatform.alt = platform
           productPlatforms.appendChild(productPlatform)
         })
@@ -360,7 +360,7 @@ class ProductGallery extends HTMLElement {
 
         product.platforms.forEach(platform => {
           const productPlatform = document.createElement('img')
-          productPlatform.src = `http://localhost:5173/public/${platform}.svg`
+          productPlatform.src = `http://localhost:5175/public/${platform}.svg`
           productPlatform.alt = platform
           productPlatforms.appendChild(productPlatform)
         })

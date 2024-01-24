@@ -20,6 +20,13 @@ class PageComponent extends HTMLElement {
   }
 
   async getTemplate (path) {
+    // TODO: fetch('/api/admin/locales')
+    const response = await fetch('/api/admin/users')
+
+    if (!response.ok) {
+      window.location.href = '/login'
+    }
+
     const routes = {
       '/admin': 'dashboard.html',
       '/admin/usuarios': 'users.html',

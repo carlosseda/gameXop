@@ -61,9 +61,7 @@ class Table extends HTMLElement {
 
     try {
       const response = await fetch(url, {
-        headers: {
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-        }
+        credentials: 'include'
       })
 
       if (response.status === 200) {

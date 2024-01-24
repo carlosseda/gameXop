@@ -3,20 +3,22 @@ const db = require('../../models')
 const User = db.User
 
 exports.signin = (req, res) => {
-  const email = req.body.email
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).send({ message: 'Los campos no pueden estar vacios.' })
+  }
 
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+  if (!/^\S+@\S+\.\S+$/.test(req.body.email)) {
     return res.status(400).send({ message: 'La dirección de correo electrónico no es válida.' })
   }
 
   User.findOne({
     where: {
-      email
+      email: req.body.email
     }
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: 'Usuario o contraseña incorrecta' })
+        return res.status(401).send({ message: 'Usuario o contraseña incorrecta' })
       }
 
       const passwordIsValid = bcrypt.compareSync(
@@ -30,10 +32,10 @@ exports.signin = (req, res) => {
         })
       }
 
-      req.session.user = user.id
+      req.session.user = { id: user.id, admin: true }
 
       res.status(200).send({
-        email: user.email
+        redirection: '/admin'
       })
     })
     .catch(err => {

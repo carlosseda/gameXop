@@ -128,7 +128,8 @@ class LoginForm extends HTMLElement {
       })
 
       if (result.ok) {
-        window.location.href = '/admin'
+        const data = await result.json()
+        window.location.href = data.redirection
       } else {
         const error = await result.json()
         console.log(error.message)

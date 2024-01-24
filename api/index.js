@@ -1,19 +1,22 @@
 require('dotenv').config()
 const process = require('process')
 const express = require('express')
-const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const IORedis = require('ioredis')
+const RedisStore = require('connect-redis').default
 const cors = require('cors')
 const fs = require('fs')
-const app = express()
 const multer = require('multer')
+const app = express()
 
-app.use(cookieParser())
+const redisClient = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379')
+
 app.use(session({
+  store: new RedisStore({ client: redisClient }),
   secret: process.env.JWT_SECRET,
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false, httpOnly: true, domain: 'dev-gamexop.com', path: '/', sameSite: 'Lax' }
+  saveUninitialized: false,
+  cookie: { secure: false, httpOnly: true, domain: 'dev-gamexop.com', path: '/', sameSite: 'Lax', maxAge: 1000 * 60 * 3600 }
 }))
 
 const corsOptions = {
@@ -23,14 +26,6 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json({ limit: '10mb', extended: true }))
 app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 50000 }))
-
-app.use(function (req, res, next) {
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Authorization, Origin, Content-Type, Accept'
-  )
-  next()
-})
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const verifyUserToken = (req, res, next) => {
+const verifyUserCookie = (req, res, next) => {
   if (req.session.user) {
     next()
   } else {
@@ -9,7 +9,7 @@ const verifyUserToken = (req, res, next) => {
 }
 
 const authJwt = {
-  verifyUserToken
+  verifyUserCookie
 }
 
 module.exports = authJwt

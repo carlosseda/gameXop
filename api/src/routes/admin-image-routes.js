@@ -8,9 +8,9 @@ module.exports = (app, upload) => {
   ])
 
   router.post('/', [authJwt.verifyUserToken, uploadFields], controller.create)
-  router.get('/', [authCookie.verifyUserToken], controller.findAll)
+  router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:filename', controller.findOne)
-  router.delete('/:filename', [authCookie.verifyUserToken], controller.delete)
+  router.delete('/:filename', [authCookie.verifyUserCookie], controller.delete)
 
   app.use('/api/admin/image-gallery', router)
 }

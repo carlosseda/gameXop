@@ -21,11 +21,11 @@ class PageComponent extends HTMLElement {
 
   async getTemplate (path) {
     // TODO: fetch('/api/admin/locales')
-    const response = await fetch('/api/admin/users')
+    // const response = await fetch('/api/admin/users')
 
-    if (!response.ok) {
-      window.location.href = '/login'
-    }
+    // if (!response.ok) {
+    //   window.location.href = '/login'
+    // }
 
     const routes = {
       '/admin': 'dashboard.html',

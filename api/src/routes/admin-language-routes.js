@@ -3,6 +3,7 @@ module.exports = (app, upload) => {
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/language-controller.js')
 
+  router.get('/locale-list', [authCookie.verifyUserCookie], controller.localeList)
   router.post('/', [authCookie.verifyUserCookie], controller.create)
   router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:id', [authCookie.verifyUserCookie], controller.findOne)

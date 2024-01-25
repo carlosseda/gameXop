@@ -13,12 +13,7 @@ class Menu extends HTMLElement {
     const url = `${import.meta.env.VITE_API_URL}/admin/menus/display/${this.getAttribute('menu')}`
 
     try {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-        }
-      })
-
+      const response = await fetch(url)
       const data = await response.json()
       this.menuItems = Object.values(data)
     } catch (error) {

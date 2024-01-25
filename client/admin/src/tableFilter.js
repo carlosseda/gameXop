@@ -587,12 +587,11 @@ class TableFilter extends HTMLElement {
       const formDataJson = Object.fromEntries(formData.entries())
       const queryString = new URLSearchParams(formData).toString()
       const method = formDataJson.prompt ? 'POST' : 'GET'
-      const url = formDataJson.prompt ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}/openai-filter` : `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?${queryString}`
+      const endpoint = formDataJson.prompt ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/openai-filter` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?${queryString}`
       const fetchOptions = {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+          'Content-Type': 'application/json'
         }
       }
 
@@ -601,7 +600,7 @@ class TableFilter extends HTMLElement {
       }
 
       try {
-        const response = await fetch(url, fetchOptions)
+        const response = await fetch(endpoint, fetchOptions)
 
         if (response.status === 500) {
           const error = await response.json()
@@ -618,7 +617,7 @@ class TableFilter extends HTMLElement {
 
           document.dispatchEvent(new CustomEvent('newFilter', {
             detail: {
-              url: this.getAttribute('url'),
+              endpoint: this.getAttribute('endpoint'),
               queryString,
               rows: this.data.rows,
               total: this.data.meta.total,

@@ -28,7 +28,7 @@ exports.findAll = (req, res) => {
 
   Language.findAndCountAll({
     where: condition,
-    attributes: ['id', 'customerId', 'fingerprintId'],
+    attributes: ['id', 'name', 'alias'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -106,6 +106,18 @@ exports.delete = (req, res) => {
   }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
+    })
+  })
+}
+
+exports.localeList = (req, res) => {
+  Language.findAll({
+    attributes: ['alias', 'name']
+  }).then(data => {
+    res.status(200).send(data)
+  }).catch(_ => {
+    res.status(500).send({
+      message: 'Algún error ha surgido al recuperar los datos.'
     })
   })
 }

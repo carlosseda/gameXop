@@ -43,17 +43,17 @@ exports.findAll = (req, res) => {
 }
 
 exports.findOne = (req, res) => {
-
   const id = req.params.id
 
   MenuItem.findByPk(id).then(data => {
-
     if (data) {
-      
-      data.dataValues.link = data.localeSeoId ? 'localeSeoId' : 
-                  data.localeSeoSlugId ? 'localeSeoSlugId' : 
-                  data.customUrl ? 'customUrl' : 
-                  null;
+      data.dataValues.link = data.localeSeoId
+        ? 'localeSeoId'
+        : data.localeSeoSlugId
+          ? 'localeSeoSlugId'
+          : data.customUrl
+            ? 'customUrl'
+            : null
 
       res.status(200).send(data)
     } else {
@@ -61,7 +61,7 @@ exports.findOne = (req, res) => {
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -74,7 +74,7 @@ exports.update = (req, res) => {
   MenuItem.update(req.body, {
     where: { id }
   }).then(num => {
-    if (num == 1) {
+    if (num === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -83,7 +83,7 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al actualiazar la id=' + id
     })
@@ -96,7 +96,7 @@ exports.delete = (req, res) => {
   MenuItem.destroy({
     where: { id }
   }).then(num => {
-    if (num == 1) {
+    if (num === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })
@@ -105,7 +105,7 @@ exports.delete = (req, res) => {
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(err => {
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })

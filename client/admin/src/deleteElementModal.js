@@ -12,7 +12,7 @@ class DeleteElementModal extends HTMLElement {
 
   handleShowDeleteModal (event) {
     this.endPoint = event.detail.endPoint
-    this.url = event.detail.url
+    this.endpoint = event.detail.endpoint
     this.subtable = event.detail.subtable
     this.shadow.querySelector('.modal-delete').classList.add('active')
   }
@@ -102,25 +102,20 @@ class DeleteElementModal extends HTMLElement {
 
     this.shadow.querySelector('#delete-confirm').addEventListener('click', () => {
       fetch(this.endPoint, {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-        }
+        method: 'DELETE'
       }).then(response => {
         return response.json()
       }).then(data => {
-        if (this.subtable) {
-          document.dispatchEvent(new CustomEvent('refreshTable', {
-            detail: {
-              url: this.url,
-              data: data.result.rows ? data.result.rows : null
-            }
-          }))
-        }
+        document.dispatchEvent(new CustomEvent('refreshTable', {
+          detail: {
+            endpoint: this.endpoint
+            // data: data.result.rows ? data.result.rows : null
+          }
+        }))
 
         document.dispatchEvent(new CustomEvent('refreshForm', {
           detail: {
-            url: this.url
+            endpoint: this.endpoint
           }
         }))
 
@@ -135,6 +130,7 @@ class DeleteElementModal extends HTMLElement {
 
         this.shadow.querySelector('.modal-delete').classList.remove('active')
       }).catch(error => {
+        console.log(error)
         document.dispatchEvent(new CustomEvent('message', {
           detail: {
             message: error.message,

@@ -153,8 +153,7 @@ exports.getMenuItems = (req, res) => {
         message: `No se puede encontrar el elemento con el nombre=${menuName}.`
       })
     }
-  }).catch(err => {
-    console.log(err)
+  }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar el nombre=' + menuName
     })

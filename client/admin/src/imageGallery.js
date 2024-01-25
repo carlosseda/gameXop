@@ -394,12 +394,7 @@ class ImageGallery extends HTMLElement {
 
   async getThumbnails () {
     try {
-      const result = await fetch(`${import.meta.env.VITE_API_URL}/admin/image-gallery`, {
-        headers: {
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-        }
-      })
-
+      const result = await fetch(`${import.meta.env.VITE_API_URL}/admin/image-gallery`)
       const data = await result.json()
 
       let html = ''
@@ -424,9 +419,6 @@ class ImageGallery extends HTMLElement {
 
     const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`, {
       method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-      },
       body: formData
     })
 

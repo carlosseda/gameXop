@@ -6,6 +6,7 @@
 
   <table-component 
     slot="table"
+    endpoint="/api/admin/users"
     structure="{
       'headers': [
         {'label': 'Nombre', 'field': 'name'},
@@ -16,12 +17,12 @@
       'recordButtons': ['edit', 'remove'],
       'tableButtons': ['filterButton']
     }"
-    url="/api/admin/users">
+  >
   </table-component>
 
   <form-component 
     slot="form"
-    url="/api/admin/users"
+    endpoint="/api/admin/users"
     structure="{
       'tabs': [
         {'name': 'general', 'label': 'General'},

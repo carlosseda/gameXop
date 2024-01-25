@@ -27,13 +27,13 @@ class Table extends HTMLElement {
   }
 
   async handleRefreshTable (event) {
-    if (event.detail.url === this.getAttribute('url')) {
+    if (event.detail.endpoint === this.getAttribute('endpoint')) {
       this.loadData(event.detail.data).then(() => this.render())
     }
   }
 
   async handleNewFilter (event) {
-    if (event.detail.url === this.getAttribute('url')) {
+    if (event.detail.endpoint === this.getAttribute('endpoint')) {
       this.data = event.detail.rows
       this.total = event.detail.total
       this.currentPage = event.detail.currentPage
@@ -57,12 +57,10 @@ class Table extends HTMLElement {
       return
     }
 
-    const url = `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}`
+    const endpoint = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
 
     try {
-      const response = await fetch(url, {
-        credentials: 'include'
-      })
+      const response = await fetch(endpoint)
 
       if (response.status === 200) {
         const data = await response.json()
@@ -110,7 +108,7 @@ class Table extends HTMLElement {
         }
 
         .table-button svg {
-          width: 1.7rem;
+          width: 2rem;
         }
 
         .table-button svg path {
@@ -402,15 +400,10 @@ class Table extends HTMLElement {
 
     editButtons.forEach(editButton => {
       editButton.addEventListener('click', async () => {
-        const url = import.meta.env.VITE_API_URL + this.getAttribute('url') + '/' + editButton.dataset.id
+        const endpoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + editButton.dataset.id
 
         try {
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-            }
-          })
+          const response = await fetch(endpoint)
 
           if (response.status === 500 || response.status === 404) {
             throw response
@@ -420,7 +413,7 @@ class Table extends HTMLElement {
             const data = await response.json()
             document.dispatchEvent(new CustomEvent('showElement', {
               detail: {
-                url: this.getAttribute('url'),
+                endpoint: this.getAttribute('endpoint'),
                 element: data
               }
             }))
@@ -440,13 +433,13 @@ class Table extends HTMLElement {
 
     removeButtons.forEach(removeButton => {
       removeButton.addEventListener('click', () => {
-        const endPoint = import.meta.env.VITE_API_URL + this.getAttribute('url') + '/' + removeButton.dataset.id
+        const endPoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + removeButton.dataset.id
 
         document.dispatchEvent(new CustomEvent('showOverlayer'))
         document.dispatchEvent(new CustomEvent('showDeleteModal', {
           detail: {
             endPoint,
-            url: this.getAttribute('url'),
+            endpoint: this.getAttribute('endpoint'),
             subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null
           }
         }))
@@ -481,14 +474,10 @@ class Table extends HTMLElement {
             break
         }
 
-        const url = this.queryString ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}&${this.queryString}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}?page=${page}`
+        const endpoint = this.queryString ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?page=${page}&${this.queryString}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?page=${page}`
 
         try {
-          const response = await fetch(url, {
-            headers: {
-              Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-            }
-          })
+          const response = await fetch(endpoint)
 
           if (response.status === 500) {
             throw response

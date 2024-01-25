@@ -3,11 +3,12 @@ class Form extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.eventsAdded = new Set()
+    this.languages = []
     this.images = []
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
   }
 
-  connectedCallback () {
+  async connectedCallback () {
     if (!this.eventsAdded.has('showElement')) {
       document.addEventListener('showElement', this.handleShowElement.bind(this))
       this.eventsAdded.add('showElement')
@@ -18,9 +19,14 @@ class Form extends HTMLElement {
       this.eventsAdded.add('refreshForm')
     }
 
-    if (!this.eventsAdded.has('showSubform')) {
-      document.addEventListener('showSubform', this.handleShowSubform.bind(this))
-      this.eventsAdded.add('showSubform')
+    if (!this.eventsAdded.has('showDependants')) {
+      document.addEventListener('showDependants', this.handleShowDependants.bind(this))
+      this.eventsAdded.add('showDependants')
+    }
+
+    if (!this.eventsAdded.has('hideDependants')) {
+      document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
+      this.eventsAdded.add('hideDependants')
     }
 
     if (!this.eventsAdded.has('attachImageToForm')) {
@@ -28,11 +34,12 @@ class Form extends HTMLElement {
       this.eventsAdded.add('attachImageToForm')
     }
 
+    await this.getLanguages()
     this.render()
   }
 
   handleShowElement = event => {
-    if (event.detail.url === this.getAttribute('url')) {
+    if (event.detail.endpoint === this.getAttribute('endpoint')) {
       this.showElement(event.detail.element)
     }
   }
@@ -43,18 +50,44 @@ class Form extends HTMLElement {
     }
   }
 
-  handleShowSubform = event => {
-    this.parentFormId = event.detail.parentFormId
+  handleShowDependants = event => {
+    if (this.getAttribute('')) {
+      this.parentFormId = event.detail.parentFormId
+      this.classList.remove('dependant')
+    }
+  }
+
+  handleHideDependants = event => {
+    if (this.getAttribute('dependant')) {
+      this.parentFormId = null
+      this.classList.add('dependant')
+    }
   }
 
   handleAttachImageToForm = event => {
     this.attachImageToForm(event.detail.image)
   }
 
+  getLanguages = async () => {
+    const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/locale-list`
+
+    try {
+      const response = await fetch(endpoint)
+      const data = await response.json()
+      this.languages = data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   render = async () => {
     this.shadow.innerHTML =
       /* html */`
         <style>
+          :host(.dependant) {
+            display: none;
+          }
+
           .tabs-container-menu{
             background-color: hsl(100, 100%, 100%);
             display: flex;
@@ -139,6 +172,7 @@ class Form extends HTMLElement {
             flex-wrap: wrap;
             gap: 1rem;
             padding: 1em 0;
+            width: 100%;
           }
 
           .form-element{
@@ -351,252 +385,51 @@ class Form extends HTMLElement {
 
       const tabElement = document.createElement('li')
       tabElement.classList.add('tab-item')
-      tabElement.dataset.tab = tab
+      tabElement.dataset.tab = tabName
       tabElement.innerHTML = this.structure.tabs[tab].label
       tabsContainerItems.append(tabElement)
 
       const tabPanel = document.createElement('div')
-      tabPanel.dataset.tab = tab
+      tabPanel.dataset.tab = tabName
       tabPanel.classList.add('tab-panel')
       tabsContainerContent.append(tabPanel)
 
-      for (const field in this.structure.inputs[tabName].noLocale) {
-        const formElement = this.structure.inputs[tabName].noLocale[field]
-        const formElementContainer = document.createElement('div')
-        formElementContainer.classList.add('form-element', formElement.width || 'full-width')
+      if (this.structure.inputs[tabName].noLocale) {
+        this.createFormElements(form, tabPanel, this.structure.inputs[tabName].noLocale)
+      }
 
-        if (formElement.label) {
-          const formElementLabel = document.createElement('div')
-          formElementContainer.append(formElementLabel)
-          formElementLabel.classList.add('form-element-label')
+      if (this.structure.inputs[tabName].locale) {
+        const localeTabsContainer = document.createElement('div')
+        localeTabsContainer.classList.add('tabs-container-menu')
+        tabPanel.append(localeTabsContainer)
 
-          const label = document.createElement('label')
-          label.innerText = formElement.label
-          label.setAttribute('for', formElement.name)
-          formElementLabel.append(label)
-        }
+        const localeTabsContainerItems = document.createElement('div')
+        localeTabsContainerItems.classList.add('tabs-container-items')
+        localeTabsContainer.append(localeTabsContainerItems)
 
-        const formElementInput = document.createElement('div')
-        formElementContainer.append(formElementInput)
-        formElementInput.classList.add('form-element-input')
+        const localeTabsContainerItemsUl = document.createElement('ul')
+        localeTabsContainerItems.append(localeTabsContainerItemsUl)
 
-        if (formElement.element === 'input') {
-          switch (formElement.type) {
-            case 'hidden': {
-              const input = document.createElement('input')
-              input.type = formElement.type
-              input.name = formElement.name
-              input.value = formElement.value || ''
+        this.languages.forEach((language, index) => {
+          const localeTabElement = document.createElement('li')
+          localeTabElement.classList.add('tab-item')
+          localeTabElement.dataset.tab = `${tabName}-${language.alias}`
+          localeTabElement.innerHTML = language.name
+          localeTabsContainerItemsUl.append(localeTabElement)
 
-              form.append(input)
+          const localeTabPanel = document.createElement('div')
+          localeTabPanel.dataset.tab = `${tabName}-${language.alias}`
+          localeTabPanel.classList.add('tab-panel')
+          tabPanel.append(localeTabPanel)
 
-              continue
-            }
-
-            case 'checkbox':
-            case 'radio': {
-              const inputContainer = document.createElement('div')
-              inputContainer.classList.add(`${formElement.type}-container`)
-
-              formElement.options.forEach(option => {
-                const input = document.createElement('input')
-                const inputLabel = document.createElement('label')
-                inputLabel.innerText = option.label
-                input.id = formElement.name
-                input.type = formElement.type
-                input.name = formElement.name
-                input.value = option.value || ''
-                input.checked = option.checked || false
-                input.disabled = option.disabled || false
-
-                inputContainer.append(inputLabel)
-                inputContainer.append(input)
-              })
-
-              formElementInput.append(inputContainer)
-
-              break
-            }
-
-            case 'range': {
-              const rangeContainer = document.createElement('div')
-              rangeContainer.classList.add('range-container')
-
-              const input = document.createElement('input')
-              input.id = formElement.name
-              input.type = formElement.type
-              input.name = formElement.name
-              input.min = formElement.min || ''
-              input.max = formElement.max || ''
-              input.step = formElement.step || ''
-              input.value = formElement.value || ''
-              rangeContainer.append(input)
-
-              const rangeValue = document.createElement('span')
-              rangeValue.classList.add('range-value')
-              rangeValue.innerText = formElement.value
-              rangeContainer.append(rangeValue)
-
-              input.addEventListener('input', () => {
-                rangeValue.innerText = input.value
-              })
-
-              formElementInput.append(rangeContainer)
-
-              break
-            }
-
-            case 'number':
-            case 'date':
-            case 'time':
-            case 'datetime-local':
-            case 'month':
-            case 'week': {
-              const input = document.createElement('input')
-              input.id = formElement.name
-              input.type = formElement.type
-              input.name = formElement.name
-              input.min = formElement.min || ''
-              input.max = formElement.max || ''
-              input.step = formElement.step || ''
-              input.placeholder = formElement.placeholder || ''
-              input.value = formElement.value || ''
-              input.readOnly = formElement.readOnly || false
-              input.dataset.validate = formElement.validate || ''
-
-              formElementInput.append(input)
-
-              break
-            }
-
-            case 'file': {
-              if (!this.shadow.querySelector('image-gallery-component')) {
-                const imageGallery = document.createElement('image-gallery-component')
-                this.shadow.append(imageGallery)
-              }
-
-              const input = document.createElement('upload-image-button-component')
-              input.id = formElement.name
-              input.setAttribute('name', formElement.name)
-              input.setAttribute('languageAlias', 'es')
-              input.setAttribute('quantity', formElement.quantity)
-
-              // input.accept = formElement.accept || '';
-              // input.multiple = formElement.multiple || false;
-              // input.required = formElement.required || false;
-              // input.dataset.validate = formElement.validate || '';
-
-              formElementInput.append(input)
-
-              break
-            }
-
-            default: {
-              const input = document.createElement('input')
-              input.id = formElement.name
-              input.type = formElement.type
-              input.name = formElement.name
-              input.value = formElement.value || ''
-              input.placeholder = formElement.placeholder || ''
-              input.dataset.validate = formElement.validate || ''
-
-              if (formElement.maxLength) {
-                input.maxLength = formElement.maxLength || ''
-                const counter = document.createElement('span')
-                formElementLabel.append(counter)
-
-                input.addEventListener('input', () => {
-                  if (input.value.length > 0) {
-                    counter.textContent = input.value.length + ' / ' + input.maxLength
-                  } else {
-                    counter.textContent = ''
-                  }
-                })
-              }
-
-              formElementInput.append(input)
-
-              break
-            }
-          }
-        }
-
-        if (formElement.element === 'textarea') {
-          const textarea = document.createElement('textarea')
-          textarea.id = field
-          textarea.name = field
-          textarea.disabled = formElement.disabled || false
-          textarea.readOnly = formElement.readOnly || false
-          textarea.value = formElement.value || ''
-          textarea.cols = formElement.cols || ''
-          textarea.rows = formElement.rows || ''
-          textarea.wrap = formElement.wrap || ''
-          textarea.placeholder = formElement.placeholder || ''
-          textarea.dataset.validate = formElement.validate || ''
-
-          if (formElement.maxLength) {
-            textarea.maxLength = formElement.maxLength || ''
-            const counter = document.createElement('span')
-            formElementLabel.append(counter)
-
-            textarea.addEventListener('input', () => {
-              if (textarea.value.length > 0) {
-                counter.textContent = textarea.value.length + ' / ' + textarea.maxLength
-              } else {
-                counter.textContent = ''
-              }
-            })
+          if (index === 0) {
+            localeTabElement.classList.add('active')
+            localeTabPanel.classList.add('active')
           }
 
-          formElementInput.append(textarea)
-        }
-
-        if (formElement.element === 'select') {
-          const select = document.createElement('select')
-          select.id = field
-          select.name = field
-          select.disabled = formElement.disabled || false
-          select.required = formElement.required || false
-          select.multiple = formElement.multiple || false
-
-          formElement.options.forEach(option => {
-            const optionElement = document.createElement('option')
-            optionElement.value = option.value
-            optionElement.innerText = option.label
-            select.append(optionElement)
-          })
-
-          formElementInput.append(select)
-        }
-
-        if (formElement.element === 'subform') {
-          const formContainer = document.createElement('div')
-          formContainer.classList.add('subform-container')
-
-          const formComponent = document.createElement('form-component')
-          formComponent.setAttribute('subform', formElement.name)
-          formComponent.setAttribute('url', formElement.url)
-          formContainer.append(formComponent)
-
-          const childrens = this.shadow.querySelector('.childrens-container')
-          childrens.append(formContainer)
-        }
-
-        if (formElement.element === 'subtable') {
-          const tableContainer = document.createElement('div')
-          tableContainer.classList.add('subtable-container')
-
-          const tableComponent = document.createElement('table-component')
-          tableComponent.setAttribute('subtable', formElement.name)
-          tableComponent.setAttribute('url', formElement.url)
-          tableContainer.append(tableComponent)
-
-          const childrens = this.shadow.querySelector('.childrens-container')
-          childrens.append(tableContainer)
-        }
-
-        tabPanel.append(formElementContainer)
-      };
+          this.createFormElements(form, localeTabPanel, this.structure.inputs[tabName].locale, language.alias)
+        })
+      }
     }
 
     this.renderTabs()
@@ -604,21 +437,266 @@ class Form extends HTMLElement {
     this.renderCreateForm()
   }
 
+  createFormElements = (form, tabPanel, elements, languageAlias = null) => {
+    for (const field in elements) {
+      const formElement = elements[field]
+      const formElementContainer = document.createElement('div')
+      formElementContainer.classList.add('form-element', formElement.width || 'full-width')
+
+      if (formElement.label) {
+        const formElementLabel = document.createElement('div')
+        formElementContainer.append(formElementLabel)
+        formElementLabel.classList.add('form-element-label')
+
+        const label = document.createElement('label')
+        label.innerText = formElement.label
+        languageAlias ? label.setAttribute('for', `${formElement.name}-${languageAlias}`) : label.setAttribute('for', formElement.name)
+        formElementLabel.append(label)
+      }
+
+      const formElementInput = document.createElement('div')
+      formElementContainer.append(formElementInput)
+      formElementInput.classList.add('form-element-input')
+
+      if (formElement.element === 'input') {
+        switch (formElement.type) {
+          case 'hidden': {
+            const input = document.createElement('input')
+            input.type = formElement.type
+            input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.value = formElement.value || ''
+
+            form.append(input)
+
+            continue
+          }
+
+          case 'checkbox':
+          case 'radio': {
+            const inputContainer = document.createElement('div')
+            inputContainer.classList.add(`${formElement.type}-container`)
+
+            formElement.options.forEach(option => {
+              const input = document.createElement('input')
+              const inputLabel = document.createElement('label')
+              inputLabel.innerText = option.label
+              input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+              input.type = formElement.type
+              input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+              input.value = option.value || ''
+              input.checked = option.checked || false
+              input.disabled = option.disabled || false
+
+              inputContainer.append(inputLabel)
+              inputContainer.append(input)
+            })
+
+            formElementInput.append(inputContainer)
+
+            break
+          }
+
+          case 'range': {
+            const rangeContainer = document.createElement('div')
+            rangeContainer.classList.add('range-container')
+
+            const input = document.createElement('input')
+            input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+            input.type = formElement.type
+            input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.min = formElement.min || ''
+            input.max = formElement.max || ''
+            input.step = formElement.step || ''
+            input.value = formElement.value || ''
+            rangeContainer.append(input)
+
+            const rangeValue = document.createElement('span')
+            rangeValue.classList.add('range-value')
+            rangeValue.innerText = formElement.value
+            rangeContainer.append(rangeValue)
+
+            input.addEventListener('input', () => {
+              rangeValue.innerText = input.value
+            })
+
+            formElementInput.append(rangeContainer)
+
+            break
+          }
+
+          case 'number':
+          case 'date':
+          case 'time':
+          case 'datetime-local':
+          case 'month':
+          case 'week': {
+            const input = document.createElement('input')
+            input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+            input.type = formElement.type
+            input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.min = formElement.min || ''
+            input.max = formElement.max || ''
+            input.step = formElement.step || ''
+            input.placeholder = formElement.placeholder || ''
+            input.value = formElement.value || ''
+            input.readOnly = formElement.readOnly || false
+            input.dataset.validate = formElement.validate || ''
+
+            formElementInput.append(input)
+
+            break
+          }
+
+          case 'file': {
+            if (!this.shadow.querySelector('image-gallery-component')) {
+              const imageGallery = document.createElement('image-gallery-component')
+              this.shadow.append(imageGallery)
+            }
+
+            const input = document.createElement('upload-image-button-component')
+            input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+            languageAlias ? input.setAttribute('name', `locales.${languageAlias}.${formElement.name}`) : input.setAttribute('name', formElement.name)
+            input.setAttribute('languageAlias', 'es')
+            input.setAttribute('quantity', formElement.quantity)
+
+            // input.accept = formElement.accept || '';
+            // input.multiple = formElement.multiple || false;
+            // input.required = formElement.required || false;
+            // input.dataset.validate = formElement.validate || '';
+
+            formElementInput.append(input)
+
+            break
+          }
+
+          default: {
+            const input = document.createElement('input')
+            input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+            input.type = formElement.type
+            input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.value = formElement.value || ''
+            input.placeholder = formElement.placeholder || ''
+            input.dataset.validate = formElement.validate || ''
+
+            if (formElement.maxLength) {
+              input.maxLength = formElement.maxLength || ''
+              const counter = document.createElement('span')
+              formElementLabel.append(counter)
+
+              input.addEventListener('input', () => {
+                if (input.value.length > 0) {
+                  counter.textContent = input.value.length + ' / ' + input.maxLength
+                } else {
+                  counter.textContent = ''
+                }
+              })
+            }
+
+            formElementInput.append(input)
+
+            break
+          }
+        }
+      }
+
+      if (formElement.element === 'textarea') {
+        const textarea = document.createElement('textarea')
+        textarea.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+        textarea.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+        textarea.disabled = formElement.disabled || false
+        textarea.readOnly = formElement.readOnly || false
+        textarea.value = formElement.value || ''
+        textarea.cols = formElement.cols || ''
+        textarea.rows = formElement.rows || ''
+        textarea.wrap = formElement.wrap || ''
+        textarea.placeholder = formElement.placeholder || ''
+        textarea.dataset.validate = formElement.validate || ''
+
+        if (formElement.maxLength) {
+          textarea.maxLength = formElement.maxLength || ''
+          const counter = document.createElement('span')
+          formElementLabel.append(counter)
+
+          textarea.addEventListener('input', () => {
+            if (textarea.value.length > 0) {
+              counter.textContent = textarea.value.length + ' / ' + textarea.maxLength
+            } else {
+              counter.textContent = ''
+            }
+          })
+        }
+
+        formElementInput.append(textarea)
+      }
+
+      if (formElement.element === 'select') {
+        const select = document.createElement('select')
+        select.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
+        select.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+        select.disabled = formElement.disabled || false
+        select.required = formElement.required || false
+        select.multiple = formElement.multiple || false
+
+        formElement.options.forEach(option => {
+          const optionElement = document.createElement('option')
+          optionElement.value = option.value
+          optionElement.innerText = option.label
+          select.append(optionElement)
+        })
+
+        formElementInput.append(select)
+      }
+
+      if (formElement.element === 'subform') {
+        const formContainer = document.createElement('div')
+        formContainer.classList.add('subform-container')
+
+        const formComponent = document.createElement('form-component')
+        formComponent.setAttribute('subform', formElement.name)
+        formComponent.setAttribute('endpoint', formElement.endpoint)
+        formContainer.append(formComponent)
+
+        const childrens = this.shadow.querySelector('.childrens-container')
+        childrens.append(formContainer)
+      }
+
+      if (formElement.element === 'subtable') {
+        const tableContainer = document.createElement('div')
+        tableContainer.classList.add('subtable-container')
+
+        const tableComponent = document.createElement('table-component')
+        tableComponent.setAttribute('subtable', formElement.name)
+        tableComponent.setAttribute('endpoint', formElement.endpoint)
+        tableContainer.append(tableComponent)
+
+        const childrens = this.shadow.querySelector('.childrens-container')
+        childrens.append(tableContainer)
+      }
+
+      tabPanel.append(formElementContainer)
+    };
+  }
+
   renderTabs = () => {
     this.shadow.querySelector('.tab-item').classList.add('active')
     this.shadow.querySelector('.tab-panel').classList.add('active')
+    const form = this.shadow.querySelector('form')
 
-    const tabsContainer = this.shadow.querySelector('.tabs-container-items ul')
-    const tabsPanelsContainer = this.shadow.querySelector('.tabs-container-content')
-    const tabsItems = this.shadow.querySelectorAll('.tab-item')
+    form.addEventListener('click', (event) => {
+      if (event.target.closest('.tab-item')) {
+        if (event.target.closest('.tab-item').classList.contains('active')) {
+          return
+        }
 
-    tabsItems.forEach(tabItem => {
-      tabItem.addEventListener('click', () => {
-        tabsContainer.querySelector('.active').classList.remove('active')
-        tabsPanelsContainer.querySelector('.active').classList.remove('active')
-        tabItem.classList.add('active')
-        tabsPanelsContainer.querySelector(`[data-tab="${tabItem.dataset.tab}"]`).classList.add('active')
-      })
+        const tabClicked = event.target.closest('.tab-item')
+        const tabActive = tabClicked.parentElement.querySelector('.active')
+
+        tabClicked.classList.add('active')
+        tabActive.classList.remove('active')
+
+        tabClicked.closest('form').querySelector(`.tab-panel.active[data-tab="${tabActive.dataset.tab}"]`).classList.remove('active')
+        tabClicked.closest('form').querySelector(`.tab-panel[data-tab="${tabClicked.dataset.tab}"]`).classList.add('active')
+      }
     })
   }
 
@@ -650,8 +728,31 @@ class Form extends HTMLElement {
         formData.append('parentFormId', this.parentFormId)
       }
 
-      const formDataJson = Object.fromEntries(formData.entries())
-      const url = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('url')}`
+      const formDataJson = {}
+
+      for (const [key, value] of formData.entries()) {
+        if (key.includes('locales')) {
+          const [prefix, locales, field] = key.split('.')
+
+          if (!(prefix in formDataJson)) {
+            formDataJson[prefix] = {}
+          }
+
+          if (!(locales in formDataJson[prefix])) {
+            formDataJson[prefix][locales] = {}
+          }
+
+          formDataJson[prefix][locales][field] = value ?? null
+        } else {
+          formDataJson[key] = value ?? null
+        }
+      }
+
+      if (this.images) {
+        formDataJson.images = this.images
+      }
+
+      const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
       delete formDataJson.id
 
@@ -660,11 +761,10 @@ class Form extends HTMLElement {
       }
 
       try {
-        const response = await fetch(url, {
+        const response = await fetch(endpoint, {
           method,
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(formDataJson)
         })
@@ -689,7 +789,7 @@ class Form extends HTMLElement {
           document.dispatchEvent(new CustomEvent('refreshTable', {
             detail: {
               subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null,
-              url: this.getAttribute('url'),
+              endpoint: this.getAttribute('endpoint'),
               data: data.rows ? data.rows : null
             }
           }))
@@ -888,24 +988,24 @@ class Form extends HTMLElement {
   }
 
   showElement = element => {
-    this.render()
+    this.shadow.querySelector('form').reset()
     this.images = []
-    this.shadow.querySelectorAll('.dependant').forEach(tab => tab.classList.remove('dependant'))
 
     Object.entries(element).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        document.dispatchEvent(new CustomEvent('showSubtable', {
-          detail: {
-            subtable: key,
-            data: value
-          }
-        }))
-
-        document.dispatchEvent(new CustomEvent('showSubform', {
-          detail: {
-            parentFormId: element.id
-          }
-        }))
+        if (key === 'locales') {
+          value.forEach(locale => {
+            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value != 'null' ? locale.value : ''
+          })
+        } else {
+          document.dispatchEvent(new CustomEvent('showDependants', {
+            detail: {
+              subtable: key,
+              data: value,
+              parentFormId: element.id
+            }
+          }))
+        }
       }
 
       if (this.shadow.querySelector(`[name="${key}"]`)) {
@@ -913,9 +1013,9 @@ class Form extends HTMLElement {
           value = JSON.stringify(value, null, 2)
         }
 
-        this.shadow.querySelector(`[name="${key}"]`).value = value
+        this.shadow.querySelector(`[name="${key}"]`).value = value != 'null' ? value : ''
 
-        if (this.shadow.querySelector(`[name="${key}"]`).tagName === 'SELECT') {
+        if (this.shadow.querySelector(`[name="${key}"]`).tagName == 'SELECT') {
           const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
 
           options.forEach(option => {
@@ -925,7 +1025,7 @@ class Form extends HTMLElement {
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type === 'radio') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type == 'radio') {
           const radios = this.shadow.querySelector(`[name="${key}"]`).closest('.form-element').querySelectorAll('input[type="radio"]')
 
           radios.forEach(radio => {
@@ -935,7 +1035,7 @@ class Form extends HTMLElement {
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type === 'checkbox') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type == 'checkbox') {
           const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
 
           checkbox.forEach(check => {

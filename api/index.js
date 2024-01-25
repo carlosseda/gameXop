@@ -6,8 +6,10 @@ const IORedis = require('ioredis')
 const RedisStore = require('connect-redis').default
 const cors = require('cors')
 const fs = require('fs')
-const multer = require('multer')
 const app = express()
+const userAgentMiddleware = require('./src/middlewares/user-agent')
+const exposeServiceMiddleware = require('./src/middlewares/expose-services')
+// const apiTrackingMiddleware = require('./src/middlewares/api-tracking.js')
 
 const redisClient = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379')
 
@@ -19,29 +21,19 @@ app.use(session({
   cookie: { secure: false, httpOnly: true, domain: 'dev-gamexop.com', path: '/', sameSite: 'Lax', maxAge: 1000 * 60 * 3600 }
 }))
 
-const corsOptions = {
-  origin: ['http://dev-gamexop.com'],
-  credentials: true
-}
-app.use(cors(corsOptions))
+app.use(cors({ origin: ['http://dev-gamexop.com'], credentials: true }))
+
 app.use(express.json({ limit: '10mb', extended: true }))
 app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 50000 }))
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'src/storage/tmp/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const upload = multer({ storage })
+app.use(userAgentMiddleware)
+app.use(...Object.values(exposeServiceMiddleware))
+// app.use(apiTrackingMiddleware)
 
 const routePath = './src/routes/'
 
 fs.readdirSync(routePath).forEach(function (file) {
-  require(routePath + file)(app, upload)
+  require(routePath + file)(app)
 })
 
 const PORT = process.env.PORT || 8080

@@ -40,6 +40,9 @@ module.exports = function (sequelize, DataTypes) {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre".'
         },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Nombre".'
+        },
         is: {
           args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
           msg: 'Por favor, rellena el campo "Nombre" con un nombre válido, sin caracteres especiales.'

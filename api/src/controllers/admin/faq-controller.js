@@ -3,7 +3,9 @@ const Faq = db.Faq
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  Faq.create(req.body).then(data => {
+  Faq.create(req.body).then(async data => {
+    await req.localeService.create('faqs', data.id, req.body.locales)
+
     res.status(200).send(data)
   }).catch(err => {
     res.status(500).send({
@@ -28,7 +30,7 @@ exports.findAll = (req, res) => {
 
   Faq.findAndCountAll({
     where: condition,
-    attributes: ['id', 'customerId', 'fingerprintId'],
+    attributes: ['id', 'name', 'createdAt', 'updatedAt'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]

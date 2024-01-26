@@ -1013,9 +1013,9 @@ class Form extends HTMLElement {
           value = JSON.stringify(value, null, 2)
         }
 
-        this.shadow.querySelector(`[name="${key}"]`).value = value != 'null' ? value : ''
+        this.shadow.querySelector(`[name="${key}"]`).value = value !== 'null' ? value : ''
 
-        if (this.shadow.querySelector(`[name="${key}"]`).tagName == 'SELECT') {
+        if (this.shadow.querySelector(`[name="${key}"]`).tagName === 'SELECT') {
           const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
 
           options.forEach(option => {
@@ -1025,7 +1025,7 @@ class Form extends HTMLElement {
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type == 'radio') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type === 'radio') {
           const radios = this.shadow.querySelector(`[name="${key}"]`).closest('.form-element').querySelectorAll('input[type="radio"]')
 
           radios.forEach(radio => {
@@ -1035,7 +1035,7 @@ class Form extends HTMLElement {
           })
         }
 
-        if (this.shadow.querySelector(`[name="${key}"]`).type == 'checkbox') {
+        if (this.shadow.querySelector(`[name="${key}"]`).type === 'checkbox') {
           const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
 
           checkbox.forEach(check => {

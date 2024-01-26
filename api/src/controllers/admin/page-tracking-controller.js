@@ -72,7 +72,7 @@ exports.update = (req, res) => {
   PageTracking.update(req.body, {
     where: { id }
   }).then(numberRowsAffected => {
-    if (numberRowsAffected === 1) {
+    if (([numberRowsAffected]) === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })

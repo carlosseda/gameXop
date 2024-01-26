@@ -53,8 +53,17 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  Faq.findByPk(id).then(data => {
+  Faq.findByPk(id, {
+    include: [
+      {
+        attributes: ['languageAlias', 'key', 'value'],
+        model: db.Locale,
+        as: 'locales'
+      }
+    ]
+  }).then(data => {
     if (data) {
+      console.log(data)
       res.status(200).send(data)
     } else {
       res.status(404).send({
@@ -73,8 +82,10 @@ exports.update = (req, res) => {
 
   Faq.update(req.body, {
     where: { id }
-  }).then(numberRowsAffected => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      await req.localeService.update('faqs', id, req.body.locales)
+
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -95,8 +106,10 @@ exports.delete = (req, res) => {
 
   Faq.destroy({
     where: { id }
-  }).then(numberRowsAffected => {
+  }).then(async numberRowsAffected => {
     if (numberRowsAffected === 1) {
+      await req.localeService.delete('faqs', id)
+
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

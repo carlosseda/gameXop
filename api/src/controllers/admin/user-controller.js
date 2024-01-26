@@ -83,7 +83,7 @@ exports.update = (req, res) => {
 
   User.update(req.body, {
     where: { id }
-  }).then(numberRowsAffected => {
+  }).then(([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'

@@ -94,7 +94,7 @@ exports.delete = (req, res) => {
   Customer.destroy({
     where: { id }
   }).then(numberRowsAffected => {
-    if (numberRowsAffected === 1) {
+    if (([numberRowsAffected]) === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

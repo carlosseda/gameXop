@@ -14,6 +14,7 @@ class ImageGallery extends HTMLElement {
   }
 
   handleopenGallery (event) {
+    document.dispatchEvent(new CustomEvent('showOverlayer'))
     this.openGallery(event.detail.image)
   }
 
@@ -394,16 +395,21 @@ class ImageGallery extends HTMLElement {
 
   async getThumbnails () {
     try {
-      const result = await fetch(`${import.meta.env.VITE_API_URL}/admin/image-gallery`)
-      const data = await result.json()
+      const result = await window.axios.get(`${window.env.API_URL}image-gallery`, {
+        headers: {
+          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+        }
+      })
+
+      const data = result.data
 
       let html = ''
 
       data.filenames.forEach(filename => {
         html += `
-                    <div class="image" data-filename="${filename}">
-                        <img src="${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}" />
-                    </div>
+                  <div class="image" data-filename="${filename}">
+                      <img src="${window.env.API_URL}image-gallery/${filename}" />
+                  </div>
                 `
       })
 
@@ -417,12 +423,13 @@ class ImageGallery extends HTMLElement {
     const formData = new FormData()
     formData.append('file', file)
 
-    const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`, {
-      method: 'POST',
-      body: formData
+    const result = await window.axios.post(`${window.env.API_URL}image-gallery`, formData, {
+      headers: {
+        Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
+      }
     })
 
-    const filenames = await result.json()
+    const filenames = result.data
 
     this.shadow.querySelectorAll('.image').forEach((item) => {
       item.classList.remove('selected')
@@ -434,7 +441,7 @@ class ImageGallery extends HTMLElement {
 
       imageContainer.classList.add('image', 'selected')
       imageContainer.setAttribute('data-filename', filename)
-      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}`
+      image.src = `${window.env.API_URL}image-gallery/${filename}`
 
       imageContainer.addEventListener('click', () => {
         this.shadow.querySelectorAll('.image').forEach(item => {

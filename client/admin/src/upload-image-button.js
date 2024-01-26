@@ -182,7 +182,7 @@ class UploadImageButton extends HTMLElement {
     imageOverlay.classList.add('upload-image-overlay')
 
     const file = document.createElement('img')
-    file.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${image.filename}`
+    file.src = `${window.env.API_URL}image-gallery/${image.filename}`
 
     const deleteButton = document.createElement('button')
     deleteButton.classList.add('delete-button')
@@ -235,7 +235,7 @@ class UploadImageButton extends HTMLElement {
     if (this.shadow.querySelector(`.upload-image[data-filename="${previousImage}"]`)) {
       const thumbnail = this.shadow.querySelector(`.upload-image[data-filename="${previousImage}"]`)
 
-      thumbnail.querySelector('img').src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${image.filename}`
+      thumbnail.querySelector('img').src = `${window.env.API_URL}image-gallery/${image.filename}`
       thumbnail.dataset.filename = image.filename
 
       image.previousImage = previousImage

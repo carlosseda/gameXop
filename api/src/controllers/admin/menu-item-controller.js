@@ -73,8 +73,8 @@ exports.update = (req, res) => {
 
   MenuItem.update(req.body, {
     where: { id }
-  }).then(num => {
-    if (num === 1) {
+  }).then(([numberRowsAffected]) => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -95,8 +95,8 @@ exports.delete = (req, res) => {
 
   MenuItem.destroy({
     where: { id }
-  }).then(num => {
-    if (num === 1) {
+  }).then(numberRowsAffected => {
+    if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

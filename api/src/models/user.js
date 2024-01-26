@@ -87,7 +87,6 @@ module.exports = function (sequelize, DataTypes) {
         user.password = bcrypt.hashSync(user.password, salt)
       },
       beforeUpdate: async (user) => {
-        console.log('user.changed', user.changed())
         if (user.password.trim() !== '' && user.changed('password')) {
           const salt = await bcrypt.genSaltSync(10)
           user.password = bcrypt.hashSync(user.password, salt)

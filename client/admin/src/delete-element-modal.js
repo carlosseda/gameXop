@@ -2,11 +2,10 @@ class DeleteElementModal extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    document.addEventListener('showDeleteModal', this.handleShowDeleteModal.bind(this))
-    document.addEventListener('hideOverlayer', this.handleHideOverlayer.bind(this))
   }
 
   connectedCallback () {
+    document.addEventListener('showDeleteModal', this.handleShowDeleteModal.bind(this))
     this.render()
   }
 
@@ -14,36 +13,40 @@ class DeleteElementModal extends HTMLElement {
     this.endPoint = event.detail.endPoint
     this.endpoint = event.detail.endpoint
     this.subtable = event.detail.subtable
-    this.shadow.querySelector('.modal-delete').classList.add('active')
-  }
-
-  handleHideOverlayer (event) {
-    if (this.shadow.querySelector('.modal-delete').classList.contains('active')) {
-      this.shadow.querySelector('.modal-delete').classList.remove('active')
-    }
+    this.shadow.querySelector('.overlayer').classList.add('active')
   }
 
   render () {
     this.shadow.innerHTML =
-      `
+      /* html */`
       <style>
-          .modal-delete{
-              background-color: hsl(0, 0%, 100%);
-              position: fixed;
-              left: 0;
-              right: 0;
-              margin-left: auto;
-              margin-right: auto;
-              opacity: 0;
-              top: 30%;
-              transition: opacity 0.3s ease;
-              width: 40%;
-              z-index: -1;
+          .overlayer {
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            left: 0;
+            opacity: 0;
+            position: fixed;
+            top: 0;
+            transition: opacity 0.3s;
+            visibility: hidden;
+            width: 100%;
+            z-index: -1;
           }
 
-          .modal-delete.active{
-              opacity: 1;
-              z-index: 3000;
+          .overlayer.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1000;
+          }
+
+          .modal-delete{
+            background-color: hsl(0, 0%, 100%);
+            position: absolute;
+            width: 500px;
           }
           
           .modal-delete-header{
@@ -72,6 +75,10 @@ class DeleteElementModal extends HTMLElement {
               width: 50%;
           }
 
+          .modal-delete-option:hover{
+            filter: brightness(1.2);
+          }
+
           .modal-delete-option#delete-cancel{
               background-color: hsl(183, 98%, 35%);;
           }
@@ -81,22 +88,23 @@ class DeleteElementModal extends HTMLElement {
           }
       </style>
 
-      <div class="modal-delete">
+      <div class="overlayer">
+        <div class="modal-delete">
           <div class="modal-delete-content">
-
               <div class="modal-delete-header">
                   <h4>¿Quiere eliminar este registro?</h4>
               </div>
 
               <div class="modal-delete-footer">
-                  <div class="modal-delete-option" id="delete-confirm">
-                      <h4>Sí</h4>
-                  </div>
-                  <div class="modal-delete-option " id="delete-cancel">
-                      <h4>No</h4>
-                  </div>
+                <div class="modal-delete-option" id="delete-confirm">
+                  <h4>Sí</h4>
+                </div>
+                <div class="modal-delete-option " id="delete-cancel">
+                  <h4>No</h4>
+                </div>
               </div>
-          </div>
+            </div>
+        </div>
       </div>
       `
 
@@ -126,9 +134,7 @@ class DeleteElementModal extends HTMLElement {
           }
         }))
 
-        document.dispatchEvent(new CustomEvent('hideOverlayer'))
-
-        this.shadow.querySelector('.modal-delete').classList.remove('active')
+        this.shadow.querySelector('.overlayer').classList.remove('active')
       }).catch(error => {
         console.log(error)
         document.dispatchEvent(new CustomEvent('message', {
@@ -141,8 +147,7 @@ class DeleteElementModal extends HTMLElement {
     })
 
     this.shadow.querySelector('#delete-cancel').addEventListener('click', () => {
-      document.dispatchEvent(new CustomEvent('hideOverlayer'))
-      this.shadow.querySelector('.modal-delete').classList.remove('active')
+      this.shadow.querySelector('.overlayer').classList.remove('active')
     })
   }
 }

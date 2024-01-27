@@ -3,6 +3,7 @@ module.exports = (app, upload) => {
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/user-controller.js')
 
+  router.get('/user-area', [authCookie.verifyUserCookie], controller.userArea)
   router.post('/', [authCookie.verifyUserCookie], controller.create)
   router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:id', [authCookie.verifyUserCookie], controller.findOne)

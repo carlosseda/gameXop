@@ -28,6 +28,11 @@ module.exports = function (sequelize, DataTypes) {
         msg: 'Ya existe ese alias.'
       }
     },
+    selected: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     createdAt: {
       type: DataTypes.DATE,
       get () {

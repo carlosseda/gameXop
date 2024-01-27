@@ -24,7 +24,7 @@ class PageComponent extends HTMLElement {
       '/login': 'login.html'
     }
 
-    const filename = routes[path] || '/pages/404.html'
+    const filename = routes[path] || '404.html'
 
     await this.loadPage(filename)
   }

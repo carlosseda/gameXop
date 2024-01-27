@@ -57,6 +57,12 @@ header{
   padding: 0.5rem 2rem;
 }
 
+.header-group{
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
 main{
   display: flex;
   flex-direction: column;

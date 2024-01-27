@@ -33,7 +33,7 @@ class PageComponent extends HTMLElement {
       '/admin/faqs': 'faqs.html'
     }
 
-    const filename = routes[path] || '/pages/404.html'
+    const filename = routes[path] || '404.html'
 
     await this.loadPage(filename)
   }

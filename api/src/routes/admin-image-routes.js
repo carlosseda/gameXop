@@ -1,13 +1,14 @@
 module.exports = (app) => {
   const router = require('express').Router()
-  const authJwt = require('../middlewares/auth-jwt.js')
+  const authCookie = require('../middlewares/auth-cookie.js')
   const uploadFiles = require('../middlewares/upload-files.js')
   const controller = require('../controllers/admin/image-gallery-controller.js')
 
-  router.post('/', [authJwt.verifyUserToken, uploadFiles], controller.create)
-  router.get('/', [authJwt.verifyUserToken], controller.findAll)
-  router.get('/:filename', controller.findOne)
-  router.delete('/:filename', [authJwt.verifyUserToken], controller.delete)
+  router.get('/image/:filename', [authCookie.verifyUserCookie], controller.getImage)
+  router.post('/', [authCookie.verifyUserCookie, uploadFiles], controller.create)
+  router.get('/', [authCookie.verifyUserCookie], controller.findAll)
+  router.get('/:filename', [authCookie.verifyUserCookie], controller.findOne)
+  router.delete('/:filename', [authCookie.verifyUserCookie], controller.delete)
 
   app.use('/api/admin/image-gallery', router)
 }

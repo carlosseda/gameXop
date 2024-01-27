@@ -42,3 +42,15 @@ exports.signin = (req, res) => {
       res.status(500).send({ message: err.message })
     })
 }
+
+exports.checkSignin = (req, res) => {
+  if (req.session.user) {
+    res.status(200).send({
+      redirection: '/admin'
+    })
+  } else {
+    res.status(401).send({
+      redirection: '/login'
+    })
+  }
+}

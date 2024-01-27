@@ -5,7 +5,27 @@ class LoginForm extends HTMLElement {
   }
 
   connectedCallback () {
+    this.checkSignin()
     this.render()
+  }
+
+  async checkSignin () {
+    const endpoint = import.meta.env.VITE_API_URL
+
+    try {
+      const result = await fetch(`${endpoint}/api/auth/users/check-signin`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (result.ok) {
+        const data = await result.json()
+        window.location.href = data.redirection
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render () {
@@ -114,12 +134,12 @@ class LoginForm extends HTMLElement {
   }
 
   async submitForm (form) {
-    const url = import.meta.env.VITE_API_URL
+    const endpoint = import.meta.env.VITE_API_URL
     const formData = new FormData(form)
     const formDataJson = Object.fromEntries(formData.entries())
 
     try {
-      const result = await fetch(url, {
+      const result = await fetch(`${endpoint}/api/auth/users/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

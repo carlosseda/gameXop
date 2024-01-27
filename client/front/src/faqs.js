@@ -9,32 +9,14 @@ class Faqs extends HTMLElement {
   }
 
   async loadData () {
-    this.faqs = [
-      {
-        title: '¿Qué es GameXop?',
-        description: `
-          GameXop es una tienda de videojuegos online. En ella podrás encontrar los últimos lanzamientos, preventas y juegos en oferta.
-        `
-      },
-      {
-        title: '¿Puedo hacer devoluciones de juegos?',
-        description: `
-          Sí, puedes hacer devoluciones de juegos siempre y cuando no hayan pasado más de 7 días desde la compra.
-        `
-      },
-      {
-        title: '¿Cuánto tarda en llegar mi pedido?',
-        description: `
-          El tiempo de entrega de los pedidos es instantáneo. Una vez realizada la compra, podrás descargar el juego en tu consola o PC.
-        `
-      },
-      {
-        title: '¿Cómo puedo pagar mi pedido?',
-        description: `
-          Puedes pagar tu pedido con tarjeta de crédito o débito, PayPal o MercadoPago.
-        `
-      }
-    ]
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/front/faqs`)
+
+    if (response.ok) {
+      const data = await response.json()
+      this.faqs = data
+    } else {
+      console.log(response)
+    }
   }
 
   render () {
@@ -75,9 +57,9 @@ class Faqs extends HTMLElement {
       const faqElement = document.createElement('details')
       const faqElementSummary = document.createElement('summary')
       faqElement.name = 'faq'
-      faqElementSummary.textContent = faq.title
+      faqElementSummary.textContent = faq.question
       faqElement.appendChild(faqElementSummary)
-      faqElement.innerHTML += faq.description
+      faqElement.innerHTML += faq.answer
       faqsContainer.appendChild(faqElement)
     })
   }

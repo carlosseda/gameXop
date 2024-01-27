@@ -4,6 +4,7 @@ const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
   User.create(req.body).then(data => {
+    req.imageService.resizeImages('users', data.id, req.body.images)
     res.status(200).send(data)
   }).catch(error => {
     if (error.errors) {
@@ -59,8 +60,9 @@ exports.findOne = (req, res) => {
 
   User.findByPk(id, {
     attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
-  }).then(data => {
+  }).then(async data => {
     if (data) {
+      data.dataValues.images = await req.imageService.getAdminImages('users', id)
       res.status(200).send(data)
     } else {
       res.status(404).send({
@@ -93,7 +95,12 @@ exports.update = (req, res) => {
 
       return user.save()
     })
-    .then(() => {
+    .then(async result => {
+      if (req.body.images?.length > 0) {
+        await req.imageService.deleteImages('users', id)
+        await req.imageService.resizeImages('users', id, req.body.images)
+      }
+
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -123,6 +130,38 @@ exports.delete = (req, res) => {
   }).catch(_ => {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
+    })
+  })
+}
+
+exports.userArea = (req, res) => {
+  const id = req.session.user.id
+
+  User.findByPk(id, {
+    attributes: ['name'],
+    include: [
+      {
+        attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
+        model: db.Image,
+        as: 'images',
+        where: {
+          languageAlias: req.userLanguage,
+          mediaQuery: 'lg'
+        }
+      }
+    ]
+  }).then(async data => {
+    if (data) {
+      data.dataValues.images = await req.imageService.parseImages(data.images)
+      res.status(200).send(data)
+    } else {
+      res.status(404).send({
+        message: `No se puede encontrar el elemento con la id=${id}.`
+      })
+    }
+  }).catch(_ => {
+    res.status(500).send({
+      message: 'Algún error ha surgido al recuperar la id=' + id
     })
   })
 }

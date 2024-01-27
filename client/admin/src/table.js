@@ -5,24 +5,13 @@ class Table extends HTMLElement {
     this.eventsAdded = new Set()
     this.data = []
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
-
-    if (!this.eventsAdded.has('refreshTable')) {
-      document.addEventListener('refreshTable', this.handleRefreshTable.bind(this))
-      this.eventsAdded.add('refreshTable')
-    }
-
-    if (!this.eventsAdded.has('newFilter')) {
-      document.addEventListener('newFilter', this.handleNewFilter.bind(this))
-      this.eventsAdded.add('newFilter')
-    }
-
-    if (!this.eventsAdded.has('showSubtable')) {
-      document.addEventListener('showSubtable', this.handleShowSubtable.bind(this))
-      this.eventsAdded.add('showSubtable')
-    }
   }
 
   async connectedCallback () {
+    document.addEventListener('refreshTable', this.handleRefreshTable.bind(this))
+    document.addEventListener('newFilter', this.handleNewFilter.bind(this))
+    document.addEventListener('showSubtable', this.handleShowSubtable.bind(this))
+
     this.loadData().then(() => this.render())
   }
 
@@ -435,7 +424,6 @@ class Table extends HTMLElement {
       removeButton.addEventListener('click', () => {
         const endPoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + removeButton.dataset.id
 
-        document.dispatchEvent(new CustomEvent('showOverlayer'))
         document.dispatchEvent(new CustomEvent('showDeleteModal', {
           detail: {
             endPoint,

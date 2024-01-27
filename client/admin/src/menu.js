@@ -23,153 +23,127 @@ class Menu extends HTMLElement {
 
   render () {
     this.shadow.innerHTML =
-        `
+      /* html */`
         <style>
-            #menu-button{
-                cursor:pointer;
-                height: 2em;
-                margin-left: auto;
-                position: relative;
-                width: 2em;
-                z-index: 1200;
-            }
-            #menu-button button{
-                background: none;
-                border: none;
-                color: inherit;
-                cursor:pointer;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                outline: inherit;
-                padding: 0;
-            }
+          .menu-container{
+            position: relative;
+          }
 
-            #menu-button button:before, #menu-button button:after,
-            #menu-button span:before, #menu-button span:after{
-                background-color: hsl(0, 0%, 100%);
-                border-radius: 15px;
-                content: "";
-                display: block;
-                height: 0.2em;
-                opacity: 1;
-                position: absolute;
-                transition: ease-in-out all 0.15s;
-                width: 100%
-            }
+          #menu-button{
+            align-items: center;
+            border-radius: 50%;
+            cursor:pointer;
+            display: flex;
+            height: 2.7rem;
+            justify-content: center;
+            position: relative;
+            width: 2.7em;
+            z-index: 3001;
+          }
+          
+          #menu-button:hover{
+            background-color: hsl(272 40% 35%);
+          }
 
-            span:before, span:after{
-                top: 50%;
-                transform: translateY(-50%);
-            }
+          #menu-button.active{
+            background-color: hsl(272 40% 35%);
+          }
 
-            #menu-button button:before{
-                top: 0.5em;
-            }
+          #menu-button svg{
+            fill: hsl(0, 0%, 100%);
+            height: 2rem;
+            width: 2rem;
+          }
 
-            #menu-button button:after{
-                bottom: 0.5em;
-            }
+          #menu{
+            background-color: hsl(0, 0%, 0%);
+            border: 0.5rem solid hsl(0, 0%, 100%);
+            height: 50vh;
+            right: -3rem;
+            position: absolute;
+            transition: opacity 0.3s;
+            top: 4rem;
+            opacity: 0;
+            padding: 5%;
+            visibility: hidden;
+            width: 400px;
+            z-index: -1;
+          }
 
-            #menu-button.active button:before, #menu-button.active button:after{
-                display: none;
-            }
+          #menu.active{
+            opacity: 1;
+            visibility: visible;
+            z-index: 6000;
+          }
 
-            #menu-button.active span:before{
-                background-color: hsl(207, 85%, 69%);
-                transform: rotate(45deg);
-            }
-
-            #menu-button.active span:after{
-                background-color: hsl(207, 85%, 69%);
-                transform: rotate(-45deg)
-            }
-
-            #menu{
-                background-color: hsl(0, 0%, 100%);
-                height: 100vh;
-                left: 0;
-                position: fixed;
-                transition: opacity 0.4s;
-                top: 0;
-                opacity: 0;
-                padding: 5%;
-                width: 100%;
-                z-index: -1;
-            }
-
-            #menu.active{
-                opacity: 1;
-                z-index: 1000;
-            }
-
-            nav {
-                display: flex;
-                align-items: center;
-                justify-content: left;
-            }
-              
-            nav ul {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                flex-direction: column; 
-            }
-              
-            nav ul li {
-                position: relative;
-                width: max-content;
-            }
-              
-            nav ul li a {
-                display: block;
-                font-family: 'Roboto', sans-serif;
-                font-size: 1.5em;
-                padding: 0.5rem;
-                text-decoration: none;
-                color: hsl(207, 85%, 69%);
-            }
-
-            nav ul li a:hover {
-                color: hsl(19, 100%, 50%);
-            }
-
-            nav ul li .sub-menu {
-                display: none;
-            }
+          nav {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+          }
             
-            nav ul li:hover .sub-menu {
-                display: block;
-            }
-              
-            nav ul li:hover > .sub-menu {
-                visibility: visible;
-                animation: slide-in 0.5s ease-in-out; /* animación de apertura */
-            }
-              
-            .sub-menu {
-                position: absolute;
-                top: 0;
-                left: 100%; 
-                visibility: hidden;
-                animation: slide-out 0.5s ease-in-out;
-            }
+          nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; 
+          }
+            
+          nav ul li {
+            position: relative;
+            width: max-content;
+          }
+            
+          nav ul li a {
+            display: block;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.5em;
+            padding: 0.5rem;
+            text-decoration: none;
+            color: hsl(207, 85%, 69%);
+          }
+
+          nav ul li a:hover {
+            color: hsl(19, 100%, 50%);
+          }
+
+          nav ul li .sub-menu {
+            display: none;
+          }
+          
+          nav ul li:hover .sub-menu {
+            display: block;
+          }
+            
+          nav ul li:hover > .sub-menu {
+            visibility: visible;
+            animation: slide-in 0.5s ease-in-out; /* animación de apertura */
+          }
+            
+          .sub-menu {
+            position: absolute;
+            top: 0;
+            left: 100%; 
+            visibility: hidden;
+            animation: slide-out 0.5s ease-in-out;
+          }
         </style>
 
-        <div id="menu-button">
-            <button>
-                <span></span>
-            </button>
-        </div>
+        <div class="menu-container">
+          <div id="menu-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16,20H20V16H16M16,14H20V10H16M10,8H14V4H10M16,8H20V4H16M10,14H14V10H10M4,14H8V10H4M4,20H8V16H4M10,20H14V16H10M4,8H8V4H4V8Z" /></svg>
+          </div>
 
-        <div id="menu">
-            <nav>
-                <ul>
-              
-                </ul>
-            </nav>
-        </div>`
+          <div id="menu">
+              <nav>
+                  <ul>
+                
+                  </ul>
+              </nav>
+          </div>
+        </div>
+        `
 
     const menuList = this.shadow.querySelector('ul')
 

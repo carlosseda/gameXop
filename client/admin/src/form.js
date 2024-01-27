@@ -2,37 +2,17 @@ class Form extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.eventsAdded = new Set()
     this.languages = []
     this.images = []
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
   }
 
   async connectedCallback () {
-    if (!this.eventsAdded.has('showElement')) {
-      document.addEventListener('showElement', this.handleShowElement.bind(this))
-      this.eventsAdded.add('showElement')
-    }
-
-    if (!this.eventsAdded.has('refreshForm')) {
-      document.addEventListener('refreshForm', this.handleRefreshForm.bind(this))
-      this.eventsAdded.add('refreshForm')
-    }
-
-    if (!this.eventsAdded.has('showDependants')) {
-      document.addEventListener('showDependants', this.handleShowDependants.bind(this))
-      this.eventsAdded.add('showDependants')
-    }
-
-    if (!this.eventsAdded.has('hideDependants')) {
-      document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
-      this.eventsAdded.add('hideDependants')
-    }
-
-    if (!this.eventsAdded.has('attachImageToForm')) {
-      document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
-      this.eventsAdded.add('attachImageToForm')
-    }
+    document.addEventListener('showElement', this.handleShowElement.bind(this))
+    document.addEventListener('refreshForm', this.handleRefreshForm.bind(this))
+    document.addEventListener('showDependants', this.handleShowDependants.bind(this))
+    document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
+    document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
 
     await this.getLanguages()
     this.render()
@@ -69,14 +49,19 @@ class Form extends HTMLElement {
   }
 
   getLanguages = async () => {
-    const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/locale-list`
+    if (!window.sessionStorage.getItem('languages')) {
+      const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/locale-list`
 
-    try {
-      const response = await fetch(endpoint)
-      const data = await response.json()
-      this.languages = data
-    } catch (error) {
-      console.log(error)
+      try {
+        const response = await fetch(endpoint)
+        const data = await response.json()
+        this.languages = data
+        window.sessionStorage.setItem('languages', JSON.stringify(data))
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      this.languages = JSON.parse(window.sessionStorage.getItem('languages'))
     }
   }
 
@@ -547,16 +532,11 @@ class Form extends HTMLElement {
             break
           }
 
-          case 'file': {
-            if (!this.shadow.querySelector('image-gallery-component')) {
-              const imageGallery = document.createElement('image-gallery-component')
-              this.shadow.append(imageGallery)
-            }
-
+          case 'image': {
             const input = document.createElement('upload-image-button-component')
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             languageAlias ? input.setAttribute('name', `locales.${languageAlias}.${formElement.name}`) : input.setAttribute('name', formElement.name)
-            input.setAttribute('languageAlias', 'es')
+            languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
             input.setAttribute('quantity', formElement.quantity)
 
             // input.accept = formElement.accept || '';

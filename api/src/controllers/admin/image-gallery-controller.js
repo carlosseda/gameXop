@@ -1,8 +1,9 @@
-const ImageService = require('../../services/image-service')
-
 exports.create = async (req, res) => {
   try {
-    const result = await new ImageService().uploadImage(req.files)
+    console.log('hola')
+
+    console.log(req.files)
+    const result = await req.imageService.uploadImage(req.files)
 
     res.status(200).send(result)
   } catch (error) {
@@ -33,7 +34,7 @@ exports.findAll = async (req, res) => {
   const limit = req.query.size || 20
   const offset = (page - 1) * limit
 
-  new ImageService().getThumbnails(limit, offset).then(result => {
+  req.imageService.getThumbnails(limit, offset).then(result => {
     result.meta = {
       total: result.count,
       pages: Math.ceil(result.count / limit),
@@ -51,7 +52,7 @@ exports.findAll = async (req, res) => {
 exports.delete = (req, res) => {
   const filename = req.params.filename
 
-  new ImageService().deleteImages(filename).then(result => {
+  req.imageService.deleteImages(filename).then(result => {
     if (result === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
@@ -66,4 +67,19 @@ exports.delete = (req, res) => {
       message: 'Algún error ha surgido al borrar'
     })
   })
+}
+
+exports.getImage = async (req, res) => {
+  const fileName = req.params.filename
+
+  const options = {
+    root: __dirname + '../../../storage/images/resized/',
+    dotfiles: 'deny',
+    headers: {
+      'x-timestamp': Date.now(),
+      'x-sent': true
+    }
+  }
+
+  res.sendFile(fileName, options)
 }

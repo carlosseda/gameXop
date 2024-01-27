@@ -50,24 +50,15 @@ module.exports = class LocaleServiceService {
     })
   }
 
-  parseColletionWithLocales = async (collection) => {
-    const parseData = {
-      locales: []
-    }
+  parseLocales = async (collection) => {
+    collection.forEach(item => {
+      item.locales.forEach(locale => {
+        item.dataValues[locale.key] = locale.value
+      })
 
-    for (const locale of collection) {
-      const languageAlias = locale.dataValues.languageAlias
-      delete locale.dataValues.languageAlias
+      delete item.dataValues.locales
+    })
 
-      for (const key of Object.keys(locale.dataValues)) {
-        parseData.locales.push({
-          languageAlias,
-          key,
-          value: locale.dataValues[key]
-        })
-      }
-    }
-
-    return parseData
+    return collection
   }
 }

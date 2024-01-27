@@ -2,374 +2,376 @@ class ImageGallery extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.name = ''
-    this.languageAlias = ''
-
-    document.addEventListener('openGallery', this.handleopenGallery.bind(this))
-    document.addEventListener('hideOverlayer', this.handleHideOverlayer.bind(this))
+    this.image = {}
   }
 
   connectedCallback () {
+    document.addEventListener('openGallery', this.handleOpenGallery.bind(this))
+    document.addEventListener('showElementGallery', this.handleShowElementGallery.bind(this))
     this.render()
   }
 
-  handleopenGallery (event) {
-    document.dispatchEvent(new CustomEvent('showOverlayer'))
+  handleOpenGallery (event) {
     this.openGallery(event.detail.image)
   }
 
-  handleHideOverlayer (event) {
-    if (this.shadow.querySelector('.modal').classList.contains('active')) {
-      this.shadow.querySelector('.modal').classList.remove('active')
-    }
-  }
-
-  disconnectedCallback () {
-    document.removeEventListener('openGallery', this.openGalleryHandler)
-    document.removeEventListener('hideOverlayer', this.closeGalleryHandler)
+  handleShowElementGallery (event) {
+    this.showElementGallery(event.detail.image)
   }
 
   async render () {
     this.shadow.innerHTML =
-        `
+      /* html */`
         <style>
-            .modal {
-                bottom: 30px;
-                left: 30px;
-                position: fixed;
-                opacity: 0;
-                top: 30px;
-                right: 30px;
-                z-index: -1;
-                visibility: hidden;
-            }
+          .overlayer {
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            left: 0;
+            opacity: 0;
+            position: fixed;
+            top: 0;
+            transition: opacity 0.3s;
+            visibility: hidden;
+            width: 100%;
+            z-index: -1;
+          }
 
-            .modal.active {
-                opacity: 1;
-                visibility: visible;
-                z-index: 50000;
-            }
+          .overlayer.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 5000;
+          }
 
-            .modal-content {
-                background-color: white;
-                border: 1px solid #888;
-                border-radius: 5px;
-                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                height: 100%;
-                position: relative;
-                width: 100%;
-            }
+          .modal {
+            height: 80%;
+            position: absolute;
+            width: 80%;
+          }
 
-            .modal-header {
-                align-items: center;
-                display: flex;
-                height: 5%;
-                justify-content: space-between;
-                padding: 1%;
-                width: 98%;
-            }
+          .modal-content {
+            background-color: white;
+            border: 1px solid #888;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+            width: 100%;
+          }
 
-            .modal-header h2 {
-                font-family: 'Roboto', sans-serif;
-                margin: 0;
-            }
+          .modal-header {
+            align-items: center;
+            display: flex;
+            height: 5%;
+            justify-content: space-between;
+            padding: 1%;
+            width: 98%;
+          }
 
-            .modal-header .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
+          .modal-header h2 {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+          }
 
-            .modal-header .close:hover,
-            .modal-header .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
+          .modal-header .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+          }
 
-            .modal-body {
-                display: flex;
-                flex-direction: column;
-                height: 85%;
-            }
+          .modal-header .close:hover,
+          .modal-header .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+          }
 
-            .tabs-container-menu {
-                display: flex;
-                flex-direction: column;
-            }
+          .modal-body {
+            display: flex;
+            flex-direction: column;
+            height: 85%;
+          }
 
-            .tabs-container-menu .tabs-container-items {
-                align-items: center;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                padding: 0 1%;
-            }
+          .tabs-container-menu {
+            display: flex;
+            flex-direction: column;
+          }
 
-            .tabs-container-menu .tabs-container-items ul {
-                display: flex;
-                flex-direction: row;
-                list-style-type: none;
-                margin: 0;
-                padding: 0;
-            }
+          .tabs-container-menu .tabs-container-items {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0 1%;
+          }
 
-            .tabs-container-menu .tabs-container-items ul li {
-                cursor: pointer;
-                font-family: 'Roboto', sans-serif;
-                padding: 0.5rem 1rem;
-            }
+          .tabs-container-menu .tabs-container-items ul {
+            display: flex;
+            flex-direction: row;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+          }
 
-            .tabs-container-menu .tabs-container-items ul li:hover {
-                color: #555;
-            }
+          .tabs-container-menu .tabs-container-items ul li {
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            padding: 0.5rem 1rem;
+          }
 
-            .tabs-container-menu .tabs-container-items ul li.active {
-                background-color: hsl(207, 85%, 69%);
-                color: white;
-            }
+          .tabs-container-menu .tabs-container-items ul li:hover {
+            color: #555;
+          }
 
-            .tabs-container-content {
-                display: flex;
-                flex-direction: column;
-                height: 95%;
-            }
+          .tabs-container-menu .tabs-container-items ul li.active {
+            background-color: hsl(207, 85%, 69%);
+            color: white;
+          }
 
-            .tabs-container-content .tab {
-                display: none;
-                height: 100%;
-            }
+          .tabs-container-content {
+            display: flex;
+            flex-direction: column;
+            height: 95%;
+          }
 
-            .tabs-container-content .tab.active {
-                display: block;
-            }
+          .tabs-container-content .tab {
+            display: none;
+            height: 100%;
+          }
 
-            .tabs-container-content .tab.active#gallery-content {
-                border-bottom: 1px solid #dcdcde;
-                border-top: 1px solid #dcdcde;
-                display: flex;
-            }
+          .tabs-container-content .tab.active {
+            display: block;
+          }
 
-            .image-gallery {
-                align-content: flex-start;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                height: 96%;
-                overflow: scroll;
-                overflow-y: auto;
-                overflow-x: hidden;
-                padding: 1%;
-                width: 80%;
-            }
+          .tabs-container-content .tab.active#gallery-content {
+            border-bottom: 1px solid #dcdcde;
+            border-top: 1px solid #dcdcde;
+            display: flex;
+          }
 
-            .image-gallery-loader {
-                background-color: #f1f1f1;
-                height: 100%;
-                overflow: scroll;
-                overflow-y: auto;
-                overflow-x: hidden;
-                width: 20%;
-            }
+          .image-gallery {
+            align-content: flex-start;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            height: 96%;
+            overflow: scroll;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1%;
+            width: 80%;
+          }
 
-            .image-gallery .image {
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                box-sizing: border-box;
-                cursor: pointer;
-                height: 135px;
-                margin: 5px;
-                overflow: hidden;
-                padding: 5px;
-                position: relative;
-                width: 135px;
-            }
+          .image-gallery-loader {
+            background-color: #f1f1f1;
+            height: 100%;
+            overflow: scroll;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 20%;
+          }
 
-            .image-gallery .image:hover {
-                border: 1px solid #aaa;
-            }
+          .image-gallery .image {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            cursor: pointer;
+            height: 135px;
+            margin: 5px;
+            overflow: hidden;
+            padding: 5px;
+            position: relative;
+            width: 135px;
+          }
 
-            .image-gallery .image img {
-                height: 100%;
-                width: 100%;
-            }
+          .image-gallery .image:hover {
+            border: 1px solid #aaa;
+          }
 
-            .image-gallery .image.selected {
-                border: 0.2rem solid #4CAF50;
-            }
+          .image-gallery .image img {
+            height: 100%;
+            width: 100%;
+          }
 
-            .image-gallery-loader-form{
-                margin: 1rem;
-            }
+          .image-gallery .image.selected {
+            border: 0.2rem solid #4CAF50;
+          }
 
-            .image-gallery-loader-form label {
-                font-family: 'Roboto', sans-serif;
-                margin: 0.5rem 5%;
-                width: 90%;
-            }   
+          .image-gallery-loader-form{
+            margin: 1rem;
+          }
 
-            .image-gallery-loader-form input {
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-                margin: 5%;
-                padding: 0.2rem;
-                position: relative;
-                width: 90%;
-            }
+          .image-gallery-loader-form label {
+            font-family: 'Roboto', sans-serif;
+            margin: 0.5rem 5%;
+            width: 90%;
+          }   
 
-            .tabs-container-content .tab.active#upload-content {
-                border-bottom: 1px solid #dcdcde;
-                border-top: 1px solid #dcdcde;
-            }
+          .image-gallery-loader-form input {
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin: 5%;
+            padding: 0.2rem;
+            position: relative;
+            width: 90%;
+          }
 
-            .upload-image {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-                justify-content: center;
-                align-items: center;
-            }
+          .tabs-container-content .tab.active#upload-content {
+            border-bottom: 1px solid #dcdcde;
+            border-top: 1px solid #dcdcde;
+          }
 
-            .upload-image input[type="file"] {
-                display: none;
-            }
+          .upload-image {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+          }
 
-            .upload-image label {
-                background-color: hsl(207, 85%, 69%);
-                border: none;
-                border-radius: 5px;
-                color: white;
-                cursor: pointer;
-                font-family: 'Roboto', sans-serif;
-                font-size: 16px;
-                padding: 12px 24px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-            }
+          .upload-image input[type="file"] {
+            display: none;
+          }
 
-            .upload-image label:hover {
-                background-color: #45a049;
-            }
+          .upload-image label {
+            background-color: hsl(207, 85%, 69%);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+          }
 
-            .modal-footer {
-                display: flex;
-                justify-content: flex-end;
-                padding: 1rem;
-            }
+          .upload-image label:hover {
+            background-color: #45a049;
+          }
 
-            .modal-footer button {
-                background-color: #ccc;
-                border: none;
-                border-radius: 5px;
-                color: white;
-                font-size: 16px;
-                padding: 12px 24px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-            }
+          .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem;
+          }
 
-            .modal-footer button.active {
-                background-color: hsl(207, 85%, 69%);
-                cursor: pointer;
-            }
+          .modal-footer button {
+            background-color: #ccc;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+          }
+
+          .modal-footer button.active {
+            background-color: hsl(207, 85%, 69%);
+            cursor: pointer;
+          }
         </style>
 
-
-        <div class="modal">
+        <div class="overlayer">
+          <div class="modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Imagen destacada</h2>
-                    <span class="close">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="tabs-container-menu">
-                        <div class="tabs-container-items">
-                            <ul>
-                                <li id="gallery-content" class="active">Galería</li>
-                                <li id="upload-content">Subir imagen</li>
-                            </ul>
+              <div class="modal-header">
+                <h2>Imagen destacada</h2>
+                <span class="close">&times;</span>
+              </div>
+              <div class="modal-body">
+                  <div class="tabs-container-menu">
+                      <div class="tabs-container-items">
+                          <ul>
+                              <li id="gallery-content" class="active">Galería</li>
+                              <li id="upload-content">Subir imagen</li>
+                          </ul>
+                      </div>
+                  </div>
+                  <div class="tabs-container-content">
+                    <div class="tab active" id="gallery-content">
+                      <div class="image-gallery"></div>
+                      <div class="image-gallery-loader">
+                        <div class="image-gallery-information">
+                          <div class="image-gallery-loader-form">
+                            <label for="title">Título</label>
+                            <input type="text" name="title" />
+                          </div>
+                          <div class="image-gallery-loader-form">
+                            <label for="description">Texto alternativo</label>
+                            <input type="text" name="alt" />
+                          </div>
                         </div>
+                      </div>
                     </div>
-                    <div class="tabs-container-content">
-                        <div class="tab active" id="gallery-content">
-                            <div class="image-gallery">
-                            </div>
-                            <div class="image-gallery-loader">
-                                <div class="image-gallery-information">
-                                    <div class="image-gallery-loader-form">
-                                        <label for="title">Título</label>
-                                        <input type="text" name="title" />
-                                    </div>
-                                    <div class="image-gallery-loader-form">
-                                        <label for="description">Texto alternativo</label>
-                                        <input type="text" name="alt" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab" id="upload-content">
-                            <div class="upload-image">
-                                <label for="file">Subir imagen</label>
-                                <input type="file" id="file" name="file" accept="image/*" />
-                            </div>
-                        </div>
+                    <div class="tab" id="upload-content">
+                      <div class="upload-image">
+                        <label for="file">Subir imagen</label>
+                        <input type="file" id="file" name="file" accept="image/*" />
+                      </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary">Elegir imagen</button>
-                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary">Elegir imagen</button>
+              </div>
             </div>
+          </div>
         </div>
         `
 
     await this.getThumbnails()
 
-    this.shadow.querySelector('.close').addEventListener('click', () => {
-      this.closeGallery()
-    })
+    this.shadow.querySelector('.overlayer').addEventListener('click', (event) => {
+      if (event.target.closest('.close')) {
+        this.closeGallery()
+      }
 
-    this.shadow.querySelectorAll('.tabs-container-menu li').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        this.changeTab(tab)
-      })
-    })
+      if (event.target.closest('.tabs-container-menu li')) {
+        this.changeTab(event.target.closest('.tabs-container-menu li'))
+      }
 
-    this.shadow.querySelectorAll('.image').forEach((image) => {
-      image.addEventListener('click', () => {
-        this.selectImage(image)
-      })
+      if (event.target.closest('.image')) {
+        this.selectImage(event.target.closest('.image'))
+      }
+
+      if (event.target.closest('.modal-footer button')) {
+        if (event.target.classList.contains('active')) {
+          this.sendDataToForm()
+        }
+      }
     })
 
     this.shadow.querySelector('input[type="file"]').addEventListener('change', async event => {
       this.uploadImage(event.target.files[0])
     })
-
-    this.shadow.querySelector('.modal-footer button').addEventListener('click', event => {
-      if (event.target.classList.contains('active')) {
-        this.sendDataToForm()
-      }
-    })
   }
 
   async openGallery (image) {
-    document.dispatchEvent(new CustomEvent('showOverlayer'))
-    this.shadow.querySelector('.modal').classList.add('active')
+    this.shadow.querySelector('.overlayer').classList.add('active')
+    this.image = image
+  }
 
-    this.setAttribute('name', image.name)
-    this.setAttribute('languageAlias', image.languageAlias)
+  async showElementGallery (image) {
+    this.shadow.querySelector('.overlayer').classList.add('active')
     this.shadow.querySelector('input[name="title"]').value = image.title
     this.shadow.querySelector('input[name="alt"]').value = image.alt
 
+    this.image = image
     const imageElement = this.shadow.querySelector(`.image[data-filename="${image.filename}"]`)
 
     if (imageElement) {
@@ -395,20 +397,14 @@ class ImageGallery extends HTMLElement {
 
   async getThumbnails () {
     try {
-      const result = await window.axios.get(`${window.env.API_URL}image-gallery`, {
-        headers: {
-          Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-        }
-      })
-
-      const data = result.data
-
+      const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`)
+      const data = await result.json()
       let html = ''
 
       data.filenames.forEach(filename => {
         html += `
                   <div class="image" data-filename="${filename}">
-                      <img src="${window.env.API_URL}image-gallery/${filename}" />
+                      <img src="${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}" />
                   </div>
                 `
       })
@@ -423,13 +419,12 @@ class ImageGallery extends HTMLElement {
     const formData = new FormData()
     formData.append('file', file)
 
-    const result = await window.axios.post(`${window.env.API_URL}image-gallery`, formData, {
-      headers: {
-        Authorization: 'Bearer ' + sessionStorage.getItem('accessToken')
-      }
+    const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`, {
+      method: 'POST',
+      body: formData
     })
 
-    const filenames = result.data
+    const filenames = await result.json()
 
     this.shadow.querySelectorAll('.image').forEach((item) => {
       item.classList.remove('selected')
@@ -441,7 +436,7 @@ class ImageGallery extends HTMLElement {
 
       imageContainer.classList.add('image', 'selected')
       imageContainer.setAttribute('data-filename', filename)
-      image.src = `${window.env.API_URL}image-gallery/${filename}`
+      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}`
 
       imageContainer.addEventListener('click', () => {
         this.shadow.querySelectorAll('.image').forEach(item => {
@@ -484,30 +479,25 @@ class ImageGallery extends HTMLElement {
   }
 
   async sendDataToForm () {
-    const image = {}
-    image.name = this.getAttribute('name')
-    image.alt = this.shadow.querySelector('input[name="alt"]').value
-    image.title = this.shadow.querySelector('input[name="title"]').value
-    image.languageAlias = this.getAttribute('languageAlias')
-    image.filename = this.shadow.querySelector('.image.selected').getAttribute('data-filename')
+    this.image.alt = this.shadow.querySelector('input[name="alt"]').value
+    this.image.title = this.shadow.querySelector('input[name="title"]').value
+    this.image.filename = this.shadow.querySelector('.image.selected').getAttribute('data-filename')
 
     // Aqui se pierde
     if (this.updateFile) {
       document.dispatchEvent(new CustomEvent('updateThumbnail', {
         detail: {
           previousImage: this.updateFile,
-          image
+          image: this.image
         }
       }))
     } else {
       document.dispatchEvent(new CustomEvent('createThumbnail', {
         detail: {
-          image
+          image: this.image
         }
       }))
     }
-
-    document.dispatchEvent(new CustomEvent('hideOverlayer'))
 
     this.updateFile = null
 
@@ -515,15 +505,13 @@ class ImageGallery extends HTMLElement {
   }
 
   async closeGallery () {
-    document.dispatchEvent(new CustomEvent('hideOverlayer'))
-
     this.shadow.querySelector('.modal-footer button').classList.remove('active')
 
     this.shadow.querySelectorAll('.image').forEach(item => {
       item.classList.remove('selected')
     })
 
-    this.shadow.querySelector('.modal').classList.remove('active')
+    this.shadow.querySelector('.overlayer').classList.remove('active')
   }
 }
 

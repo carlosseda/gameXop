@@ -112,7 +112,8 @@ exports.delete = (req, res) => {
 
 exports.localeList = (req, res) => {
   Language.findAll({
-    attributes: ['alias', 'name']
+    attributes: ['alias', 'name'],
+    where: { selected: true }
   }).then(data => {
     res.status(200).send(data)
   }).catch(_ => {

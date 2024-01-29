@@ -12,8 +12,7 @@ class Faqs extends HTMLElement {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/front/faqs`)
 
     if (response.ok) {
-      const data = await response.json()
-      this.faqs = data
+      this.faqs = await response.json()
     } else {
       console.log(response)
     }

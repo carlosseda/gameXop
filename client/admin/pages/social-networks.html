@@ -24,22 +24,20 @@
     endpoint="/api/admin/product-categories"
     structure="{
       'tabs': [
-        {'name': 'general', 'label': 'General'}
+        {'name': 'general', 'label': 'General'},
+        {'name': 'images', 'label': 'Imágenes'}
       ],
       'inputs': {
         'general': {
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
             {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'half-width'},
-            {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'half-width', 'options': 
-              [
-                {'label': 'Si', 'value': 'true'},
-                {'label': 'No', 'value': 'false'}
-              ]
-            }
-          ],
-          'locale': [
-            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'}
+            {'name': 'baseUrl', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'}
+          ]
+        },
+        'images': {
+          'noLocale': [
+            {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'half-width', 'quantity': 'single'}
           ]
         }
       }

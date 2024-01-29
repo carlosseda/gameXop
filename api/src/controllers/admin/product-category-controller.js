@@ -3,9 +3,12 @@ const ProductCategory = db.ProductCategory
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  ProductCategory.create(req.body).then(data => {
+  ProductCategory.create(req.body).then(async data => {
+    await req.localeService.create('product_categories', data.id, req.body.locales)
+
     res.status(200).send(data)
   }).catch(err => {
+    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
@@ -28,7 +31,7 @@ exports.findAll = (req, res) => {
 
   ProductCategory.findAndCountAll({
     where: condition,
-    attributes: ['id', 'customerId', 'fingerprintId'],
+    attributes: ['id', 'name', 'createdAt', 'updatedAt'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -51,7 +54,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  ProductCategory.findByPk(id).then(data => {
+  ProductCategory.findByPk(id, {
+    include: [
+      {
+        attributes: ['languageAlias', 'key', 'value'],
+        model: db.Locale,
+        as: 'locales',
+        required: false
+      }
+    ]
+  }).then(data => {
     if (data) {
       res.status(200).send(data)
     } else {
@@ -71,8 +83,10 @@ exports.update = (req, res) => {
 
   ProductCategory.update(req.body, {
     where: { id }
-  }).then(([numberRowsAffected]) => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      await req.localeService.update('product_categories', id, req.body.locales)
+
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -93,8 +107,10 @@ exports.delete = (req, res) => {
 
   ProductCategory.destroy({
     where: { id }
-  }).then(numberRowsAffected => {
+  }).then(async numberRowsAffected => {
     if (numberRowsAffected === 1) {
+      await req.localeService.delete('product_categories', id)
+
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

@@ -11,78 +11,15 @@ class CategoryFilter extends HTMLElement {
   }
 
   async loadData () {
-    this.categories = [
-      {
-        id: 1,
-        title: 'Acción',
-        backgroundColor: '#ff5c6b'
-      },
-      {
-        id: 2,
-        title: 'Arcade',
-        backgroundColor: '#d59040'
-      },
-      {
-        id: 3,
-        title: 'Aventura',
-        backgroundColor: '#8d8d34'
-      },
-      {
-        id: 4,
-        title: 'Puzzles',
-        backgroundColor: '#6bc57f'
-      },
-      {
-        id: 5,
-        title: 'Rol',
-        backgroundColor: '#ff8590'
-      },
-      {
-        id: 6,
-        title: 'Construcción',
-        backgroundColor: '#843a3a'
-      },
-      {
-        id: 7,
-        title: 'Deportes',
-        backgroundColor: '#64b4d8'
-      },
-      {
-        id: 8,
-        title: 'Simuladores de carrera',
-        backgroundColor: '#8e50bc'
-      },
-      {
-        id: 9,
-        title: 'Lucha',
-        backgroundColor: '#4246cb'
-      },
-      {
-        id: 10,
-        title: 'Terror',
-        backgroundColor: '#208240'
-      },
-      {
-        id: 11,
-        title: 'Cooperativos',
-        backgroundColor: '#b36215'
-      },
-      {
-        id: 12,
-        title: 'Shooter',
-        backgroundColor: '#ff5c6b'
-      },
-      {
-        id: 13,
-        title: 'Terror',
-        backgroundColor: '#208240'
-      },
-      {
-        id: 14,
-        title: 'Cooperativos',
-        backgroundColor: '#b36215'
-      }
-    ]
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/front/product-categories`)
+
+    if (response.ok) {
+      this.categories = await response.json()
+
+      console.log(this.categories)
+    } else {
+      console.log(response)
+    }
   }
 
   updateArrowVisibility () {

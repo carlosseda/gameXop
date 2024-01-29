@@ -58,12 +58,12 @@ exports.findOne = (req, res) => {
       {
         attributes: ['languageAlias', 'key', 'value'],
         model: db.Locale,
-        as: 'locales'
+        as: 'locales',
+        required: false
       }
     ]
   }).then(data => {
     if (data) {
-      console.log(data)
       res.status(200).send(data)
     } else {
       res.status(404).send({

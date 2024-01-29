@@ -31,7 +31,8 @@ class PageComponent extends HTMLElement {
       '/admin': 'dashboard.html',
       '/admin/usuarios': 'users.html',
       '/admin/faqs': 'faqs.html',
-      '/admin/categoria-productos': 'product-categories.html'
+      '/admin/categoria-productos': 'product-categories.html',
+      '/admin/redes-sociales': 'social-networks.html'
     }
 
     const filename = routes[path] || '404.html'

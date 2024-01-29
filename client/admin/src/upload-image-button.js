@@ -42,34 +42,33 @@ class UploadImageButton extends HTMLElement {
       /* html */`
       <style>
         .square-button {
-          width: 135px;
-          height: 135px;
           border: none;
           background-color: hsl(207, 85%, 69%);
-          color: white;
-          text-align: center;
+          color: hsl(0, 0%, 100%);
+          cursor: pointer;
           display: inline-block;
           font-size: 16px;
-          cursor: pointer;
-          position: absolute;
+          height: 135px;
+          text-align: center;
+          width: 135px;
           z-index: 2000;
         }
 
         .square-button:hover {
-          filter: brightness(1.2);
           cursor: pointer;
+          filter: brightness(1.2);
         }
       
         .icon {
           fill: white;
-          width: 24px;
           height: 24px;
+          width: 24px;
         }
 
         .upload-image-container {
           display: flex;
-          gap: 1rem;
           flex-wrap: wrap;
+          gap: 1rem;
           justify-content: left;
           position: relative;
         }
@@ -78,6 +77,7 @@ class UploadImageButton extends HTMLElement {
           background-color: hsl(100, 100%, 100%);
           cursor: pointer;
           height: 135px;
+          position: relative;
           width: 135px;
         }
 
@@ -86,18 +86,22 @@ class UploadImageButton extends HTMLElement {
           z-index: 2001;
         }
 
+        .upload-image img {
+          background-color: hsl(0, 0%, 0%);
+        }
+
         .upload-image-overlay {
+          align-items: center;
           background-color: hsla(0, 0%, 0%, 0.5);
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
           height: 100%;
           display: flex;
           justify-content: center;
-          align-items: center;
+          left: 0;
           opacity: 0;
+          position: absolute;
+          top: 0;
           transition: opacity 0.3s ease;
+          width: 100%;
           z-index: 2000;
         }
 
@@ -106,19 +110,19 @@ class UploadImageButton extends HTMLElement {
         }
 
         .delete-button {
-          position: absolute;
-          top: 0.2rem;
-          right: 0.2rem;
           background-color: hsl(0, 100%, 50%);
-          color: white;
           border: none;
           border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          font-size: 12px;
+          color: white;
           cursor: pointer;
+          font-size: 12px;
+          height: 20px;
           opacity: 0;
+          position: absolute;
+          right: 0.2rem;
+          top: 0.2rem;
           transition: opacity 0.3s ease;
+          width: 20px;
           z-index: 2001;
         }
 

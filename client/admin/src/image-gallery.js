@@ -196,6 +196,7 @@ class ImageGallery extends HTMLElement {
           }
 
           .image-gallery .image img {
+            background-color: hsl(0, 0%, 0%);
             height: 100%;
             width: 100%;
           }

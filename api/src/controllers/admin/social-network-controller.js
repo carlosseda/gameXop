@@ -4,6 +4,7 @@ const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
   SocialNetwork.create(req.body).then(data => {
+    req.imageService.resizeImages('social_networks', data.id, req.body.images)
     res.status(200).send(data)
   }).catch(err => {
     res.status(500).send({
@@ -28,7 +29,7 @@ exports.findAll = (req, res) => {
 
   SocialNetwork.findAndCountAll({
     where: condition,
-    attributes: ['id', 'customerId', 'fingerprintId'],
+    attributes: ['id', 'name', 'baseUrl', 'createdAt', 'updatedAt'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -51,8 +52,11 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  SocialNetwork.findByPk(id).then(data => {
+  SocialNetwork.findByPk(id, {
+    attributes: ['id', 'name', 'baseUrl', 'createdAt', 'updatedAt']
+  }).then(async data => {
     if (data) {
+      data.dataValues.images = await req.imageService.getAdminImages('social_networks', id)
       res.status(200).send(data)
     } else {
       res.status(404).send({
@@ -71,8 +75,13 @@ exports.update = (req, res) => {
 
   SocialNetwork.update(req.body, {
     where: { id }
-  }).then(([numberRowsAffected]) => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      if (req.body.images?.length > 0) {
+        await req.imageService.deleteImages('social_networks', id)
+        await req.imageService.resizeImages('social_networks', id, req.body.images)
+      }
+
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })

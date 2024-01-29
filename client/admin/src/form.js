@@ -159,7 +159,7 @@ class Form extends HTMLElement {
           .tab-panel.active{
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1%;
             padding: 1em 0;
             width: 100%;
           }
@@ -174,7 +174,7 @@ class Form extends HTMLElement {
           }
 
           .form-element.half-width {
-            flex: 0 0 49%;
+            flex: 0 0 49.5%;
           }
 
           .form-element.one-third-width {
@@ -539,7 +539,7 @@ class Form extends HTMLElement {
           case 'image': {
             const input = document.createElement('upload-image-button-component')
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
-            languageAlias ? input.setAttribute('name', `locales.${languageAlias}.${formElement.name}`) : input.setAttribute('name', formElement.name)
+            input.setAttribute('name', formElement.name)
             languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
             input.setAttribute('quantity', formElement.quantity)
 

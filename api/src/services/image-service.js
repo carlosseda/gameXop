@@ -228,14 +228,17 @@ module.exports = class ImageService {
   }
 
   parseImages = async (images) => {
-    const parsedImages = images.reduce((obj, item) => {
-      const key = item.name
-      const { name, ...rest } = item.dataValues
-      obj[key] = rest
-
-      return obj
-    }, {})
-
-    return parsedImages
+    if (Array.isArray(images)) {
+      return images.reduce((obj, item) => {
+        const key = item.name
+        const { name, ...rest } = item.dataValues
+        obj[key] = rest
+        return obj
+      }, {})
+    } else {
+      const key = images.name
+      const { name, ...rest } = images.dataValues
+      return { [key]: rest }
+    }
   }
 }

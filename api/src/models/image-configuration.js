@@ -39,6 +39,16 @@ module.exports = function (sequelize, DataTypes) {
     heightPx: {
       type: DataTypes.INTEGER
     },
+    thumbnail: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    thumbnailWidthPx: {
+      type: DataTypes.INTEGER
+    },
+    thumbnailHeightPx: {
+      type: DataTypes.INTEGER
+    },
     createdAt: {
       type: DataTypes.DATE,
       get () {

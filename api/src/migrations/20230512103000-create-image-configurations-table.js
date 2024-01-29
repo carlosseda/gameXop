@@ -28,6 +28,16 @@ module.exports = {
       heightPx: {
         type: Sequelize.INTEGER
       },
+      thumbnail: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      thumbnailWidthPx: {
+        type: Sequelize.INTEGER
+      },
+      thumbnailHeightPx: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false

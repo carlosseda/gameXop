@@ -58,7 +58,7 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   SocialNetwork.associate = function (models) {
-
+    SocialNetwork.hasOne(models.Image, { as: 'images', foreignKey: 'entityId', scope: { entity: 'social_networks' } })
   }
 
   return SocialNetwork

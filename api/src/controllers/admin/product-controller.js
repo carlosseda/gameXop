@@ -3,7 +3,10 @@ const Product = db.Product
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  Product.create(req.body).then(data => {
+  Product.create(req.body).then(async data => {
+    await req.localeService.create('products', data.id, req.body.locales)
+    await req.imageService.resizeImages('products', data.id, req.body.images)
+
     res.status(200).send(data)
   }).catch(err => {
     res.status(500).send({
@@ -28,7 +31,7 @@ exports.findAll = (req, res) => {
 
   Product.findAndCountAll({
     where: condition,
-    attributes: ['id', 'customerId', 'fingerprintId'],
+    attributes: ['id', 'name', 'createdAt', 'updatedAt'],
     limit,
     offset,
     order: [['createdAt', 'DESC']]
@@ -51,8 +54,19 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id
 
-  Product.findByPk(id).then(data => {
+  Product.findByPk(id, {
+    include: [
+      {
+        attributes: ['languageAlias', 'key', 'value'],
+        model: db.Locale,
+        as: 'locales',
+        required: false
+      }
+    ]
+  }).then(async data => {
     if (data) {
+      data.dataValues.images = await req.imageService.getAdminImages('products', id)
+
       res.status(200).send(data)
     } else {
       res.status(404).send({
@@ -71,8 +85,12 @@ exports.update = (req, res) => {
 
   Product.update(req.body, {
     where: { id }
-  }).then(([numberRowsAffected]) => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      await req.localeService.update('products', id, req.body.locales)
+      await req.imageService.deleteImages('products', id)
+      await req.imageService.resizeImages('products', id, req.body.images)
+
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -93,8 +111,10 @@ exports.delete = (req, res) => {
 
   Product.destroy({
     where: { id }
-  }).then(numberRowsAffected => {
+  }).then(async numberRowsAffected => {
     if (numberRowsAffected === 1) {
+      await req.localeService.delete('products', id)
+
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
       })

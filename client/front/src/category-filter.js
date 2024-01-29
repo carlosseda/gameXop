@@ -15,8 +15,6 @@ class CategoryFilter extends HTMLElement {
 
     if (response.ok) {
       this.categories = await response.json()
-
-      console.log(this.categories)
     } else {
       console.log(response)
     }

@@ -1,0 +1,64 @@
+<crud-component>
+  <!-- <table-filter 
+    slot="filter"
+    url="/api/admin/users">
+  </table-filter> -->
+
+  <table-component 
+    slot="table"
+    endpoint="/api/admin/products"
+    structure="{
+      'headers': [
+        {'label': 'Nombre', 'field': 'name'},
+        {'label': 'Fecha de creación', 'field': 'createdAt'},
+        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+      ],
+      'recordButtons': ['edit', 'remove'],
+      'tableButtons': ['filterButton']
+    }"
+  >
+  </table-component>
+
+  <form-component 
+    slot="form"
+    endpoint="/api/admin/products"
+    structure="{
+      'tabs': [
+        {'name': 'general', 'label': 'General'},
+        {'name': 'images', 'label': 'Imágenes'}
+      ],
+      'inputs': {
+        'general': {
+          'noLocale': [
+            {'name': 'id', 'element':'input', 'type': 'hidden'},
+            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'},
+            {'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
+            {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'half-width', 'options': 
+            [
+              {'label': 'Si', 'value': 'true'},
+              {'label': 'No', 'value': 'false'}
+            ]
+            },
+            {'name': 'featured', 'element':'select', 'label': 'Destacado', 'width': 'half-width', 'options': 
+              [
+                {'label': 'Si', 'value': 'true'},
+                {'label': 'No', 'value': 'false'}
+              ]
+            }
+          ],
+          'locale': [
+            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'},
+            {'name': 'description', 'element':'textarea', 'label': 'Descripción', 'width': 'full-width'}
+          ]
+        },
+        'images': {
+          'locale': [
+            {'name': 'home-product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de la página de inicio', 'width': 'one-third-width', 'quantity': 'single'},
+            {'name': 'product-featured', 'element':'input', 'type': 'image', 'label': 'Imagen destacada', 'width': 'one-third-width', 'quantity': 'single'},
+            {'name': 'product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de producto', 'width': 'one-third-width', 'quantity': 'multiple'}
+          ]
+        }
+      }
+    }">
+  </form-component>
+</crud-component>

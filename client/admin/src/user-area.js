@@ -2,7 +2,7 @@ class UserArea extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.data = []
+    this.user = []
   }
 
   connectedCallback () {
@@ -14,7 +14,7 @@ class UserArea extends HTMLElement {
 
     try {
       const response = await fetch(url)
-      this.data = await response.json()
+      this.user = await response.json()
     } catch (error) {
       console.log(error)
     }
@@ -72,11 +72,11 @@ class UserArea extends HTMLElement {
         </div>
       `
 
-    if (this.data.images.avatar.filename) {
+    if (this.user.images.avatar?.filename) {
       const image = document.createElement('img')
-      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.data.images.avatar.filename}`
-      image.alt = this.data.images.avatar.alt
-      image.title = this.data.images.avatar.title
+      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.filename}`
+      image.alt = this.user.images.avatar.alt
+      image.title = this.user.images.avatar.title
       this.shadow.querySelector('.user-avatar').innerHTML = ''
       this.shadow.querySelector('.user-avatar').appendChild(image)
     }

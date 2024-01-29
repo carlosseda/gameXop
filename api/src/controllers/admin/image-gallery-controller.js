@@ -1,8 +1,5 @@
 exports.create = async (req, res) => {
   try {
-    console.log('hola')
-
-    console.log(req.files)
     const result = await req.imageService.uploadImage(req.files)
 
     res.status(200).send(result)

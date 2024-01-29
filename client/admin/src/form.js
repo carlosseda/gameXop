@@ -54,9 +54,12 @@ class Form extends HTMLElement {
 
       try {
         const response = await fetch(endpoint)
-        const data = await response.json()
-        this.languages = data
-        window.sessionStorage.setItem('languages', JSON.stringify(data))
+
+        if (response.ok) {
+          const data = await response.json()
+          this.languages = data
+          window.sessionStorage.setItem('languages', JSON.stringify(data))
+        }
       } catch (error) {
         console.log(error)
       }
@@ -110,6 +113,7 @@ class Form extends HTMLElement {
           
           .tabs-container-buttons{
             display: flex;
+            gap: 0.5rem;
             padding: 0 0.5em;
           }
 

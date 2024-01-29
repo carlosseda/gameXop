@@ -147,7 +147,8 @@ exports.userArea = (req, res) => {
         where: {
           languageAlias: req.userLanguage,
           mediaQuery: 'lg'
-        }
+        },
+        required: false
       }
     ]
   }).then(async data => {

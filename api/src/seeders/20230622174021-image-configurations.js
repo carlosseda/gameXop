@@ -46,7 +46,7 @@ module.exports = {
       },
       {
         id: 5,
-        entity: 'user',
+        entity: 'users',
         name: 'avatar',
         mediaQuery: 'xs',
         widthPx: 50,
@@ -56,7 +56,7 @@ module.exports = {
       },
       {
         id: 6,
-        entity: 'user',
+        entity: 'users',
         name: 'avatar',
         mediaQuery: 'sm',
         widthPx: 50,
@@ -66,7 +66,7 @@ module.exports = {
       },
       {
         id: 7,
-        entity: 'user',
+        entity: 'users',
         name: 'avatar',
         mediaQuery: 'md',
         widthPx: 135,
@@ -76,7 +76,7 @@ module.exports = {
       },
       {
         id: 8,
-        entity: 'user',
+        entity: 'users',
         name: 'avatar',
         mediaQuery: 'lg',
         widthPx: 135,

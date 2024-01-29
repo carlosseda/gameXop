@@ -15,7 +15,6 @@ class UserArea extends HTMLElement {
     try {
       const response = await fetch(url)
       this.data = await response.json()
-      console.log(this.data)
     } catch (error) {
       console.log(error)
     }
@@ -43,10 +42,21 @@ class UserArea extends HTMLElement {
           }
 
           .user-avatar {
+            align-items: center;
+            background-color: hsl(272 40% 35%);
             border-radius: 50%;
-            height: 3rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            height: 2.7rem;
             overflow: hidden;
-            width: 3rem;
+            width: 2.7rem;
+          }
+
+          .user-avatar svg {
+            fill: hsl(0, 0%, 100%);
+            height: 30px;
+            width: 30px;
           }
 
           .user-avatar img {
@@ -57,10 +67,19 @@ class UserArea extends HTMLElement {
 
         <div class="user-area">
           <div class="user-avatar">
-            <img src="${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.data.images.avatar.filename}" alt="${this.data.images.avatar.alt}" title="${this.data.images.avatar.title}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
           </div>
         </div>
       `
+
+    if (this.data.images.avatar.filename) {
+      const image = document.createElement('img')
+      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.data.images.avatar.filename}`
+      image.alt = this.data.images.avatar.alt
+      image.title = this.data.images.avatar.title
+      this.shadow.querySelector('.user-avatar').innerHTML = ''
+      this.shadow.querySelector('.user-avatar').appendChild(image)
+    }
   }
 }
 

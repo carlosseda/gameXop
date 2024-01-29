@@ -11,7 +11,8 @@ exports.findAll = (req, res) => {
         as: 'locales',
         where: {
           languageAlias: req.userLanguage
-        }
+        },
+        required: false
       }
     ]
   })

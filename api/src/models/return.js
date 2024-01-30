@@ -7,25 +7,13 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     saleId: {
-      type: DataTypes.INTEGER,
-      refence: {
-        model: 'Sale',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     customerId: {
-      type: DataTypes.INTEGER,
-      refence: {
-        model: 'Customer',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     paymentMethodId: {
-      type: DataTypes.INTEGER,
-      refence: {
-        model: 'PaymentMethod',
-        key: 'id'
-      }
+      type: DataTypes.INTEGER
     },
     reference: {
       type: DataTypes.STRING,

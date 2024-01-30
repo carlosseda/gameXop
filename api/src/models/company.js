@@ -25,6 +25,9 @@ module.exports = function (sequelize, DataTypes) {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre Fiscal".'
         },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Nombre Fiscal".'
+        },
         is: {
           args: /^[a-z0-9\sáéíóúüñÁÉÍÓÚÜÑ]+$/i,
           msg: 'Por favor, rellena el campo "Nombre Fiscal" con un nombre válido, sin caracteres especiales.'
@@ -36,6 +39,9 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       validate: {
         notNull: {
+          msg: 'Por favor, rellena el campo "Nombre Comercial".'
+        },
+        notEmpty: {
           msg: 'Por favor, rellena el campo "Nombre Comercial".'
         },
         is: {
@@ -51,6 +57,9 @@ module.exports = function (sequelize, DataTypes) {
         notNull: {
           msg: 'Por favor, rellena el campo "NIF".'
         },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "NIF".'
+        },
         isAlphanumeric: {
           msg: 'Por favor, rellena el campo "NIF" con un NIF válido, sin caracteres especiales.'
         }
@@ -62,6 +71,9 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Dirección Comercial".'
+        },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Dirección Comercial".'
         }
       }
     },
@@ -71,6 +83,9 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Dirección Fiscal".'
+        },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Dirección Fiscal".'
         }
       }
     },
@@ -79,6 +94,9 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       validate: {
         notNull: {
+          msg: 'Por favor, rellena el campo "Código Postal".'
+        },
+        notEmpty: {
           msg: 'Por favor, rellena el campo "Código Postal".'
         },
         isNumeric: {
@@ -92,6 +110,9 @@ module.exports = function (sequelize, DataTypes) {
       unique: true,
       validate: {
         notNull: {
+          msg: 'Por favor, rellena el campo "Email".'
+        },
+        notEmpty: {
           msg: 'Por favor, rellena el campo "Email".'
         },
         isEmail: {
@@ -116,6 +137,9 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       validate: {
         notNull: {
+          msg: 'Por favor, rellena el campo "Sitio web".'
+        },
+        notEmpty: {
           msg: 'Por favor, rellena el campo "Sitio web".'
         }
       }

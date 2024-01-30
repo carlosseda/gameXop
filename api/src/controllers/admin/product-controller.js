@@ -111,7 +111,7 @@ exports.delete = (req, res) => {
 
   Product.destroy({
     where: { id }
-  }).then(async numberRowsAffected => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       await req.localeService.delete('products', id)
 

@@ -12,6 +12,9 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre".'
+        },
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Nombre".'
         }
       }
     },

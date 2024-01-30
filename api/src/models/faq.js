@@ -10,6 +10,9 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
+        notEmpty: {
+          msg: 'Por favor, rellena el campo "Nombre".'
+        },
         notNull: {
           msg: 'Por favor, rellena el campo "Nombre".'
         }

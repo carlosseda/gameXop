@@ -106,7 +106,7 @@ exports.delete = (req, res) => {
 
   Faq.destroy({
     where: { id }
-  }).then(async numberRowsAffected => {
+  }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       await req.localeService.delete('faqs', id)
 

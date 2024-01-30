@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Locale = db.Locale
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Locale = sequelizeDb.Locale
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Locale.create(req.body).then(data => {

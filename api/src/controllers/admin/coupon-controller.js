@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Coupon = db.Coupon
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Coupon = sequelizeDb.Coupon
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Coupon.create(req.body).then(data => {

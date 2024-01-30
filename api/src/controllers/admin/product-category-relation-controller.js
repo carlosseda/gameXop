@@ -1,6 +1,6 @@
-const db = require('../../models')
-const ProductCategoryRelation = db.ProductCategoryRelation
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const ProductCategoryRelation = sequelizeDb.ProductCategoryRelation
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   ProductCategoryRelation.create(req.body).then(data => {

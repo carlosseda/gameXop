@@ -6,7 +6,7 @@ const Sequelize = require('sequelize')
 const process = require('process')
 const path = require('path')
 const basename = path.basename(__filename)
-const db = {}
+const sequelizeDb = {}
 
 const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
 
@@ -34,16 +34,16 @@ fs.readdirSync(__dirname)
       sequelize,
       Sequelize.DataTypes
     )
-    db[model.name] = model
+    sequelizeDb[model.name] = model
   })
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db)
+Object.keys(sequelizeDb).forEach(modelName => {
+  if (sequelizeDb[modelName].associate) {
+    sequelizeDb[modelName].associate(sequelizeDb)
   }
 })
 
-db.sequelize = sequelize
-db.Sequelize = Sequelize
+sequelizeDb.sequelize = sequelize
+sequelizeDb.Sequelize = Sequelize
 
-module.exports = db
+module.exports = sequelizeDb

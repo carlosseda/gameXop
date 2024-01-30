@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Fingerprint = db.Fingerprint
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Fingerprint = sequelizeDb.Fingerprint
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Fingerprint.create(req.body).then(data => {

@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const OAuth2 = google.auth.OAuth2
 const process = require('process')
-const db = require('../models')
-const SentEmail = db.SentEmail
+const sequelizeDb = require('../models/sequelize')
+const SentEmail = sequelizeDb.SentEmail
 
 module.exports = class EmailService {
   constructor (type) {

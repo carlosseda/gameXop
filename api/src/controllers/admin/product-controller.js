@@ -1,15 +1,21 @@
-const db = require('../../models')
-const Product = db.Product
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const mongooseDb = require('../../models/mongoose')
+const ProductSpecification = mongooseDb.ProductSpecification
+const Product = sequelizeDb.Product
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Product.create(req.body).then(async data => {
-    console.log('data', req.body)
-    await req.priceManagementService.createPrice(data.id, req.body.price)
-    await req.localeService.create('products', data.id, req.body.locales)
-    await req.imageService.resizeImages('products', data.id, req.body.images)
-
-    res.status(200).send(data)
+    try {
+      const productSpecification = new ProductSpecification(req.body.specifications)
+      const response = await productSpecification.save()
+      await req.priceManagementService.createPrice(data.id, req.body.price)
+      await req.localeService.create('products', data.id, req.body.locales)
+      await req.imageService.resizeImages('products', data.id, req.body.images)
+      res.status(200).send(data)
+    } catch (err) {
+      console.log(err)
+    }
   }).catch(err => {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
@@ -60,7 +66,7 @@ exports.findOne = (req, res) => {
     include: [
       {
         attributes: ['languageAlias', 'key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         required: false
       }
@@ -89,6 +95,7 @@ exports.update = (req, res) => {
     where: { id }
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      await req.priceManagementService.createPrice(id, req.body.price)
       await req.localeService.update('products', id, req.body.locales)
       await req.imageService.deleteImages('products', id)
       await req.imageService.resizeImages('products', id, req.body.images)

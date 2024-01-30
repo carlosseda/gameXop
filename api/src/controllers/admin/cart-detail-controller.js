@@ -1,6 +1,6 @@
-const db = require('../../models')
-const CartDetail = db.CartDetail
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const CartDetail = sequelizeDb.CartDetail
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   CartDetail.create(req.body).then(data => {

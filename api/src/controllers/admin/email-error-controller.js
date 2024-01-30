@@ -1,6 +1,6 @@
-const db = require('../../models')
-const EmailError = db.EmailError
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const EmailError = sequelizeDb.EmailError
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   EmailError.create(req.body).then(data => {

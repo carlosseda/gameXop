@@ -985,7 +985,7 @@ class Form extends HTMLElement {
       if (Array.isArray(value)) {
         if (key === 'locales') {
           value.forEach(locale => {
-            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value != 'null' ? locale.value : ''
+            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value !== 'null' ? locale.value : ''
           })
         } else {
           document.dispatchEvent(new CustomEvent('showDependants', {

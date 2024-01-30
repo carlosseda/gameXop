@@ -1,6 +1,6 @@
-const db = require('../../models')
-const AdminTracking = db.AdminTracking
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const AdminTracking = sequelizeDb.AdminTracking
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   AdminTracking.create(req.body).then(data => {

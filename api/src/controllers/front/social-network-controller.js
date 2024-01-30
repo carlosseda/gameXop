@@ -1,5 +1,5 @@
-const db = require('../../models')
-const SocialNetwork = db.SocialNetwork
+const sequelizeDb = require('../../models/sequelize')
+const SocialNetwork = sequelizeDb.SocialNetwork
 
 exports.findAll = (req, res) => {
   SocialNetwork.findAll({
@@ -7,7 +7,7 @@ exports.findAll = (req, res) => {
     include: [
       {
         attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
-        model: db.Image,
+        model: sequelizeDb.Image,
         as: 'images',
         where: {
           languageAlias: req.userLanguage,

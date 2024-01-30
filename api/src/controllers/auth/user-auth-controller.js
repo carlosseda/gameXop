@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
-const db = require('../../models')
-const User = db.User
+const sequelizeDb = require('../../models/sequelize')
+const User = sequelizeDb.User
 
 exports.signin = (req, res) => {
   if (!req.body.email || !req.body.password) {

@@ -1,4 +1,4 @@
-module.exports = (app, upload) => {
+module.exports = (app) => {
   const router = require('express').Router()
   const controller = require('../controllers/front/page-tracking-controller.js')
 

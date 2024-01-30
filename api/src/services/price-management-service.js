@@ -1,29 +1,32 @@
-const db = require('../models')
-const Op = db.Sequelize.Op
-const Price = db.Price
-const PriceDiscount = db.PriceDiscount
+const sequelizeDb = require('../models/sequelize')
+const Price = sequelizeDb.Price
+const PriceDiscount = sequelizeDb.PriceDiscount
 
 module.exports = class PriceManagementService {
   createPrice = async (productId, price) => {
-    console.log('price', price)
-    await Price.update({
-      current: false
-    }, {
-      where: {
-        productId,
-        basePrice: {
-          [Op.not]: price.basePrice
-        },
-        current: true
-      }
-    })
+    try {
+      const [existingPrice, created] = await Price.findOrCreate({
+        attributes: ['id', 'basePrice', 'current'],
+        where: { productId, current: true },
+        defaults: { basePrice: price.basePrice, current: true }
+      })
 
-    return await Price.create({
-      productId,
-      current: true,
-      basePrice: price.basePrice,
-      taxId: price.taxId
-    })
+      if (existingPrice) {
+        if (existingPrice.basePrice !== price.basePrice) {
+          await existingPrice.update({ current: false })
+
+          return await Price.create({
+            productId,
+            current: true,
+            basePrice: price.basePrice
+          })
+        }
+      } else {
+        return created
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   createPriceDiscount = async (priceId, priceDiscount) => {

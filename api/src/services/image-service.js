@@ -1,9 +1,9 @@
 const fs = require('fs/promises')
 const path = require('path')
 const sharp = require('sharp')
-const db = require('../models')
-const ImageConfiguration = db.ImageConfiguration
-const Image = db.Image
+const sequelizeDb = require('../models/sequelize')
+const ImageConfiguration = sequelizeDb.ImageConfiguration
+const Image = sequelizeDb.Image
 
 module.exports = class ImageService {
   uploadImage = async images => {

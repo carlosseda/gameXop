@@ -1,6 +1,6 @@
-const db = require('../../models')
-const MenuItem = db.MenuItem
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const MenuItem = sequelizeDb.MenuItem
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   MenuItem.create(req.body).then(data => {

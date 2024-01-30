@@ -2,8 +2,8 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const process = require('process')
-const db = require('../../models')
-const User = db.User
+const sequelizeDb = require('../../models/sequelize')
+const User = sequelizeDb.User
 
 exports.signin = (req, res) => {
   User.findOne({

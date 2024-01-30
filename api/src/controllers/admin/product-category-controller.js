@@ -1,6 +1,6 @@
-const db = require('../../models')
-const ProductCategory = db.ProductCategory
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const ProductCategory = sequelizeDb.ProductCategory
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   ProductCategory.create(req.body).then(async data => {
@@ -58,7 +58,7 @@ exports.findOne = (req, res) => {
     include: [
       {
         attributes: ['languageAlias', 'key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         required: false
       }

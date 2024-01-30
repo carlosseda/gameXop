@@ -1,6 +1,6 @@
-const db = require('../../models')
-const User = db.User
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const User = sequelizeDb.User
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   User.create(req.body).then(data => {
@@ -142,7 +142,7 @@ exports.userArea = (req, res) => {
     include: [
       {
         attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
-        model: db.Image,
+        model: sequelizeDb.Image,
         as: 'images',
         where: {
           languageAlias: req.userLanguage,

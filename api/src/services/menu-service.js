@@ -1,7 +1,7 @@
-const db = require('../models')
-const Menu = db.Menu
-const MenuItem = db.MenuItem
-const LocaleSeo = db.LocaleSeo
+const sequelizeDb = require('../models/sequelize')
+const Menu = sequelizeDb.Menu
+const MenuItem = sequelizeDb.MenuItem
+const LocaleSeo = sequelizeDb.LocaleSeo
 const naming = require('../utils/naming')
 
 module.exports = class MenuService {

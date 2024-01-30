@@ -1,5 +1,5 @@
-const db = require('../../models')
-const Product = db.Product
+const sequelizeDb = require('../../models/sequelize')
+const Product = sequelizeDb.Product
 
 exports.findAll = (req, res) => {
   Product.findAll({
@@ -10,7 +10,7 @@ exports.findAll = (req, res) => {
     include: [
       {
         attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
-        model: db.Image,
+        model: sequelizeDb.Image,
         as: 'images',
         where: {
           languageAlias: req.userLanguage,
@@ -21,7 +21,7 @@ exports.findAll = (req, res) => {
       },
       {
         attributes: ['key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         where: {
           key: 'title',

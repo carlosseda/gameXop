@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Faq = db.Faq
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Faq = sequelizeDb.Faq
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Faq.create(req.body).then(async data => {
@@ -57,7 +57,7 @@ exports.findOne = (req, res) => {
     include: [
       {
         attributes: ['languageAlias', 'key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         required: false
       }

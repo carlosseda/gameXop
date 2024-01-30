@@ -1,6 +1,6 @@
-const db = require('../../models')
-const DialCode = db.DialCode
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const DialCode = sequelizeDb.DialCode
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   DialCode.create(req.body).then(data => {

@@ -1,4 +1,4 @@
-module.exports = (app, upload) => {
+module.exports = (app) => {
   const router = require('express').Router()
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/coupon-controller.js')

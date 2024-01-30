@@ -1,6 +1,6 @@
-const db = require('../../models')
-const SocialNetwork = db.SocialNetwork
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const SocialNetwork = sequelizeDb.SocialNetwork
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   SocialNetwork.create(req.body).then(data => {

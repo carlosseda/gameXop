@@ -1,8 +1,8 @@
-const db = require('../models')
-const Op = db.Sequelize.Op
-const ApiTracking = db.ApiTracking
-const PageTracking = db.PageTracking
-const CustomerTracking = db.CustomerTracking
+const sequelizeDb = require('../models/sequelize')
+const Op = sequelizeDb.Sequelize.Op
+const ApiTracking = sequelizeDb.ApiTracking
+const PageTracking = sequelizeDb.PageTracking
+const CustomerTracking = sequelizeDb.CustomerTracking
 
 module.exports = class TrackingService {
   async createApiLog (log) {

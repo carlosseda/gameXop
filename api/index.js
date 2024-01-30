@@ -11,7 +11,7 @@ const userAgentMiddleware = require('./src/middlewares/user-agent')
 const exposeServiceMiddleware = require('./src/middlewares/expose-services')
 // const apiTrackingMiddleware = require('./src/middlewares/api-tracking.js')
 
-const redisClient = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379')
+const redisClient = new IORedis(process.env.REDIS_URL)
 
 app.use(session({
   store: new RedisStore({ client: redisClient }),

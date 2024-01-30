@@ -1,5 +1,5 @@
-const db = require('../models')
-const Locale = db.Locale
+const sequelizeDb = require('../models/sequelize')
+const Locale = sequelizeDb.Locale
 
 module.exports = class LocaleService {
   create = async (entity, entityId, locale) => {

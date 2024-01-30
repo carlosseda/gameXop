@@ -1,6 +1,6 @@
-const db = require('../../models')
-const ReturnError = db.ReturnError
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const ReturnError = sequelizeDb.ReturnError
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   ReturnError.create(req.body).then(data => {

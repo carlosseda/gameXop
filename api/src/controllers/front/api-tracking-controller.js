@@ -1,6 +1,6 @@
-const db = require('../../models')
-const ApiTracking = db.ApiTracking
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const ApiTracking = sequelizeDb.ApiTracking
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   ApiTracking.create(req.body).then(data => {

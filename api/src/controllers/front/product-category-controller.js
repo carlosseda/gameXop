@@ -1,5 +1,5 @@
-const db = require('../../models')
-const ProductCategory = db.ProductCategory
+const sequelizeDb = require('../../models/sequelize')
+const ProductCategory = sequelizeDb.ProductCategory
 
 exports.findAll = (req, res) => {
   ProductCategory.findAll({
@@ -10,7 +10,7 @@ exports.findAll = (req, res) => {
     include: [
       {
         attributes: ['key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         where: {
           languageAlias: req.userLanguage

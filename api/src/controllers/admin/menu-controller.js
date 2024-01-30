@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Menu = db.Menu
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Menu = sequelizeDb.Menu
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = async (req, res) => {
   try {
@@ -56,14 +56,14 @@ exports.findOne = (req, res) => {
   Menu.findByPk(id, {
     attributes: ['id', 'name'],
     include: [{
-      model: db.MenuItem,
+      model: sequelizeDb.MenuItem,
       as: 'menuItems',
       order: [
         ['parentId', 'ASC'],
         ['order', 'ASC']
       ],
       include: [{
-        model: db.LocaleSeo,
+        model: sequelizeDb.LocaleSeo,
         as: 'localeSeo'
       }]
     }]
@@ -132,14 +132,14 @@ exports.getMenuItems = (req, res) => {
   Menu.findOne({
     where: { name: menuName },
     include: [{
-      model: db.MenuItem,
+      model: sequelizeDb.MenuItem,
       as: 'menuItems',
       order: [
         ['parentId', 'ASC'],
         ['order', 'ASC']
       ],
       include: [{
-        model: db.LocaleSeo,
+        model: sequelizeDb.LocaleSeo,
         as: 'localeSeo'
       }]
     }]

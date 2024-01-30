@@ -1,5 +1,5 @@
-const db = require('../../models')
-const Faq = db.Faq
+const sequelizeDb = require('../../models/sequelize')
+const Faq = sequelizeDb.Faq
 
 exports.findAll = (req, res) => {
   Faq.findAll({
@@ -7,7 +7,7 @@ exports.findAll = (req, res) => {
     include: [
       {
         attributes: ['key', 'value'],
-        model: db.Locale,
+        model: sequelizeDb.Locale,
         as: 'locales',
         where: {
           languageAlias: req.userLanguage

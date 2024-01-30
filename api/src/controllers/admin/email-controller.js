@@ -1,6 +1,6 @@
-const db = require('../../models')
-const Email = db.Email
-const Op = db.Sequelize.Op
+const sequelizeDb = require('../../models/sequelize')
+const Email = sequelizeDb.Email
+const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Email.create(req.body).then(data => {

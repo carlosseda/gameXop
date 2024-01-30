@@ -4,6 +4,7 @@ const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
   Product.create(req.body).then(async data => {
+    console.log('data', req.body)
     await req.priceManagementService.createPrice(data.id, req.body.price)
     await req.localeService.create('products', data.id, req.body.locales)
     await req.imageService.resizeImages('products', data.id, req.body.images)

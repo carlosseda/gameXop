@@ -729,6 +729,14 @@ class Form extends HTMLElement {
           }
 
           formDataJson[prefix][locales][field] = value ?? null
+        } else if (key.includes('.')) {
+          const [prefix, field] = key.split('.')
+
+          if (!(prefix in formDataJson)) {
+            formDataJson[prefix] = {}
+          }
+
+          formDataJson[prefix][field] = value ?? null
         } else {
           formDataJson[key] = value ?? null
         }
@@ -741,10 +749,6 @@ class Form extends HTMLElement {
       const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
       delete formDataJson.id
-
-      if (this.images) {
-        formDataJson.images = this.images
-      }
 
       try {
         const response = await fetch(endpoint, {

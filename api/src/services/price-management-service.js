@@ -1,24 +1,29 @@
 const db = require('../models')
+const Op = db.Sequelize.Op
 const Price = db.Price
 const PriceDiscount = db.PriceDiscount
 
 module.exports = class PriceManagementService {
   createPrice = async (productId, price) => {
+    console.log('price', price)
     await Price.update({
       current: false
     }, {
-      where: { productId }
+      where: {
+        productId,
+        basePrice: {
+          [Op.not]: price.basePrice
+        },
+        current: true
+      }
     })
 
     return await Price.create({
-      ...price,
       productId,
-      current: true
+      current: true,
+      basePrice: price.basePrice,
+      taxId: price.taxId
     })
-  }
-
-  updatePrice = async (productId, price) => {
-
   }
 
   createPriceDiscount = async (priceId, priceDiscount) => {
@@ -33,9 +38,5 @@ module.exports = class PriceManagementService {
       priceId,
       current: true
     })
-  }
-
-  updatePriceDiscount = async (priceId, priceDiscount) => {
-
   }
 }

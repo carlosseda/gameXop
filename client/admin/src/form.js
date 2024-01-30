@@ -523,6 +523,7 @@ class Form extends HTMLElement {
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             input.type = formElement.type
             input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.name = formElement.prefix ? `${formElement.prefix}.${input.name}` : input.name
             input.min = formElement.min || ''
             input.max = formElement.max || ''
             input.step = formElement.step || ''
@@ -558,6 +559,7 @@ class Form extends HTMLElement {
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             input.type = formElement.type
             input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.name = formElement.prefix ? `${formElement.prefix}.${input.name}` : input.name
             input.value = formElement.value || ''
             input.placeholder = formElement.placeholder || ''
             input.dataset.validate = formElement.validate || ''

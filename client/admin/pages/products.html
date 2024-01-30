@@ -31,8 +31,10 @@
         'general': {
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'},
+            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'half-width'},
             {'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
+            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'half-width'},
+            {'prefix': 'price', 'name': 'taxId', 'element':'input', 'type': 'number', 'label': 'Tipo de Iva', 'width': 'half-width'},
             {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'half-width', 'options': 
             [
               {'label': 'Si', 'value': 'true'},

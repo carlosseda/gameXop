@@ -37,9 +37,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(6, 2),
       allowNull: false
     },
-    taxPrice: {
-      type: DataTypes.DECIMAL(6, 2)
-    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false

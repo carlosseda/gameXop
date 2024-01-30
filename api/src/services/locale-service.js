@@ -1,7 +1,7 @@
 const db = require('../models')
 const Locale = db.Locale
 
-module.exports = class LocaleServiceService {
+module.exports = class LocaleService {
   create = async (entity, entityId, locale) => {
     for (const language in locale) {
       for (const key in locale[language]) {

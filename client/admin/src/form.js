@@ -430,7 +430,7 @@ class Form extends HTMLElement {
     this.renderCreateForm()
   }
 
-  createFormElements = (form, tabPanel, elements, languageAlias = null) => {
+  createFormElements = async (form, tabPanel, elements, languageAlias = null) => {
     for (const field in elements) {
       const formElement = elements[field]
       const formElementContainer = document.createElement('div')
@@ -468,6 +468,12 @@ class Form extends HTMLElement {
           case 'radio': {
             const inputContainer = document.createElement('div')
             inputContainer.classList.add(`${formElement.type}-container`)
+
+            if (formElement.endpoint) {
+              const response = await fetch(`${import.meta.env.VITE_API_URL}${formElement.endpoint}`)
+              formElement.options = await response.json()
+              console.log(formElement.options)
+            }
 
             formElement.options.forEach(option => {
               const input = document.createElement('input')
@@ -1025,7 +1031,6 @@ class Form extends HTMLElement {
       }
 
       if (typeof value === 'object') {
-        console.log(key)
         if (key === 'images') {
           document.dispatchEvent(new CustomEvent('showThumbnails', {
             detail: {

@@ -2,7 +2,11 @@ module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
       productId: String,
-      developer: String
+      developer: String,
+      genre: String,
+      releaseDate: String,
+      categories: [String],
+      platforms: [String]
     },
     { timestamps: true }
   )

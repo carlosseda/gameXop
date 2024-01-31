@@ -214,7 +214,7 @@ module.exports = class ImageService {
     return images
   }
 
-  getAdminImages = async (entity, entityId) => {
+  getAdminImages = async (data, entity, entityId) => {
     const images = await Image.findAll({
       attributes: [['originalFilename', 'filename'], 'name', 'languageAlias', 'alt', 'title'],
       where: {
@@ -224,7 +224,9 @@ module.exports = class ImageService {
       group: [['originalFilename', 'filename'], 'name', 'languageAlias', 'alt', 'title']
     })
 
-    return images
+    data.dataValues.images = images
+
+    return data
   }
 
   parseImages = async (images) => {

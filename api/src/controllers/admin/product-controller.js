@@ -72,7 +72,7 @@ exports.findOne = (req, res) => {
   }).then(async data => {
     if (data) {
       data = await req.productManagementService.getSpecifications(data, id)
-      data.dataValues.images = await req.imageService.getAdminImages('products', id)
+      data = await req.imageService.getAdminImages(data, 'products', id)
 
       res.status(200).send(data)
     } else {

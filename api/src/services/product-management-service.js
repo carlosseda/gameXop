@@ -12,7 +12,7 @@ module.exports = class ProductManagementService {
     }
   }
 
-  getSpecifications = async (entity, productId) => {
+  getSpecifications = async (data, productId) => {
     try {
       const productSpecification = await ProductSpecification.findOne({ productId }, {
         productId: 0,
@@ -23,12 +23,12 @@ module.exports = class ProductManagementService {
       })
 
       if (!productSpecification) {
-        return entity
+        return data
       }
 
-      entity.dataValues.specifications = productSpecification.toObject()
+      data.dataValues.specifications = productSpecification.toObject()
 
-      return entity
+      return data
     } catch (err) {
       console.log(err)
     }

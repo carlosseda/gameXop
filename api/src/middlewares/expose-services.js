@@ -2,11 +2,13 @@ const TrackingService = require('../services/tracking-service')
 const ImageService = require('../services/image-service')
 const LocaleService = require('../services/locale-service')
 const PriceManagementService = require('../services/price-management-service')
+const ProductManagementService = require('../services/product-management-service')
 
 const trackingService = new TrackingService()
 const imageService = new ImageService()
 const localeService = new LocaleService()
 const priceManagementService = new PriceManagementService()
+const productManagementService = new ProductManagementService()
 
 const trackingServiceMiddleware = (req, res, next) => {
   req.trackingService = trackingService
@@ -28,9 +30,15 @@ const priceManagementServicMiddleware = (req, res, next) => {
   next()
 }
 
+const productManagementServiceMiddleware = (req, res, next) => {
+  req.productManagementService = productManagementService
+  next()
+}
+
 module.exports = {
   trackingServiceMiddleware,
   imageServiceMiddleware,
   localeServiceMiddleware,
-  priceManagementServicMiddleware
+  priceManagementServicMiddleware,
+  productManagementServiceMiddleware
 }

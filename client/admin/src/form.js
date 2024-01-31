@@ -83,6 +83,10 @@ class Form extends HTMLElement {
             justify-content: space-between;
             width: 100%;
           }
+
+          .tabs-container-content .tabs-container-menu{
+            margin-top: 1rem;
+          }
           
           .tabs-container-menu ul{
             height: 2.5em;
@@ -982,22 +986,6 @@ class Form extends HTMLElement {
     this.images = []
 
     Object.entries(element).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (key === 'locales') {
-          value.forEach(locale => {
-            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value !== 'null' ? locale.value : ''
-          })
-        } else {
-          document.dispatchEvent(new CustomEvent('showDependants', {
-            detail: {
-              subtable: key,
-              data: value,
-              parentFormId: element.id
-            }
-          }))
-        }
-      }
-
       if (this.shadow.querySelector(`[name="${key}"]`)) {
         if (typeof value === 'object') {
           value = JSON.stringify(value, null, 2)
@@ -1036,12 +1024,30 @@ class Form extends HTMLElement {
         }
       }
 
-      if (key === 'images') {
-        document.dispatchEvent(new CustomEvent('showThumbnails', {
-          detail: {
-            images: value
-          }
-        }))
+      if (typeof value === 'object') {
+        console.log(key)
+        if (key === 'images') {
+          document.dispatchEvent(new CustomEvent('showThumbnails', {
+            detail: {
+              images: value
+            }
+          }))
+        } else if (key === 'locales') {
+          value.forEach(locale => {
+            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value !== 'null' ? locale.value : ''
+          })
+        } else {
+          Object.entries(value).forEach(([name, fieldValue]) => {
+            this.shadow.querySelector(`[name="${key}.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+          })
+          // document.dispatchEvent(new CustomEvent('showDependants', {
+          //   detail: {
+          //     subtable: key,
+          //     data: value,
+          //     parentFormId: element.id
+          //   }
+          // }))
+        }
       }
     })
   }

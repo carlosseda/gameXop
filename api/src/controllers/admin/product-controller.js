@@ -1,14 +1,11 @@
 const sequelizeDb = require('../../models/sequelize')
-const mongooseDb = require('../../models/mongoose')
-const ProductSpecification = mongooseDb.ProductSpecification
 const Product = sequelizeDb.Product
 const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   Product.create(req.body).then(async data => {
     try {
-      const productSpecification = new ProductSpecification(req.body.specifications)
-      const response = await productSpecification.save()
+      await req.productManagementService.createSpecifications(data.id, req.body.specifications)
       await req.priceManagementService.createPrice(data.id, req.body.price)
       await req.localeService.create('products', data.id, req.body.locales)
       await req.imageService.resizeImages('products', data.id, req.body.images)
@@ -63,6 +60,7 @@ exports.findOne = (req, res) => {
   const id = req.params.id
 
   Product.findByPk(id, {
+    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
     include: [
       {
         attributes: ['languageAlias', 'key', 'value'],
@@ -73,6 +71,7 @@ exports.findOne = (req, res) => {
     ]
   }).then(async data => {
     if (data) {
+      data = await req.productManagementService.getSpecifications(data, id)
       data.dataValues.images = await req.imageService.getAdminImages('products', id)
 
       res.status(200).send(data)

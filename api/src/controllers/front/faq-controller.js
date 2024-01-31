@@ -1,27 +1,25 @@
-const sequelizeDb = require('../../models/sequelize')
-const Faq = sequelizeDb.Faq
+const mongooseDb = require('../../models/mongoose')
+const Faq = mongooseDb.Faq
 
-exports.findAll = (req, res) => {
-  Faq.findAll({
-    attributes: [],
-    include: [
-      {
-        attributes: ['key', 'value'],
-        model: sequelizeDb.Locale,
-        as: 'locales',
-        where: {
-          languageAlias: req.userLanguage
-        },
-        required: false
-      }
-    ]
-  })
-    .then(async result => {
-      result = await req.localeService.parseLocales(result)
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+exports.findAll = async (req, res) => {
+  try {
+    const whereStatement = {}
+    whereStatement.deletedAt = { $exists: false }
+
+    const result = await Faq.find(whereStatement)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
+
+    const response = result.map(doc => ({
+      ...doc,
+      locales: doc.locales[req.userLanguage]
+    }))
+
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }

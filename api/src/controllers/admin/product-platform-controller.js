@@ -1,10 +1,10 @@
 const moment = require('moment')
 const mongooseDb = require('../../models/mongoose')
-const ProductCategory = mongooseDb.ProductCategory
+const ProductPlatform = mongooseDb.ProductPlatform
 
 exports.create = async (req, res) => {
-  const productCategory = new ProductCategory(req.body)
-  productCategory.save().then(async data => {
+  const productPlatform = new ProductPlatform(req.body)
+  productPlatform.save().then(async data => {
     res.status(200).send(data)
   }).catch(err => {
     console.log(err)
@@ -28,14 +28,14 @@ exports.findAll = async (req, res) => {
   }
 
   try {
-    const result = await ProductCategory.find(whereStatement)
+    const result = await ProductPlatform.find(whereStatement)
       .skip(offset)
       .limit(limit)
       .sort({ createdAt: -1 })
       .lean()
       .exec()
 
-    const count = await ProductCategory.countDocuments(whereStatement)
+    const count = await ProductPlatform.countDocuments(whereStatement)
 
     const response = {
       rows: result.map(doc => ({
@@ -64,7 +64,7 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await ProductCategory.findById(id).lean().exec()
+    const data = await ProductPlatform.findById(id).lean().exec()
 
     if (data) {
       data.id = data._id
@@ -89,7 +89,7 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await ProductCategory.findByIdAndUpdate(id, req.body, { new: true })
+    const data = await ProductPlatform.findByIdAndUpdate(id, req.body, { new: true })
 
     if (data) {
       res.status(200).send({
@@ -111,7 +111,7 @@ exports.delete = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await ProductCategory.findByIdAndUpdate(id, { deletedAt: new Date() })
+    const data = await ProductPlatform.findByIdAndUpdate(id, { deletedAt: new Date() })
 
     if (data) {
       res.status(200).send({
@@ -129,9 +129,9 @@ exports.delete = async (req, res) => {
   }
 }
 
-exports.getCategories = async (req, res) => {
+exports.getPlatforms = async (req, res) => {
   try {
-    const result = await ProductCategory.find({}, 'name').lean().exec()
+    const result = await ProductPlatform.find({}, 'name').lean().exec()
 
     const response = result.map(element => ({
       label: element.name,

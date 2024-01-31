@@ -1,0 +1,39 @@
+<crud-component>
+  <!-- <table-filter 
+    slot="filter"
+    url="/api/admin/users">
+  </table-filter> -->
+
+  <table-component 
+    slot="table"
+    endpoint="/api/admin/product-platforms"
+    structure="{
+      'headers': [
+        {'label': 'Nombre', 'field': 'name'},
+        {'label': 'Fecha de creación', 'field': 'createdAt'},
+        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+      ],
+      'recordButtons': ['edit', 'remove'],
+      'tableButtons': ['filterButton']
+    }"
+  >
+  </table-component>
+
+  <form-component 
+    slot="form"
+    endpoint="/api/admin/product-platforms"
+    structure="{
+      'tabs': [
+        {'name': 'general', 'label': 'General'}
+      ],
+      'inputs': {
+        'general': {
+          'noLocale': [
+            {'name': 'id', 'element':'input', 'type': 'hidden'},
+            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
+          ]
+        }
+      }
+    }">
+  </form-component>
+</crud-component>

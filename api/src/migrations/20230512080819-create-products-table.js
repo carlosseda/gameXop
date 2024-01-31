@@ -14,12 +14,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      featured: {
-        type: Sequelize.BOOLEAN
-      },
-      visible: {
-        type: Sequelize.BOOLEAN
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false

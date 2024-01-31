@@ -3,11 +3,11 @@ const Product = sequelizeDb.Product
 const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
+  console.log(req.body)
   Product.create(req.body).then(async data => {
     try {
-      await req.productManagementService.createSpecifications(data.id, req.body.specifications)
+      await req.productManagementService.createSpecifications(data.id, req.body)
       await req.priceManagementService.createPrice(data.id, req.body.price)
-      await req.localeService.create('products', data.id, req.body.locales)
       await req.imageService.resizeImages('products', data.id, req.body.images)
       res.status(200).send(data)
     } catch (err) {
@@ -94,6 +94,8 @@ exports.update = (req, res) => {
     where: { id }
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
+      console.log(req.body.specifications)
+
       await req.priceManagementService.createPrice(id, req.body.price)
       await req.localeService.update('products', id, req.body.locales)
       await req.imageService.deleteImages('products', id)

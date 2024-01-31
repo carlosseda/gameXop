@@ -119,7 +119,6 @@ module.exports = (sequelize, DataTypes) => {
   CartDetail.associate = function (models) {
     CartDetail.belongsTo(models.Cart, { as: 'cart', foreignKey: 'cartId' })
     CartDetail.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' })
-    CartDetail.belongsTo(models.Locale, { as: 'locale', foreignKey: 'localeId' })
     CartDetail.belongsTo(models.Price, { as: 'price', foreignKey: 'priceId' })
     CartDetail.belongsTo(models.PriceDiscount, { as: 'priceDiscount', foreignKey: 'priceDiscountId' })
     CartDetail.belongsTo(models.Tax, { as: 'tax', foreignKey: 'taxId' })

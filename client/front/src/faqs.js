@@ -13,6 +13,7 @@ class Faqs extends HTMLElement {
 
     if (response.ok) {
       this.faqs = await response.json()
+      console.log(this.faqs)
     } else {
       console.log(response)
     }
@@ -56,9 +57,9 @@ class Faqs extends HTMLElement {
       const faqElement = document.createElement('details')
       const faqElementSummary = document.createElement('summary')
       faqElement.name = 'faq'
-      faqElementSummary.textContent = faq.question
+      faqElementSummary.textContent = faq.locales.question
       faqElement.appendChild(faqElementSummary)
-      faqElement.innerHTML += faq.answer
+      faqElement.innerHTML += faq.locales.answer
       faqsContainer.appendChild(faqElement)
     })
   }

@@ -56,7 +56,6 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Faq.associate = function (models) {
-    Faq.hasMany(models.Locale, { as: 'locales', foreignKey: 'entityId', scope: { entity: 'faqs' } })
   }
 
   return Faq

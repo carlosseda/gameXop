@@ -472,7 +472,6 @@ class Form extends HTMLElement {
             if (formElement.endpoint) {
               const response = await fetch(`${import.meta.env.VITE_API_URL}${formElement.endpoint}`)
               formElement.options = await response.json()
-              console.log(formElement.options)
             }
 
             formElement.options.forEach(option => {
@@ -482,6 +481,7 @@ class Form extends HTMLElement {
               input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
               input.type = formElement.type
               input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+              input.name = formElement.prefix ? `${formElement.prefix}.${input.name}` : input.name
               input.value = option.value || ''
               input.checked = option.checked || false
               input.disabled = option.disabled || false
@@ -503,6 +503,7 @@ class Form extends HTMLElement {
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             input.type = formElement.type
             input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.name = formElement.prefix ? `${formElement.prefix}.${input.name}` : input.name
             input.min = formElement.min || ''
             input.max = formElement.max || ''
             input.step = formElement.step || ''
@@ -708,18 +709,6 @@ class Form extends HTMLElement {
 
       const formData = new FormData(form)
 
-      if (this.shadow.querySelectorAll('input[type="checkbox"]').length > 0) {
-        this.shadow.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-          const checkboxValues = []
-
-          this.shadow.querySelectorAll(`input[name="${checkbox.name}"]:checked`).forEach(checkedCheckbox => {
-            checkboxValues.push(checkedCheckbox.value)
-          })
-
-          formData.append(checkbox.name, checkboxValues)
-        })
-      }
-
       if (this.parentFormId) {
         formData.append('parentFormId', this.parentFormId)
       }
@@ -750,6 +739,27 @@ class Form extends HTMLElement {
         } else {
           formDataJson[key] = value ?? null
         }
+      }
+
+      if (this.shadow.querySelectorAll('input[type="checkbox"]').length > 0) {
+        const checkboxesByName = {}
+
+        this.shadow.querySelectorAll('input[type="checkbox"]:checked').forEach(checkedCheckbox => {
+          if (!checkboxesByName[checkedCheckbox.name]) {
+            checkboxesByName[checkedCheckbox.name] = []
+          }
+
+          checkboxesByName[checkedCheckbox.name].push(checkedCheckbox.value)
+        })
+
+        Object.keys(checkboxesByName).forEach(name => {
+          if (name.includes('.')) {
+            const [prefix, field] = name.split('.')
+            formDataJson[prefix][field] = checkboxesByName[name]
+          } else {
+            formDataJson[name] = checkboxesByName[name]
+          }
+        })
       }
 
       if (this.images) {
@@ -1023,7 +1033,7 @@ class Form extends HTMLElement {
           const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
 
           checkbox.forEach(check => {
-            if (check.value === value) {
+            if (value.includes(check.value)) {
               check.setAttribute('checked', true)
             }
           })
@@ -1038,8 +1048,12 @@ class Form extends HTMLElement {
             }
           }))
         } else if (key === 'locales') {
-          value.forEach(locale => {
-            this.shadow.querySelector(`[name="locales\\.${locale.languageAlias}\\.${locale.key}"]`).value = locale.value !== 'null' ? locale.value : ''
+          Object.entries(value).forEach(([languageAlias, localeValue]) => {
+            Object.entries(localeValue).forEach(([name, fieldValue]) => {
+              if (this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`)) {
+                this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+              }
+            })
           })
         } else {
           Object.entries(value).forEach(([name, fieldValue]) => {

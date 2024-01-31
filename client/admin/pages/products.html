@@ -56,13 +56,15 @@
           'locale': [
             {'name': 'home-product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de la página de inicio', 'width': 'one-third-width', 'quantity': 'single'},
             {'name': 'product-featured', 'element':'input', 'type': 'image', 'label': 'Imagen destacada', 'width': 'one-third-width', 'quantity': 'single'},
-            {'name': 'product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de producto', 'width': 'one-third-width', 'quantity': 'multiple'}
+            {'name': 'product-screenshots', 'element':'input', 'type': 'image', 'label': 'Galería de producto', 'width': 'one-third-width', 'quantity': 'multiple'}
           ]
         },
         'specifications': {
           'noLocale': [
-            {'prefix':'specifications', 'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
-            {'prefix':'specifications', 'name': 'categories', 'element':'input',  'type': 'checkbox', 'label': 'Categorias', 'width': 'full-width', 'endpoint': '/api/admin/product-categories'}
+            {'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
+            {'name': 'releaseDate', 'element':'input', 'type': 'date', 'label': 'Fecha de lanzamiento', 'width': 'half-width'},
+            {'name': 'categories', 'element':'input',  'type': 'checkbox', 'label': 'Categorias', 'width': 'full-width', 'endpoint': '/api/admin/product-categories/get-categories'},
+            {'name': 'platforms', 'element':'input',  'type': 'checkbox', 'label': 'Plataformas', 'width': 'full-width', 'endpoint': '/api/admin/product-platforms/get-platforms'}
           ]
         }
       }

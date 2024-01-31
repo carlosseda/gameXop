@@ -14,19 +14,25 @@ module.exports = class ProductManagementService {
 
   getSpecifications = async (data, productId) => {
     try {
-      const productSpecification = await ProductSpecification.findOne({ productId }, {
-        productId: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        _id: 0,
-        __v: 0
-      })
+      let query = ProductSpecification.findOne({ productId })
+
+      const schemaPaths = ProductSpecification.schema.paths
+
+      for (const field in schemaPaths) {
+        if (schemaPaths[field] instanceof mongooseDb.mongoose.Schema.Types.ObjectId) {
+          query = query.populate(field)
+        }
+      }
+
+      const productSpecification = await query.select('-productId -createdAt -updatedAt -_id -__v').lean().exec()
 
       if (!productSpecification) {
         return data
       }
 
-      data.dataValues.specifications = productSpecification.toObject()
+      data.dataValues = { ...data.dataValues, ...productSpecification }
+
+      console.log(data.dataValues)
 
       return data
     } catch (err) {

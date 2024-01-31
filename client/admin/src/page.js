@@ -32,6 +32,7 @@ class PageComponent extends HTMLElement {
       '/admin/usuarios': 'users.html',
       '/admin/faqs': 'faqs.html',
       '/admin/categoria-productos': 'product-categories.html',
+      '/admin/plataformas': 'product-platforms.html',
       '/admin/productos': 'products.html',
       '/admin/redes-sociales': 'social-networks.html'
     }

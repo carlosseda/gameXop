@@ -3,6 +3,7 @@ module.exports = (app) => {
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/product-category-controller.js')
 
+  router.get('/get-categories', [authCookie.verifyUserCookie], controller.getCategories)
   router.post('/', [authCookie.verifyUserCookie], controller.create)
   router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:id', [authCookie.verifyUserCookie], controller.findOne)

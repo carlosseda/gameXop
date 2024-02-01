@@ -1,4 +1,3 @@
-import '../events/event-listen-manager.js'
 import './not-found.js'
 import './page.js'
 import './font-loader.js'

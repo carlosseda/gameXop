@@ -9,7 +9,7 @@ class UploadImageButton extends HTMLElement {
     this.languageAlias = this.getAttribute('language-alias')
     this.quantity = this.getAttribute('quantity')
 
-    // document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
+    document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
     document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
     document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
     document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
@@ -163,16 +163,17 @@ class UploadImageButton extends HTMLElement {
   }
 
   async showThumbnails (images) {
-    console.log(images)
-
     this.shadow.querySelectorAll('.upload-image').forEach(image => {
       image.remove()
     })
+    // TODO
+    console.log(images)
 
     images.forEach(image => {
-      image.show = true
-
-      this.createThumbnail(image)
+      if (image.name === this.name && image.languageAlias === this.languageAlias) {
+        console.log(image)
+        this.createThumbnail(image)
+      }
     })
   }
 
@@ -225,10 +226,7 @@ class UploadImageButton extends HTMLElement {
     deleteButton.addEventListener('click', (event) => {
       deleteButton.parentElement.remove()
 
-      image.previousImage = imageContainer.dataset.filename
-      image.delete = true
-
-      document.dispatchEvent(new CustomEvent('attachImageToForm', {
+      document.dispatchEvent(new CustomEvent('removeImageFromForm', {
         detail: {
           image
         }

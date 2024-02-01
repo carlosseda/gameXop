@@ -13,6 +13,7 @@ class Form extends HTMLElement {
     document.addEventListener('showDependants', this.handleShowDependants.bind(this))
     document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
     document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
+    document.addEventListener('removeImageFromForm', this.handleRemoveImageFromForm.bind(this))
 
     await this.getLanguages()
     this.render()
@@ -46,6 +47,10 @@ class Form extends HTMLElement {
 
   handleAttachImageToForm = event => {
     this.attachImageToForm(event.detail.image)
+  }
+
+  handleRemoveImageFromForm = event => {
+    this.removeImageFromForm(event.detail.image)
   }
 
   getLanguages = async () => {
@@ -1080,19 +1085,18 @@ class Form extends HTMLElement {
 
     if (index === -1) {
       this.images.push(attachedImage)
-    } else {
-      if (attachedImage.delete && attachedImage.create) {
-        this.images.splice(index, 1)
-      }
+    }
+  }
 
-      if (attachedImage.update && attachedImage.create) {
-        this.images.splice(index, 1)
-        this.images[index] = attachedImage
-        delete attachedImage.update
-      } else {
-        this.images.splice(index, 1)
-        this.images[index] = attachedImage
-      }
+  removeImageFromForm = async removedImage => {
+    const index = this.images.findIndex(image =>
+      image.filename === removedImage.filename &&
+      image.languageAlias === removedImage.languageAlias &&
+      image.name === removedImage.name
+    )
+
+    if (index !== -1) {
+      this.images.splice(index, 1)
     }
   }
 }

@@ -86,6 +86,7 @@ exports.update = (req, res) => {
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       req.body.images = await req.imageService.resizeImages('products', id, req.body.images)
+      console.log(req.body.images)
       await req.productManagementService.updateSpecifications(id, req.body)
       await req.priceManagementService.createPrice(id, req.body.price)
 

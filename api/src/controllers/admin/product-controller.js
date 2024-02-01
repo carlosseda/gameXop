@@ -1,3 +1,4 @@
+const moment = require('moment')
 const sequelizeDb = require('../../models/sequelize')
 const Product = sequelizeDb.Product
 const Op = sequelizeDb.Sequelize.Op
@@ -13,6 +14,8 @@ exports.create = (req, res) => {
       console.log(err)
     }
   }).catch(err => {
+    console.log(err)
+
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
@@ -62,7 +65,9 @@ exports.findOne = (req, res) => {
     attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
   }).then(async data => {
     if (data) {
-      data = await req.productManagementService.getSpecifications(data, id)
+      data = await req.productManagementService.getSpecifications(id, data)
+      data = await req.priceManagementService.getCurrentBasePrice(id, data)
+      data.dataValues.releaseDate = moment(data.dataValues.releaseDate).format('YYYY-MM-DD')
       data.dataValues.images = data.dataValues.images.adminImages
 
       res.status(200).send(data)
@@ -86,7 +91,6 @@ exports.update = (req, res) => {
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       req.body.images = await req.imageService.resizeImages('products', id, req.body.images)
-      console.log(req.body.images)
       await req.productManagementService.updateSpecifications(id, req.body)
       await req.priceManagementService.createPrice(id, req.body.price)
 

@@ -18,12 +18,6 @@ module.exports = function (sequelize, DataTypes) {
         }
       }
     },
-    featured: {
-      type: DataTypes.BOOLEAN
-    },
-    visible: {
-      type: DataTypes.BOOLEAN
-    },
     createdAt: {
       type: DataTypes.DATE,
       get () {
@@ -58,7 +52,6 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   Product.associate = function (models) {
-    Product.hasMany(models.Image, { as: 'images', foreignKey: 'entityId', scope: { entity: 'products' } })
     Product.hasMany(models.Price, { as: 'prices', foreignKey: 'productId' })
     Product.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'productId' })
     Product.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'productId' })

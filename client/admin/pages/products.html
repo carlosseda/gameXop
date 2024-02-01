@@ -32,20 +32,23 @@
         'general': {
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'half-width'},
-            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'half-width'},
-            {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'half-width', 'options': 
+            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'one-third-width'},
+            {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'one-third-width', 'options': 
               [
                 {'label': 'Si', 'value': 'true'},
                 {'label': 'No', 'value': 'false'}
               ]
             },
-            {'name': 'featured', 'element':'select', 'label': 'Destacado', 'width': 'half-width', 'options': 
+            {'name': 'featured', 'element':'select', 'label': 'Destacado', 'width': 'one-third-width', 'options': 
               [
                 {'label': 'Si', 'value': 'true'},
                 {'label': 'No', 'value': 'false'}
               ]
-            }
+            },
+            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'one-quarter-width'},
+            {'prefix': 'price', 'name': 'discountPercentage', 'element':'input', 'type': 'number', 'label': 'Porcentaje de oferta (opcional)', 'width': 'one-quarter-width'},
+            {'prefix': 'price', 'name': 'startsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Principio de oferta', 'width': 'one-quarter-width'},
+            {'prefix': 'price', 'name': 'endsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Final de oferta', 'width': 'one-quarter-width'}
           ],
           'locale': [
             {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'},

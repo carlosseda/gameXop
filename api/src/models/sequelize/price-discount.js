@@ -10,8 +10,8 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    percentage: {
-      type: DataTypes.DECIMAL(10, 2),
+    discountPercentage: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     multiplier: {
@@ -23,11 +23,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     startsAt: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false
     },
     endsAt: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false
     },
     createdAt: {

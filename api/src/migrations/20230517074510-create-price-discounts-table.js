@@ -20,11 +20,11 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      percentage: {
-        type: Sequelize.DECIMAL
+      discountPercentage: {
+        type: Sequelize.INTEGER
       },
       multiplier: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2)
       },
       current: {
         type: Sequelize.BOOLEAN

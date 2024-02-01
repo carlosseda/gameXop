@@ -30,16 +30,6 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'NO ACTION'
       },
-      localeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'locales',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'NO ACTION'
-      },
       priceId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -103,10 +93,6 @@ module.exports = {
 
     await queryInterface.addIndex('cart_details', ['productId'], {
       name: 'cart_details_productId_fk'
-    })
-
-    await queryInterface.addIndex('cart_details', ['localeId'], {
-      name: 'cart_details_localeId_fk'
     })
 
     await queryInterface.addIndex('cart_details', ['priceId'], {

@@ -166,12 +166,9 @@ class UploadImageButton extends HTMLElement {
     this.shadow.querySelectorAll('.upload-image').forEach(image => {
       image.remove()
     })
-    // TODO
-    console.log(images)
 
     images.forEach(image => {
       if (image.name === this.name && image.languageAlias === this.languageAlias) {
-        console.log(image)
         this.createThumbnail(image)
       }
     })
@@ -202,10 +199,6 @@ class UploadImageButton extends HTMLElement {
     imageContainer.appendChild(deleteButton)
     imageContainer.appendChild(file)
     uploadImageContainer.appendChild(imageContainer)
-
-    if (!image.show) {
-      image.create = true
-    }
 
     document.dispatchEvent(new CustomEvent('attachImageToForm', {
       detail: {
@@ -254,9 +247,6 @@ class UploadImageButton extends HTMLElement {
 
       thumbnail.querySelector('img').src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${image.filename}`
       thumbnail.dataset.filename = image.filename
-
-      image.previousImage = previousImage
-      image.update = true
 
       document.dispatchEvent(new CustomEvent('attachImageToForm', {
         detail: {

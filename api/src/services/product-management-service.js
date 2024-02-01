@@ -24,7 +24,7 @@ module.exports = class ProductManagementService {
     }
   }
 
-  getSpecifications = async (data, productId) => {
+  getSpecifications = async (productId, data) => {
     try {
       let query = ProductSpecification.findOne({ productId })
 

@@ -12,9 +12,6 @@ module.exports = function (sequelize, DataTypes) {
     productId: {
       type: DataTypes.INTEGER
     },
-    localeId: {
-      type: DataTypes.INTEGER
-    },
     priceId: {
       type: DataTypes.INTEGER
     },
@@ -82,13 +79,6 @@ module.exports = function (sequelize, DataTypes) {
         using: 'BTREE',
         fields: [
           { name: 'productId' }
-        ]
-      },
-      {
-        name: 'return_details_localeId_fk',
-        using: 'BTREE',
-        fields: [
-          { name: 'localeId' }
         ]
       },
       {

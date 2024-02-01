@@ -352,7 +352,7 @@ class ImageGallery extends HTMLElement {
 
       if (event.target.closest('.modal-footer button')) {
         if (event.target.classList.contains('active')) {
-          this.sendDataToForm()
+          this.createThumbnail()
         }
       }
     })
@@ -378,7 +378,7 @@ class ImageGallery extends HTMLElement {
     if (imageElement) {
       imageElement.classList.add('selected')
       this.shadow.querySelector('.modal-footer button').classList.add('active')
-      this.updateFile = image.filename
+      this.previousImage = image.filename
     }
   }
 
@@ -479,28 +479,20 @@ class ImageGallery extends HTMLElement {
     this.shadow.querySelector('.modal-footer button').classList.add('active')
   }
 
-  async sendDataToForm () {
+  async createThumbnail () {
     this.image.alt = this.shadow.querySelector('input[name="alt"]').value
     this.image.title = this.shadow.querySelector('input[name="title"]').value
     this.image.filename = this.shadow.querySelector('.image.selected').getAttribute('data-filename')
 
-    // Aqui se pierde
-    if (this.updateFile) {
-      document.dispatchEvent(new CustomEvent('updateThumbnail', {
-        detail: {
-          previousImage: this.updateFile,
-          image: this.image
-        }
-      }))
-    } else {
-      document.dispatchEvent(new CustomEvent('createThumbnail', {
-        detail: {
-          image: this.image
-        }
-      }))
+    if (this.previousImage) {
+      this.image.previousImage = this.previousImage
     }
 
-    this.updateFile = null
+    document.dispatchEvent(new CustomEvent('createThumbnail', {
+      detail: {
+        image: this.image
+      }
+    }))
 
     this.closeGallery()
   }

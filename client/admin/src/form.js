@@ -187,11 +187,11 @@ class Form extends HTMLElement {
           }
 
           .form-element.one-third-width {
-            flex: 0 0 32%;
+            flex: 0 0 32.65%;
           }
 
           .form-element.one-quarter-width {
-            flex: 0 0 23.5%;
+            flex: 0 0 24.25%;
           }
 
           .form-element-label{
@@ -241,6 +241,7 @@ class Form extends HTMLElement {
             border-radius: 0;
             box-sizing: border-box;
             color: hsl(0, 0%, 100%);
+            height: 2.2rem;
             font-family: 'Lato' , sans-serif;
             font-size: 1rem;
             font-weight: 600;
@@ -798,8 +799,7 @@ class Form extends HTMLElement {
             }
           }))
 
-          this.images = []
-          this.render()
+          this.resetForm(form)
 
           document.dispatchEvent(new CustomEvent('refreshTable', {
             detail: {
@@ -847,9 +847,157 @@ class Form extends HTMLElement {
 
   renderCreateForm = () => {
     this.shadow.querySelector('#create-button').addEventListener('click', () => {
-      this.images = []
-      this.render()
+      this.resetForm(this.shadow.querySelector('form'))
     })
+  }
+
+  resetForm = async form => {
+    form.reset()
+
+    this.shadow.querySelector("[name='id']").value = ''
+
+    this.shadow.querySelectorAll(".tab-item[data-tab='active']").forEach(tab => {
+      tab.classList.remove('active')
+      tab.parentElement.querySelector('.tab-item').classList.add('active')
+    })
+
+    this.shadow.querySelectorAll(".tab-panel[data-tab='active']").forEach(tabPanel => {
+      tabPanel.classList.remove('active')
+      tabPanel.parentElement.querySelector('.tab-panel').classList.add('active')
+    })
+
+    this.shadow.querySelector('.errors-container').innerHTML = ''
+
+    this.shadow.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.checked = false
+    })
+
+    this.shadow.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.checked = false
+    })
+
+    this.shadow.querySelectorAll('select').forEach(select => {
+      select.selectedIndex = 0
+    })
+
+    this.images = []
+
+    document.dispatchEvent(new CustomEvent('deleteThumbnails'))
+  }
+
+  showElement = async element => {
+    await this.resetForm(this.shadow.querySelector('form'))
+
+    Object.entries(element).forEach(([key, value]) => {
+      if (this.shadow.querySelector(`[name="${key}"]`)) {
+        if (typeof value === 'object') {
+          value = JSON.stringify(value, null, 2)
+        }
+
+        const input = this.shadow.querySelector(`[name="${key}"]`)
+
+        if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+          if (input.type !== 'checkbox' && input.type !== 'radio') {
+            input.value = value !== 'null' ? value : ''
+          }
+        }
+
+        if (input.tagName === 'SELECT') {
+          const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
+
+          options.forEach(option => {
+            if (option.value === value) {
+              option.setAttribute('selected', true)
+            }
+          })
+        }
+
+        if (input.type === 'radio') {
+          const radios = this.shadow.querySelector(`[name="${key}"]`).closest('.form-element').querySelectorAll('input[type="radio"]')
+
+          radios.forEach(radio => {
+            if (radio.value === value) {
+              radio.setAttribute('checked', true)
+            }
+          })
+        }
+
+        if (input.type === 'checkbox') {
+          const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
+
+          checkbox.forEach(check => {
+            if (value.includes(check.value)) {
+              check.checked = true
+            }
+          })
+        }
+      }
+
+      if (typeof value === 'object') {
+        if (key === 'images') {
+          document.dispatchEvent(new CustomEvent('showThumbnails', {
+            detail: {
+              images: value
+            }
+          }))
+        } else if (key === 'locales') {
+          Object.entries(value).forEach(([languageAlias, localeValue]) => {
+            Object.entries(localeValue).forEach(([name, fieldValue]) => {
+              if (this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`)) {
+                this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+              }
+            })
+          })
+        } else {
+          Object.entries(value).forEach(([name, fieldValue]) => {
+            this.shadow.querySelector(`[name="${key}.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+          })
+          // document.dispatchEvent(new CustomEvent('showDependants', {
+          //   detail: {
+          //     subtable: key,
+          //     data: value,
+          //     parentFormId: element.id
+          //   }
+          // }))
+        }
+      }
+    })
+  }
+
+  attachImageToForm = async attachedImage => {
+    if (attachedImage.previousImage) {
+      const index = this.images.findIndex(image =>
+        image.filename === attachedImage.previousImage &&
+        image.languageAlias === attachedImage.languageAlias &&
+        image.name === attachedImage.name
+      )
+
+      if (index !== -1) {
+        this.images.splice(index, 1)
+      }
+    }
+
+    const index = this.images.findIndex(image =>
+      image.filename === attachedImage.filename &&
+      image.languageAlias === attachedImage.languageAlias &&
+      image.name === attachedImage.name
+    )
+
+    if (index === -1) {
+      this.images.push(attachedImage)
+    }
+  }
+
+  removeImageFromForm = async removedImage => {
+    const index = this.images.findIndex(image =>
+      image.filename === removedImage.filename &&
+      image.languageAlias === removedImage.languageAlias &&
+      image.name === removedImage.name
+    )
+
+    if (index !== -1) {
+      this.images.splice(index, 1)
+    }
   }
 
   validateForm = formInputs => {
@@ -1000,104 +1148,6 @@ class Form extends HTMLElement {
     }
 
     return validForm
-  }
-
-  showElement = element => {
-    this.shadow.querySelector('form').reset()
-    this.images = []
-
-    Object.entries(element).forEach(([key, value]) => {
-      if (this.shadow.querySelector(`[name="${key}"]`)) {
-        if (typeof value === 'object') {
-          value = JSON.stringify(value, null, 2)
-        }
-
-        this.shadow.querySelector(`[name="${key}"]`).value = value !== 'null' ? value : ''
-
-        if (this.shadow.querySelector(`[name="${key}"]`).tagName === 'SELECT') {
-          const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
-
-          options.forEach(option => {
-            if (option.value === value) {
-              option.setAttribute('selected', true)
-            }
-          })
-        }
-
-        if (this.shadow.querySelector(`[name="${key}"]`).type === 'radio') {
-          const radios = this.shadow.querySelector(`[name="${key}"]`).closest('.form-element').querySelectorAll('input[type="radio"]')
-
-          radios.forEach(radio => {
-            if (radio.value === value) {
-              radio.setAttribute('checked', true)
-            }
-          })
-        }
-
-        if (this.shadow.querySelector(`[name="${key}"]`).type === 'checkbox') {
-          const checkbox = this.shadow.querySelectorAll(`[name="${key}"]`)
-
-          checkbox.forEach(check => {
-            if (value.includes(check.value)) {
-              check.setAttribute('checked', true)
-            }
-          })
-        }
-      }
-
-      if (typeof value === 'object') {
-        if (key === 'images') {
-          document.dispatchEvent(new CustomEvent('showThumbnails', {
-            detail: {
-              images: value
-            }
-          }))
-        } else if (key === 'locales') {
-          Object.entries(value).forEach(([languageAlias, localeValue]) => {
-            Object.entries(localeValue).forEach(([name, fieldValue]) => {
-              if (this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`)) {
-                this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
-              }
-            })
-          })
-        } else {
-          Object.entries(value).forEach(([name, fieldValue]) => {
-            this.shadow.querySelector(`[name="${key}.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
-          })
-          // document.dispatchEvent(new CustomEvent('showDependants', {
-          //   detail: {
-          //     subtable: key,
-          //     data: value,
-          //     parentFormId: element.id
-          //   }
-          // }))
-        }
-      }
-    })
-  }
-
-  attachImageToForm = async attachedImage => {
-    const index = this.images.findIndex(image =>
-      image.filename === attachedImage.previousImage &&
-      image.languageAlias === attachedImage.languageAlias &&
-      image.name === attachedImage.name
-    )
-
-    if (index === -1) {
-      this.images.push(attachedImage)
-    }
-  }
-
-  removeImageFromForm = async removedImage => {
-    const index = this.images.findIndex(image =>
-      image.filename === removedImage.filename &&
-      image.languageAlias === removedImage.languageAlias &&
-      image.name === removedImage.name
-    )
-
-    if (index !== -1) {
-      this.images.splice(index, 1)
-    }
   }
 }
 

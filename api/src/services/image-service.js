@@ -3,9 +3,6 @@ const path = require('path')
 const sharp = require('sharp')
 const mongooseDb = require('../models/mongoose')
 const ImageConfiguration = mongooseDb.ImageConfiguration
-// const sequelizeDb = require('../models/sequelize')
-// const ImageConfiguration = sequelizeDb.ImageConfiguration
-// const Image = sequelizeDb.Image
 
 module.exports = class ImageService {
   uploadImage = async images => {
@@ -73,84 +70,6 @@ module.exports = class ImageService {
         })
 
         for (const imageConfiguration of imageConfigurations) {
-          // if (images[image].delete) {
-          //   const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-
-          //   Image.destroy({
-          //     where: {
-          //       entity,
-          //       entityId,
-          //       name: images[image].name,
-          //       languageAlias: images[image].languageAlias,
-          //       resizedFilename
-          //     }
-          //   })
-          // }
-
-          // if (images[image].update) {
-          //   const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-          //   const previousResizedFilename = `${path.parse(images[image].previousImage).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-
-          //   if (images[image].filename !== images[image].previousImage) {
-          //     let imageResize = {}
-
-          //     await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
-          //       const start = new Date().getTime()
-
-          //       const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-          //       imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
-          //       imageResize.size = stats.size
-
-          //       const end = new Date().getTime()
-
-          //       imageResize.latency = end - start
-          //     }).catch(async () => {
-          //       const start = new Date().getTime()
-
-          //       imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
-          //         .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
-          //         .webp({ nearLossless: true })
-          //         .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-
-          //       const end = new Date().getTime()
-
-          //       imageResize.latency = end - start
-          //     })
-
-          //     Image.update({
-          //       imageConfigurationId: imageConfiguration.id,
-          //       mediaQuery: imageConfiguration.mediaQuery,
-          //       sizeBytes: imageResize.size,
-          //       latencyMs: imageResize.latency,
-          //       title: images[image].title,
-          //       alt: images[image].alt,
-          //       resizedFilename,
-          //       originalFilename: images[image].filename
-          //     }, {
-          //       where: {
-          //         entity,
-          //         entityId,
-          //         name: images[image].name,
-          //         languageAlias: images[image].languageAlias,
-          //         resizedFilename: previousResizedFilename
-          //       }
-          //     })
-          //   } else {
-          //     Image.update({
-          //       title: images[image].title,
-          //       alt: images[image].alt
-          //     }, {
-          //       where: {
-          //         entity,
-          //         entityId,
-          //         name: images[image].name,
-          //         languageAlias: images[image].languageAlias,
-          //         resizedFilename
-          //       }
-          //     })
-          //   }
-          // }
-
           let imageResize = {}
           const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
 
@@ -203,9 +122,7 @@ module.exports = class ImageService {
 
       return resizedImages
     } catch (error) {
-      console.log(error)
-
-      return false
+      return null
     }
   }
 

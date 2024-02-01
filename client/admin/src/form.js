@@ -50,7 +50,7 @@ class Form extends HTMLElement {
 
   getLanguages = async () => {
     if (!window.sessionStorage.getItem('languages')) {
-      const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/locale-list`
+      const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/get-languages`
 
       try {
         const response = await fetch(endpoint)

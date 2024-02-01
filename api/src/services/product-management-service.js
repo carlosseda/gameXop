@@ -12,6 +12,18 @@ module.exports = class ProductManagementService {
     }
   }
 
+  updateSpecifications = async (productId, specifications) => {
+    try {
+      await ProductSpecification.findOneAndUpdate(
+        { productId },
+        specifications,
+        { new: true }
+      )
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   getSpecifications = async (data, productId) => {
     try {
       let query = ProductSpecification.findOne({ productId })
@@ -31,8 +43,6 @@ module.exports = class ProductManagementService {
       }
 
       data.dataValues = { ...data.dataValues, ...productSpecification }
-
-      console.log(data.dataValues)
 
       return data
     } catch (err) {

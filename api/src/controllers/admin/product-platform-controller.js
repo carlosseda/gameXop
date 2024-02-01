@@ -131,7 +131,9 @@ exports.delete = async (req, res) => {
 
 exports.getPlatforms = async (req, res) => {
   try {
-    const result = await ProductPlatform.find({}, 'name').lean().exec()
+    const result = await ProductPlatform.find({
+      deletedAt: { $exists: false }
+    }, 'name').lean().exec()
 
     const response = result.map(element => ({
       label: element.name,

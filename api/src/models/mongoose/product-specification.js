@@ -17,6 +17,10 @@ module.exports = (mongoose) => {
       locales: {
         type: Map,
         of: mongoose.Schema.Types.Mixed
+      },
+      images: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
       }
     },
     { timestamps: true }

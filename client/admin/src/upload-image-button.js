@@ -9,7 +9,7 @@ class UploadImageButton extends HTMLElement {
     this.languageAlias = this.getAttribute('language-alias')
     this.quantity = this.getAttribute('quantity')
 
-    document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
+    // document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
     document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
     document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
     document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
@@ -163,6 +163,8 @@ class UploadImageButton extends HTMLElement {
   }
 
   async showThumbnails (images) {
+    console.log(images)
+
     this.shadow.querySelectorAll('.upload-image').forEach(image => {
       image.remove()
     })
@@ -170,11 +172,7 @@ class UploadImageButton extends HTMLElement {
     images.forEach(image => {
       image.show = true
 
-      document.dispatchEvent(new CustomEvent('createThumbnail', {
-        detail: {
-          image
-        }
-      }))
+      this.createThumbnail(image)
     })
   }
 

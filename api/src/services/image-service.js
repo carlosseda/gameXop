@@ -1,9 +1,11 @@
 const fs = require('fs/promises')
 const path = require('path')
 const sharp = require('sharp')
-const sequelizeDb = require('../models/sequelize')
-const ImageConfiguration = sequelizeDb.ImageConfiguration
-const Image = sequelizeDb.Image
+const mongooseDb = require('../models/mongoose')
+const ImageConfiguration = mongooseDb.ImageConfiguration
+// const sequelizeDb = require('../models/sequelize')
+// const ImageConfiguration = sequelizeDb.ImageConfiguration
+// const Image = sequelizeDb.Image
 
 module.exports = class ImageService {
   uploadImage = async images => {
@@ -50,139 +52,156 @@ module.exports = class ImageService {
 
   resizeImages = async (entity, entityId, images) => {
     try {
+      const resizedImages = {}
+
       for (const image in images) {
-        const imageConfigurations = await ImageConfiguration.findAll({
-          where: {
-            entity,
-            name: images[image].name
-          }
+        if (!resizedImages.adminImages) {
+          resizedImages.adminImages = []
+        }
+
+        resizedImages.adminImages.push({
+          name: images[image].name,
+          filename: images[image].filename,
+          title: images[image].title,
+          alt: images[image].alt,
+          languageAlias: images[image].languageAlias
+        })
+
+        const imageConfigurations = await ImageConfiguration.find({
+          entity,
+          name: images[image].name
         })
 
         for (const imageConfiguration of imageConfigurations) {
-          if (images[image].delete) {
-            const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+          // if (images[image].delete) {
+          //   const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
 
-            Image.destroy({
-              where: {
-                entity,
-                entityId,
-                name: images[image].name,
-                languageAlias: images[image].languageAlias,
-                resizedFilename
-              }
-            })
+          //   Image.destroy({
+          //     where: {
+          //       entity,
+          //       entityId,
+          //       name: images[image].name,
+          //       languageAlias: images[image].languageAlias,
+          //       resizedFilename
+          //     }
+          //   })
+          // }
+
+          // if (images[image].update) {
+          //   const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+          //   const previousResizedFilename = `${path.parse(images[image].previousImage).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+
+          //   if (images[image].filename !== images[image].previousImage) {
+          //     let imageResize = {}
+
+          //     await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
+          //       const start = new Date().getTime()
+
+          //       const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+          //       imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
+          //       imageResize.size = stats.size
+
+          //       const end = new Date().getTime()
+
+          //       imageResize.latency = end - start
+          //     }).catch(async () => {
+          //       const start = new Date().getTime()
+
+          //       imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
+          //         .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
+          //         .webp({ nearLossless: true })
+          //         .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+
+          //       const end = new Date().getTime()
+
+          //       imageResize.latency = end - start
+          //     })
+
+          //     Image.update({
+          //       imageConfigurationId: imageConfiguration.id,
+          //       mediaQuery: imageConfiguration.mediaQuery,
+          //       sizeBytes: imageResize.size,
+          //       latencyMs: imageResize.latency,
+          //       title: images[image].title,
+          //       alt: images[image].alt,
+          //       resizedFilename,
+          //       originalFilename: images[image].filename
+          //     }, {
+          //       where: {
+          //         entity,
+          //         entityId,
+          //         name: images[image].name,
+          //         languageAlias: images[image].languageAlias,
+          //         resizedFilename: previousResizedFilename
+          //       }
+          //     })
+          //   } else {
+          //     Image.update({
+          //       title: images[image].title,
+          //       alt: images[image].alt
+          //     }, {
+          //       where: {
+          //         entity,
+          //         entityId,
+          //         name: images[image].name,
+          //         languageAlias: images[image].languageAlias,
+          //         resizedFilename
+          //       }
+          //     })
+          //   }
+          // }
+
+          let imageResize = {}
+          const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+
+          await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
+            const start = new Date().getTime()
+
+            const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+            imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
+            imageResize.size = stats.size
+
+            const end = new Date().getTime()
+
+            imageResize.latency = end - start
+          }).catch(async () => {
+            const start = new Date().getTime()
+
+            imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
+              .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
+              .webp({ nearLossless: true })
+              .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+
+            const end = new Date().getTime()
+
+            imageResize.latency = end - start
+          })
+
+          if (!resizedImages[imageConfiguration.mediaQuery]) {
+            resizedImages[imageConfiguration.mediaQuery] = {}
           }
 
-          if (images[image].update) {
-            const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-            const previousResizedFilename = `${path.parse(images[image].previousImage).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-
-            if (images[image].filename !== images[image].previousImage) {
-              let imageResize = {}
-
-              await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
-                const start = new Date().getTime()
-
-                const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-                imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
-                imageResize.size = stats.size
-
-                const end = new Date().getTime()
-
-                imageResize.latency = end - start
-              }).catch(async () => {
-                const start = new Date().getTime()
-
-                imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
-                  .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
-                  .webp({ nearLossless: true })
-                  .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-
-                const end = new Date().getTime()
-
-                imageResize.latency = end - start
-              })
-
-              Image.update({
-                imageConfigurationId: imageConfiguration.id,
-                mediaQuery: imageConfiguration.mediaQuery,
-                sizeBytes: imageResize.size,
-                latencyMs: imageResize.latency,
-                title: images[image].title,
-                alt: images[image].alt,
-                resizedFilename,
-                originalFilename: images[image].filename
-              }, {
-                where: {
-                  entity,
-                  entityId,
-                  name: images[image].name,
-                  languageAlias: images[image].languageAlias,
-                  resizedFilename: previousResizedFilename
-                }
-              })
-            } else {
-              Image.update({
-                title: images[image].title,
-                alt: images[image].alt
-              }, {
-                where: {
-                  entity,
-                  entityId,
-                  name: images[image].name,
-                  languageAlias: images[image].languageAlias,
-                  resizedFilename
-                }
-              })
-            }
+          if (!resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias]) {
+            resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias] = {}
           }
 
-          if (images[image].create) {
-            let imageResize = {}
-            const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-
-            await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
-              const start = new Date().getTime()
-
-              const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-              imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
-              imageResize.size = stats.size
-
-              const end = new Date().getTime()
-
-              imageResize.latency = end - start
-            }).catch(async () => {
-              const start = new Date().getTime()
-
-              imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
-                .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
-                .webp({ nearLossless: true })
-                .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-
-              const end = new Date().getTime()
-
-              imageResize.latency = end - start
-            })
-
-            await Image.create({
-              imageConfigurationId: imageConfiguration.id,
-              entityId,
-              entity,
-              name: images[image].name,
-              originalFilename: images[image].filename,
-              resizedFilename,
-              title: images[image].title,
-              alt: images[image].alt,
-              languageAlias: images[image].languageAlias,
-              mediaQuery: imageConfiguration.mediaQuery,
-              sizeBytes: imageResize.size,
-              latencyMs: imageResize.latency
-            })
+          if (!resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name]) {
+            resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name] = []
           }
+
+          resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name].push({
+            imageConfigurationId: imageConfiguration.id,
+            originalFilename: images[image].filename,
+            resizedFilename,
+            title: images[image].title,
+            alt: images[image].alt,
+            sizeBytes: imageResize.size,
+            latencyMs: imageResize.latency
+          })
         }
       }
 
-      return true
+      return resizedImages
     } catch (error) {
       console.log(error)
 
@@ -212,35 +231,5 @@ module.exports = class ImageService {
     images.count = files.length
 
     return images
-  }
-
-  getAdminImages = async (data, entity, entityId) => {
-    const images = await Image.findAll({
-      attributes: [['originalFilename', 'filename'], 'name', 'languageAlias', 'alt', 'title'],
-      where: {
-        entity,
-        entityId
-      },
-      group: [['originalFilename', 'filename'], 'name', 'languageAlias', 'alt', 'title']
-    })
-
-    data.dataValues.images = images
-
-    return data
-  }
-
-  parseImages = async (images) => {
-    if (Array.isArray(images)) {
-      return images.reduce((obj, item) => {
-        const key = item.name
-        const { name, ...rest } = item.dataValues
-        obj[key] = rest
-        return obj
-      }, {})
-    } else {
-      const key = images.name
-      const { name, ...rest } = images.dataValues
-      return { [key]: rest }
-    }
   }
 }

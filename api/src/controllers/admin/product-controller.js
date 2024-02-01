@@ -3,12 +3,11 @@ const Product = sequelizeDb.Product
 const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
-  console.log(req.body)
   Product.create(req.body).then(async data => {
     try {
+      req.body.images = await req.imageService.resizeImages('products', data.id, req.body.images)
       await req.productManagementService.createSpecifications(data.id, req.body)
       await req.priceManagementService.createPrice(data.id, req.body.price)
-      await req.imageService.resizeImages('products', data.id, req.body.images)
       res.status(200).send(data)
     } catch (err) {
       console.log(err)
@@ -60,19 +59,11 @@ exports.findOne = (req, res) => {
   const id = req.params.id
 
   Product.findByPk(id, {
-    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
-    include: [
-      {
-        attributes: ['languageAlias', 'key', 'value'],
-        model: sequelizeDb.Locale,
-        as: 'locales',
-        required: false
-      }
-    ]
+    attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
   }).then(async data => {
     if (data) {
       data = await req.productManagementService.getSpecifications(data, id)
-      data = await req.imageService.getAdminImages(data, 'products', id)
+      data.dataValues.images = data.dataValues.images.adminImages
 
       res.status(200).send(data)
     } else {
@@ -94,12 +85,9 @@ exports.update = (req, res) => {
     where: { id }
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
-      console.log(req.body.specifications)
-
+      req.body.images = await req.imageService.resizeImages('products', id, req.body.images)
+      await req.productManagementService.updateSpecifications(id, req.body)
       await req.priceManagementService.createPrice(id, req.body.price)
-      await req.localeService.update('products', id, req.body.locales)
-      await req.imageService.deleteImages('products', id)
-      await req.imageService.resizeImages('products', id, req.body.images)
 
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'

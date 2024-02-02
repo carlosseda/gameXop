@@ -3,96 +3,59 @@ const Price = sequelizeDb.Price
 const PriceDiscount = sequelizeDb.PriceDiscount
 
 module.exports = class PriceManagementService {
-  createPrice = async (productId, price) => {
+  createPrice = async (productId, data) => {
     try {
-      const [existingPrice, priceCreated] = await Price.findOrCreate({
+      const priceData = {
+        productId,
+        basePrice: data.basePrice,
+        current: true,
+        currency: data.currency ?? 'euro',
+        discountPercentage: data.discountPercentage ?? null,
+        multiplier: data.discountPercentage ? parseFloat((1 - data.discountPercentage / 100).toFixed(2)) : null,
+        startsAt: data.startsAt ?? null,
+        endsAt: data.endsAt ?? null
+      }
+
+      let [price, created] = await Price.findOrCreate({
         attributes: ['id', 'basePrice', 'current'],
         where: { productId, current: true },
-        defaults: { basePrice: price.basePrice, current: true }
+        defaults: priceData
       })
-      // TODO duplica al crear
-      if (existingPrice) {
-        if (existingPrice.basePrice !== price.basePrice) {
-          await existingPrice.update({ current: false })
 
-          return await Price.create({
-            productId,
-            current: true,
-            basePrice: price.basePrice
-          })
-        }
-
-        if (price.discountPercentage) {
-          const multiplier = `0.${(100 - price.discountPercentage)}`
-
-          const [existingDiscountPrice, discountCreated] = await PriceDiscount.findOrCreate({
-            where: { priceId: existingPrice.id, current: true },
-            defaults: { discountPercentage: price.discountPercentage, multiplier, startsAt: price.startsAt, endsAt: price.endsAt, current: true }
-          })
-
-          if (existingDiscountPrice) {
-            if (existingDiscountPrice.discountPercentage !== price.discountPercentage || existingDiscountPrice.startsAt !== price.startsAt || existingDiscountPrice.endsAt !== price.endsAt) {
-              await existingDiscountPrice.update({ current: false })
-
-              return await PriceDiscount.create({
-                priceId: existingPrice.id,
-                discountPercentage: price.discountPercentage,
-                multiplier,
-                startsAt: price.startsAt,
-                endsAt: price.endsAt,
-                current: true
-              })
-            }
-          }
-
-          return discountCreated
-        }
-      } else {
-        if (price.discountPercentage) {
-          const multiplier = 1 - (price.discountPercentage / 100)
-
-          const [existingDiscountPrice, discountCreated] = await PriceDiscount.findOrCreate({
-            where: { priceId: priceCreated.id, current: true },
-            defaults: { discountPercentage: price.discountPercentage, multiplier, startsAt: price.startsAt, endsAt: price.endsAt, current: true }
-          })
-
-          if (existingDiscountPrice) {
-            if (existingDiscountPrice.discountPercentage !== price.discountPercentage || existingDiscountPrice.startsAt !== price.startsAt || existingDiscountPrice.endsAt !== price.endsAt) {
-              await existingDiscountPrice.update({ current: false })
-
-              return await PriceDiscount.create({
-                priceId: priceCreated.id,
-                discountPercentage: price.discountPercentage,
-                multiplier,
-                startsAt: price.startsAt,
-                endsAt: price.endsAt,
-                current: true
-              })
-            }
-          }
-
-          return discountCreated
-        }
-
-        return priceCreated
+      if (!created && price.basePrice !== data.basePrice) {
+        await price.update({ current: false })
+        await PriceDiscount.update(
+          { current: false },
+          { where: { priceId: price.id, current: true } }
+        )
+        price = await Price.create(priceData)
       }
+
+      priceData.priceId = price.id
+
+      if (data.discountPercentage) {
+        await PriceDiscount.update(
+          { current: false },
+          { where: { priceId: price.id, current: true } }
+        )
+
+        const priceDiscount = await PriceDiscount.create(priceData)
+
+        priceData.priceDiscountId = priceDiscount.id
+      } else {
+        await PriceDiscount.update(
+          { current: false },
+          { where: { priceId: price.id, current: true } }
+        )
+      }
+
+      delete priceData.current
+      delete priceData.productId
+
+      return priceData
     } catch (err) {
       console.log(err)
+      return false
     }
-  }
-
-  getCurrentBasePrice = async (productId, data) => {
-    const price = await Price.findOne({
-      attributes: ['basePrice'],
-      where: { productId, current: true }
-    })
-
-    if (!price) {
-      return data
-    }
-
-    data.dataValues.price = price
-
-    return data
   }
 }

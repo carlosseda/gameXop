@@ -1,8 +1,6 @@
 const fs = require('fs/promises')
 const path = require('path')
 const sharp = require('sharp')
-const mongooseDb = require('../models/mongoose')
-const ImageConfiguration = mongooseDb.ImageConfiguration
 
 module.exports = class ImageService {
   uploadImage = async images => {
@@ -44,12 +42,15 @@ module.exports = class ImageService {
       }
     }
 
+    console.log(result)
+
     return result
   }
 
-  resizeImages = async (entity, entityId, images) => {
+  resizeImages = async (images) => {
     try {
       const resizedImages = {}
+      const uploadPromises = []
 
       for (const image in images) {
         if (!resizedImages.adminImages) {
@@ -61,64 +62,70 @@ module.exports = class ImageService {
           filename: images[image].filename,
           title: images[image].title,
           alt: images[image].alt,
-          languageAlias: images[image].languageAlias
+          languageAlias: images[image].languageAlias,
+          widthPx: 135,
+          heightPx: 135
         })
 
-        const imageConfigurations = await ImageConfiguration.find({
-          entity,
-          name: images[image].name
+        const imageUploadPromise = new Promise(async (resolve) => {
+          const imageConfigurationPromises = []
+
+          for (const [mediaQuery, imageConfiguration] of Object.entries(images[image].imageConfigurations)) {
+            const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+
+            const imageResize = {
+              originalFilename: images[image].filename,
+              resizedFilename,
+              title: images[image].title,
+              alt: images[image].alt,
+              widthPx: imageConfiguration.widthPx,
+              heightPx: imageConfiguration.heightPx
+            }
+
+            const resizePromise = fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+              .then(async () => {
+                const start = new Date().getTime()
+                const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+                imageResize.sizeBytes = stats.size
+                const end = new Date().getTime()
+                imageResize.latencyMs = end - start
+              })
+              .catch(async () => {
+                const start = new Date().getTime()
+                await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
+                  .resize(parseInt(imageConfiguration.widthPx), parseInt(imageConfiguration.heightPx))
+                  .webp({ nearLossless: true })
+                  .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+
+                const end = new Date().getTime()
+                imageResize.sizeBytes = (await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))).size
+                imageResize.latencyMs = end - start
+              })
+
+            if (!resizedImages[mediaQuery]) {
+              resizedImages[mediaQuery] = {}
+            }
+
+            if (!resizedImages[mediaQuery][images[image].languageAlias]) {
+              resizedImages[mediaQuery][images[image].languageAlias] = {}
+            }
+
+            if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
+              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
+            }
+
+            resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
+            imageConfigurationPromises.push(resizePromise)
+          }
+
+          await Promise.all(imageConfigurationPromises)
+          resolve()
         })
 
-        for (const imageConfiguration of imageConfigurations) {
-          let imageResize = {}
-          const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
-
-          await fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).then(async () => {
-            const start = new Date().getTime()
-
-            const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-            imageResize = await sharp(path.join(__dirname, `../storage/images/resized/${resizedFilename}`)).metadata()
-            imageResize.size = stats.size
-
-            const end = new Date().getTime()
-
-            imageResize.latency = end - start
-          }).catch(async () => {
-            const start = new Date().getTime()
-
-            imageResize = await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
-              .resize(imageConfiguration.widthPx, imageConfiguration.heightPx)
-              .webp({ nearLossless: true })
-              .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
-
-            const end = new Date().getTime()
-
-            imageResize.latency = end - start
-          })
-
-          if (!resizedImages[imageConfiguration.mediaQuery]) {
-            resizedImages[imageConfiguration.mediaQuery] = {}
-          }
-
-          if (!resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias]) {
-            resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias] = {}
-          }
-
-          if (!resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name]) {
-            resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name] = []
-          }
-
-          resizedImages[imageConfiguration.mediaQuery][images[image].languageAlias][images[image].name].push({
-            imageConfigurationId: imageConfiguration.id,
-            originalFilename: images[image].filename,
-            resizedFilename,
-            title: images[image].title,
-            alt: images[image].alt,
-            sizeBytes: imageResize.size,
-            latencyMs: imageResize.latency
-          })
-        }
+        uploadPromises.push(imageUploadPromise)
       }
+
+      await Promise.all(uploadPromises)
 
       return resizedImages
     } catch (error) {

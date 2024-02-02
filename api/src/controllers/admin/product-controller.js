@@ -6,9 +6,9 @@ const Op = sequelizeDb.Sequelize.Op
 exports.create = (req, res) => {
   Product.create(req.body).then(async data => {
     try {
-      req.body.images = await req.imageService.resizeImages('products', data.id, req.body.images)
+      req.body.images = await req.imageService.resizeImages(req.body.images)
+      req.body.price = await req.priceManagementService.createPrice(data.id, req.body.price)
       await req.productManagementService.createSpecifications(data.id, req.body)
-      await req.priceManagementService.createPrice(data.id, req.body.price)
       res.status(200).send(data)
     } catch (err) {
       console.log(err)
@@ -66,9 +66,8 @@ exports.findOne = (req, res) => {
   }).then(async data => {
     if (data) {
       data = await req.productManagementService.getSpecifications(id, data)
-      data = await req.priceManagementService.getCurrentBasePrice(id, data)
       data.dataValues.releaseDate = moment(data.dataValues.releaseDate).format('YYYY-MM-DD')
-      data.dataValues.images = data.dataValues.images.adminImages
+      data.dataValues.images = data.dataValues.images?.adminImages ? data.dataValues.images.adminImages : []
 
       res.status(200).send(data)
     } else {
@@ -77,6 +76,7 @@ exports.findOne = (req, res) => {
       })
     }
   }).catch(_ => {
+    console.log(_)
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -91,8 +91,8 @@ exports.update = (req, res) => {
   }).then(async ([numberRowsAffected]) => {
     if (numberRowsAffected === 1) {
       req.body.images = await req.imageService.resizeImages('products', id, req.body.images)
+      req.body.price = await req.priceManagementService.createPrice(id, req.body.price)
       await req.productManagementService.updateSpecifications(id, req.body)
-      await req.priceManagementService.createPrice(id, req.body.price)
 
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'

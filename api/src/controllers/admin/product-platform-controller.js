@@ -3,6 +3,7 @@ const mongooseDb = require('../../models/mongoose')
 const ProductPlatform = mongooseDb.ProductPlatform
 
 exports.create = async (req, res) => {
+  req.body.images = await req.imageService.resizeImages(req.body.images)
   const productPlatform = new ProductPlatform(req.body)
   productPlatform.save().then(async data => {
     res.status(200).send(data)
@@ -65,6 +66,7 @@ exports.findOne = async (req, res) => {
 
   try {
     const data = await ProductPlatform.findById(id).lean().exec()
+    data.images = data.images?.adminImages ? data.images.adminImages : []
 
     if (data) {
       data.id = data._id
@@ -89,6 +91,7 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
+    req.body.images = await req.imageService.resizeImages(req.body.images)
     const data = await ProductPlatform.findByIdAndUpdate(id, req.body, { new: true })
 
     if (data) {

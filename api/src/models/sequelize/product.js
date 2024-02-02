@@ -53,6 +53,9 @@ module.exports = function (sequelize, DataTypes) {
 
   Product.associate = function (models) {
     Product.hasMany(models.Price, { as: 'prices', foreignKey: 'productId' })
+    Product.hasOne(models.Price, { as: 'price', foreignKey: 'productId', scope: { current: true } })
+    Product.hasMany(models.PriceDiscount, { as: 'priceDiscounts', foreignKey: 'productId' })
+    Product.hasOne(models.PriceDiscount, { as: 'priceDiscount', foreignKey: 'productId', scope: { current: true } })
     Product.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'productId' })
     Product.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'productId' })
     Product.hasMany(models.ReturnDetail, { as: 'returnDetails', foreignKey: 'productId' })

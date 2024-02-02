@@ -24,13 +24,42 @@
     endpoint="/api/admin/product-platforms"
     structure="{
       'tabs': [
-        {'name': 'general', 'label': 'General'}
+        {'name': 'general', 'label': 'General'},
+        {'name': 'images', 'label': 'Imágenes'}
       ],
       'inputs': {
         'general': {
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
             {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
+          ]
+        },
+        'images': {
+          'noLocale': [
+            {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
+              {
+                'thumbnail': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'xs': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'sm': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'md': {
+                  'widthPx': '200',
+                  'heightPx': '200'
+                },
+                'lg': {
+                  'widthPx': '200',
+                  'heightPx': '200'
+                }
+              } 
+            }
           ]
         }
       }

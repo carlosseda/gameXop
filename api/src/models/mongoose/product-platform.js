@@ -1,7 +1,11 @@
 module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
-      name: String
+      name: String,
+      images: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
+      }
     },
     { timestamps: true }
   )

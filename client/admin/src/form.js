@@ -101,6 +101,8 @@ class Form extends HTMLElement {
           }
           
           .tabs-container-menu li{
+            background: hsl(272deg 40% 35% / 50%);
+            border-right: 1px solid hsl(0 0% 50%);
             color: hsl(236 55% 25%);
             cursor: pointer;
             font-family: 'Lato' , sans-serif;
@@ -560,6 +562,7 @@ class Form extends HTMLElement {
             input.setAttribute('name', formElement.name)
             languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
             input.setAttribute('quantity', formElement.quantity)
+            input.setAttribute('image-configurations', JSON.stringify(formElement.imageConfigurations))
 
             // input.accept = formElement.accept || '';
             // input.multiple = formElement.multiple || false;
@@ -950,7 +953,10 @@ class Form extends HTMLElement {
           })
         } else {
           Object.entries(value).forEach(([name, fieldValue]) => {
-            this.shadow.querySelector(`[name="${key}.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+            const field = this.shadow.querySelector(`[name="${key}.${name}"]`)
+            if (field) {
+              field.value = fieldValue !== 'null' ? fieldValue : ''
+            }
           })
           // document.dispatchEvent(new CustomEvent('showDependants', {
           //   detail: {

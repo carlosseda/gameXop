@@ -8,6 +8,7 @@ class UploadImageButton extends HTMLElement {
     this.name = this.getAttribute('name')
     this.languageAlias = this.getAttribute('language-alias')
     this.quantity = this.getAttribute('quantity')
+    this.imageConfigurations = JSON.parse(this.getAttribute('image-configurations'))
 
     document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
     document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
@@ -59,10 +60,10 @@ class UploadImageButton extends HTMLElement {
           filter: brightness(1.2);
         }
       
-        .icon {
+        .square-button svg {
           fill: white;
-          height: 24px;
-          width: 24px;
+          height: 4em;
+          width: 4rem;
         }
 
         .upload-image-container {
@@ -137,8 +138,8 @@ class UploadImageButton extends HTMLElement {
 
       <div class="upload-image-container">
         <button class="square-button">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20,5A2,2 0 0,1 22,7V17A2,2 0 0,1 20,19H4C2.89,19 2,18.1 2,17V7C2,5.89 2.89,5 4,5H20M5,16H19L14.5,10L11,14.5L8.5,11.5L5,16Z" />
           </svg>
         </button>
       </div>
@@ -158,18 +159,6 @@ class UploadImageButton extends HTMLElement {
             image
           }
         }))
-      }
-    })
-  }
-
-  async showThumbnails (images) {
-    this.shadow.querySelectorAll('.upload-image').forEach(image => {
-      image.remove()
-    })
-
-    images.forEach(image => {
-      if (image.name === this.name && image.languageAlias === this.languageAlias) {
-        this.createThumbnail(image)
       }
     })
   }
@@ -199,6 +188,8 @@ class UploadImageButton extends HTMLElement {
     imageContainer.appendChild(deleteButton)
     imageContainer.appendChild(file)
     uploadImageContainer.appendChild(imageContainer)
+
+    image.imageConfigurations = this.imageConfigurations
 
     document.dispatchEvent(new CustomEvent('attachImageToForm', {
       detail: {
@@ -237,23 +228,16 @@ class UploadImageButton extends HTMLElement {
     })
   }
 
-  async updateThumbnail (image, previousImage) {
-    if (this.shadow.querySelector(`.upload-image[data-filename="${image.filename}"]`)) {
-      return
-    }
+  async showThumbnails (images) {
+    this.shadow.querySelectorAll('.upload-image').forEach(image => {
+      image.remove()
+    })
 
-    if (this.shadow.querySelector(`.upload-image[data-filename="${previousImage}"]`)) {
-      const thumbnail = this.shadow.querySelector(`.upload-image[data-filename="${previousImage}"]`)
-
-      thumbnail.querySelector('img').src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${image.filename}`
-      thumbnail.dataset.filename = image.filename
-
-      document.dispatchEvent(new CustomEvent('attachImageToForm', {
-        detail: {
-          image
-        }
-      }))
-    }
+    images.forEach(image => {
+      if (image.name === this.name && image.languageAlias === this.languageAlias) {
+        this.createThumbnail(image)
+      }
+    })
   }
 
   async deleteThumbnails () {

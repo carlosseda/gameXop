@@ -75,85 +75,29 @@ class ImageGallery extends HTMLElement {
           }
 
           .modal-header h2 {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Lato', sans-serif;
             margin: 0;
           }
 
           .modal-header .close {
-            color: #aaa;
+            color: hsl(0, 0%, 40%);
             float: right;
-            font-size: 28px;
+            font-size: 2rem;
             font-weight: bold;
           }
 
           .modal-header .close:hover,
           .modal-header .close:focus {
-            color: black;
+            color: hsl(0, 0%, 20%);
             text-decoration: none;
             cursor: pointer;
           }
 
           .modal-body {
+            border-bottom: 1px solid hsl(0, 0%, 90%);
+            border-top: 1px solid hsl(0, 0%, 90%);
             display: flex;
-            flex-direction: column;
             height: 85%;
-          }
-
-          .tabs-container-menu {
-            display: flex;
-            flex-direction: column;
-          }
-
-          .tabs-container-menu .tabs-container-items {
-            align-items: center;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            padding: 0 1%;
-          }
-
-          .tabs-container-menu .tabs-container-items ul {
-            display: flex;
-            flex-direction: row;
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-          }
-
-          .tabs-container-menu .tabs-container-items ul li {
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            padding: 0.5rem 1rem;
-          }
-
-          .tabs-container-menu .tabs-container-items ul li:hover {
-            color: #555;
-          }
-
-          .tabs-container-menu .tabs-container-items ul li.active {
-            background-color: hsl(207, 85%, 69%);
-            color: white;
-          }
-
-          .tabs-container-content {
-            display: flex;
-            flex-direction: column;
-            height: 95%;
-          }
-
-          .tabs-container-content .tab {
-            display: none;
-            height: 100%;
-          }
-
-          .tabs-container-content .tab.active {
-            display: block;
-          }
-
-          .tabs-container-content .tab.active#gallery-content {
-            border-bottom: 1px solid #dcdcde;
-            border-top: 1px solid #dcdcde;
-            display: flex;
           }
 
           .image-gallery {
@@ -170,12 +114,58 @@ class ImageGallery extends HTMLElement {
           }
 
           .image-gallery-loader {
-            background-color: #f1f1f1;
+            background-color: hsl(0, 0%, 90%);
+            border-left: 1px solid hsl(0, 0%, 80%);
             height: 100%;
             overflow: scroll;
             overflow-y: auto;
             overflow-x: hidden;
             width: 20%;
+          }
+
+          .upload-image {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            cursor: pointer;
+            height: 135px;
+            margin: 5px;
+            overflow: hidden;
+            padding: 5px;
+            position: relative;
+            width: 135px;
+          }
+
+          .upload-image input[type="file"] {
+            display: none;
+          }
+
+          .upload-image label {
+            align-items: center;  
+            background-color: hsl(207, 85%, 69%);
+            border: none;
+            box-sizing: border-box;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            font-family: 'Lato', sans-serif;
+            font-size: 16px;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            text-decoration: none;
+            transition-duration: 0.4s;
+            width: 100%;
+          }
+
+          .upload-image label:hover {
+            filter: brightness(1.2);
+          }
+
+          .upload-image label svg {
+            fill: white;
+            height: 4em;
+            width: 4rem;
           }
 
           .image-gallery .image {
@@ -205,70 +195,45 @@ class ImageGallery extends HTMLElement {
             border: 0.2rem solid #4CAF50;
           }
 
-          .image-gallery-loader-form{
-            margin: 1rem;
+          .image-gallery-information{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 1rem;
+          }
+
+          .image-gallery-loader-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
           }
 
           .image-gallery-loader-form label {
-            font-family: 'Roboto', sans-serif;
-            margin: 0.5rem 5%;
-            width: 90%;
+            color: hsl(0, 0%, 40%);
+            font-family: 'Lato', sans-serif;
           }   
 
           .image-gallery-loader-form input {
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            margin: 5%;
-            padding: 0.2rem;
-            position: relative;
-            width: 90%;
-          }
-
-          .tabs-container-content .tab.active#upload-content {
-            border-bottom: 1px solid #dcdcde;
-            border-top: 1px solid #dcdcde;
-          }
-
-          .upload-image {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            justify-content: center;
-            align-items: center;
-          }
-
-          .upload-image input[type="file"] {
-            display: none;
-          }
-
-          .upload-image label {
-            background-color: hsl(207, 85%, 69%);
             border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            padding: 12px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-          }
-
-          .upload-image label:hover {
-            background-color: #45a049;
+            border-bottom: 1px solid hsl(0, 0%, 80%);
+            box-sizing: border-box;
+            font-family: 'Lato', sans-serif;
+            height: 2rem;
+            outline: none;  
+            padding: 0.5rem;
+            width: 100%;
           }
 
           .modal-footer {
+            align-items: center;
             display: flex;
             justify-content: flex-end;
             padding: 1rem;
           }
 
           .modal-footer button {
-            background-color: #ccc;
+            background-color: hsl(0, 0%, 90%);
             border: none;
             border-radius: 5px;
             color: white;
@@ -277,13 +242,16 @@ class ImageGallery extends HTMLElement {
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            margin: 4px 2px;
             transition-duration: 0.4s;
           }
 
           .modal-footer button.active {
-            background-color: hsl(207, 85%, 69%);
+            background-color: hsl(236 55% 25%);
             cursor: pointer;
+          }
+
+          .modal-footer button.active:hover {
+            background-color: hsl(272 40% 35%);
           }
         </style>
 
@@ -291,40 +259,22 @@ class ImageGallery extends HTMLElement {
           <div class="modal">
             <div class="modal-content">
               <div class="modal-header">
-                <h2>Imagen destacada</h2>
+                <h2>Galería</h2>
                 <span class="close">&times;</span>
               </div>
               <div class="modal-body">
-                  <div class="tabs-container-menu">
-                      <div class="tabs-container-items">
-                          <ul>
-                              <li id="gallery-content" class="active">Galería</li>
-                              <li id="upload-content">Subir imagen</li>
-                          </ul>
-                      </div>
+                <div class="image-gallery"></div>
+                <div class="image-gallery-loader">
+                  <div class="image-gallery-information">
+                    <div class="image-gallery-loader-form">
+                      <label for="title">Título</label>
+                      <input type="text" name="title" />
+                    </div>
+                    <div class="image-gallery-loader-form">
+                      <label for="description">Texto alternativo</label>
+                      <input type="text" name="alt" />
+                    </div>
                   </div>
-                  <div class="tabs-container-content">
-                    <div class="tab active" id="gallery-content">
-                      <div class="image-gallery"></div>
-                      <div class="image-gallery-loader">
-                        <div class="image-gallery-information">
-                          <div class="image-gallery-loader-form">
-                            <label for="title">Título</label>
-                            <input type="text" name="title" />
-                          </div>
-                          <div class="image-gallery-loader-form">
-                            <label for="description">Texto alternativo</label>
-                            <input type="text" name="alt" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="tab" id="upload-content">
-                      <div class="upload-image">
-                        <label for="file">Subir imagen</label>
-                        <input type="file" id="file" name="file" accept="image/*" />
-                      </div>
-                    </div>
                 </div>
               </div>
               <div class="modal-footer">
@@ -398,19 +348,40 @@ class ImageGallery extends HTMLElement {
 
   async getThumbnails () {
     try {
+      const imageGallery = this.shadow.querySelector('.image-gallery')
+      imageGallery.innerHTML = ''
       const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`)
       const data = await result.json()
-      let html = ''
+
+      const uploadImage = document.createElement('div')
+      const label = document.createElement('label')
+      const input = document.createElement('input')
+
+      uploadImage.classList.add('upload-image')
+      label.setAttribute('for', 'file')
+      input.setAttribute('type', 'file')
+      input.setAttribute('id', 'file')
+      input.setAttribute('name', 'file')
+      input.setAttribute('accept', 'image/*')
+
+      label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" /></svg>'
+
+      uploadImage.appendChild(label)
+      uploadImage.appendChild(input)
+
+      imageGallery.appendChild(uploadImage)
 
       data.filenames.forEach(filename => {
-        html += `
-                  <div class="image" data-filename="${filename}">
-                      <img src="${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}" />
-                  </div>
-                `
-      })
+        const imageContainer = document.createElement('div')
+        const image = document.createElement('img')
 
-      this.shadow.querySelector('.image-gallery').innerHTML = html
+        imageContainer.classList.add('image')
+        imageContainer.setAttribute('data-filename', filename)
+        image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}`
+
+        imageContainer.appendChild(image)
+        imageGallery.appendChild(imageContainer)
+      })
     } catch (e) {
       console.log(e)
     }
@@ -449,20 +420,10 @@ class ImageGallery extends HTMLElement {
 
       imageContainer.appendChild(image)
 
-      this.shadow.querySelector('.image-gallery').prepend(imageContainer)
+      const uploadImage = this.shadow.querySelector('.upload-image')
+      uploadImage.insertAdjacentElement('afterend', imageContainer)
     })
 
-    this.shadow.querySelectorAll('.tabs-container-menu li').forEach((item) => {
-      item.classList.remove('active')
-    })
-
-    this.shadow.querySelector('li#gallery-content').classList.add('active')
-
-    this.shadow.querySelectorAll('.tab').forEach((item) => {
-      item.classList.remove('active')
-    })
-
-    this.shadow.querySelector('.tab#gallery-content').classList.add('active')
     this.shadow.querySelector('.modal-footer button').classList.add('active')
 
     this.shadow.querySelector('input[name="alt"]').value = ''

@@ -26,7 +26,8 @@
       'tabs': [
         {'name': 'general', 'label': 'General'},
         {'name': 'images', 'label': 'Imágenes'},
-        {'name': 'specifications', 'label': 'Especificaciones'}
+        {'name': 'specifications', 'label': 'Especificaciones'},
+        {'name': 'prices', 'label': 'Precios'}
       ],
       'inputs': {
         'general': {
@@ -44,11 +45,7 @@
                 {'label': 'Si', 'value': 'true'},
                 {'label': 'No', 'value': 'false'}
               ]
-            },
-            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'one-quarter-width'},
-            {'prefix': 'price', 'name': 'discountPercentage', 'element':'input', 'type': 'number', 'label': 'Porcentaje de oferta (opcional)', 'width': 'one-quarter-width'},
-            {'prefix': 'price', 'name': 'startsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Principio de oferta', 'width': 'one-quarter-width'},
-            {'prefix': 'price', 'name': 'endsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Final de oferta', 'width': 'one-quarter-width'}
+            }
           ],
           'locale': [
             {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'},
@@ -68,6 +65,14 @@
             {'name': 'releaseDate', 'element':'input', 'type': 'date', 'label': 'Fecha de lanzamiento', 'width': 'half-width'},
             {'name': 'categories', 'element':'input',  'type': 'checkbox', 'label': 'Categorias', 'width': 'full-width', 'endpoint': '/api/admin/product-categories/get-categories'},
             {'name': 'platforms', 'element':'input',  'type': 'checkbox', 'label': 'Plataformas', 'width': 'full-width', 'endpoint': '/api/admin/product-platforms/get-platforms'}
+          ]
+        },
+        'prices': {
+          'noLocale': [
+            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'full-width'},
+            {'prefix': 'price', 'name': 'discountPercentage', 'element':'input', 'type': 'number', 'label': 'Porcentaje de oferta (opcional)', 'width': 'one-third-width'},
+            {'prefix': 'price', 'name': 'startsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Principio de oferta', 'width': 'one-third-width'},
+            {'prefix': 'price', 'name': 'endsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Final de oferta', 'width': 'one-third-width'}
           ]
         }
       }

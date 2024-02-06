@@ -109,7 +109,7 @@ exports.delete = (req, res) => {
 
   Menu.destroy({
     where: { id }
-  }).then(([numberRowsAffected]) => {
+  }).then((numberRowsAffected) => {
     if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'

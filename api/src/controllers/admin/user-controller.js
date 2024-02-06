@@ -4,7 +4,7 @@ const Op = sequelizeDb.Sequelize.Op
 
 exports.create = (req, res) => {
   User.create(req.body).then(data => {
-    req.imageService.resizeImages('users', data.id, req.body.images)
+    // req.imageService.resizeImages('users', data.id, req.body.images)
     res.status(200).send(data)
   }).catch(error => {
     if (error.errors) {
@@ -62,7 +62,7 @@ exports.findOne = (req, res) => {
     attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt']
   }).then(async data => {
     if (data) {
-      data.dataValues.images = await req.imageService.getAdminImages('users', id)
+      // data.dataValues.images = await req.imageService.getAdminImages('users', id)
       res.status(200).send(data)
     } else {
       res.status(404).send({
@@ -70,6 +70,7 @@ exports.findOne = (req, res) => {
       })
     }
   }).catch(_ => {
+    console.log(_)
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
@@ -117,7 +118,7 @@ exports.delete = (req, res) => {
 
   User.destroy({
     where: { id }
-  }).then(([numberRowsAffected]) => {
+  }).then((numberRowsAffected) => {
     if (numberRowsAffected === 1) {
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'
@@ -128,6 +129,7 @@ exports.delete = (req, res) => {
       })
     }
   }).catch(_ => {
+    console.log(_)
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })

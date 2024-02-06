@@ -8,7 +8,11 @@ const options = {
   changeOrigin: true,
   logLevel: 'debug',
   onProxyReq: function(proxyReq, req, res) {
-    proxyReq.setHeader('Accept-Language', req.headers['accept-language']);
+    if (!req.headers['accept-language']) {
+      proxyReq.setHeader('Accept-Language', 'es-ES,es;q=0.9,en;q=0.8');
+    } else {
+      proxyReq.setHeader('Accept-Language', req.headers['accept-language']);
+    }
   }
 };
 

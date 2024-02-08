@@ -5,13 +5,32 @@ class PageComponent extends HTMLElement {
     this.basePath = this.getAttribute('base-path') || ''
   }
 
-  connectedCallback () {
+  async connectedCallback () {
+    await this.getRoutes()
     this.render()
     window.onpopstate = () => this.handleRouteChange()
   }
 
   handleRouteChange () {
     this.render()
+  }
+
+  async getRoutes () {
+    this.screenWidth = window.innerWidth
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/front/routes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ screenWidth: this.screenWidth })
+    })
+
+    if (response.ok) {
+      this.routes = await response.json()
+      console.log(this.routes)
+    } else {
+      console.log(response)
+    }
   }
 
   render () {

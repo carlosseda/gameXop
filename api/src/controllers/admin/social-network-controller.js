@@ -1,87 +1,99 @@
-const sequelizeDb = require('../../models/sequelize')
-const SocialNetwork = sequelizeDb.SocialNetwork
-const Op = sequelizeDb.Sequelize.Op
+const moment = require('moment')
+const mongooseDb = require('../../models/mongoose')
+const SocialNetwork = mongooseDb.SocialNetwork
 
-exports.create = (req, res) => {
-  SocialNetwork.create(req.body).then(data => {
-    req.imageService.resizeImages('social_networks', data.id, req.body.images)
+exports.create = async (req, res) => {
+  try {
+    req.body.images = await req.imageService.resizeImages(req.body.images)
+    const data = await SocialNetwork.create(req.body)
     res.status(200).send(data)
-  }).catch(err => {
+  } catch (err) {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  })
+  }
 }
 
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
   const page = req.query.page || 1
   const limit = parseInt(req.query.size) || 10
   const offset = (page - 1) * limit
   const whereStatement = {}
+  whereStatement.deletedAt = { $exists: false }
 
   for (const key in req.query) {
     if (req.query[key] !== '' && key !== 'page' && key !== 'size') {
-      whereStatement[key] = { [Op.substring]: req.query[key] }
+      whereStatement[key] = { $regex: req.query[key], $options: 'i' }
     }
   }
 
-  const condition = Object.keys(whereStatement).length > 0 ? { [Op.and]: [whereStatement] } : {}
+  try {
+    const result = await SocialNetwork.find(whereStatement)
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
 
-  SocialNetwork.findAndCountAll({
-    where: condition,
-    attributes: ['id', 'name', 'baseUrl', 'createdAt', 'updatedAt'],
-    limit,
-    offset,
-    order: [['createdAt', 'DESC']]
-  })
-    .then(result => {
-      result.meta = {
-        total: result.count,
-        pages: Math.ceil(result.count / limit),
+    const count = await SocialNetwork.countDocuments(whereStatement)
+
+    const response = {
+      rows: result.map(doc => ({
+        ...doc,
+        id: doc._id,
+        _id: undefined,
+        createdAt: moment(doc.createdAt).format('YYYY-MM-DD HH:mm'),
+        updatedAt: moment(doc.updatedAt).format('YYYY-MM-DD HH:mm')
+      })),
+      meta: {
+        total: count,
+        pages: Math.ceil(count / limit),
         currentPage: page
       }
+    }
 
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }
 
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id
 
-  SocialNetwork.findByPk(id, {
-    attributes: ['id', 'name', 'baseUrl', 'createdAt', 'updatedAt']
-  }).then(async data => {
+  try {
+    const data = await SocialNetwork.findById(id).lean().exec()
+    data.images = data.images?.adminImages ? data.images.adminImages : []
+
     if (data) {
-      data.dataValues.images = await req.imageService.getAdminImages('social_networks', id)
+      data.id = data._id
+      delete data._id
+    }
+
+    if (data) {
       res.status(200).send(data)
     } else {
       res.status(404).send({
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
-  })
+  }
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id
 
-  SocialNetwork.update(req.body, {
-    where: { id }
-  }).then(async ([numberRowsAffected]) => {
-    if (numberRowsAffected === 1) {
-      if (req.body.images?.length > 0) {
-        await req.imageService.deleteImages('social_networks', id)
-        await req.imageService.resizeImages('social_networks', id, req.body.images)
-      }
+  try {
+    req.body.images = await req.imageService.resizeImages(req.body.images)
+    const data = await SocialNetwork.findByIdAndUpdate(id, req.body, { new: true })
 
+    if (data) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -90,31 +102,31 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
-      message: 'Algún error ha surgido al actualiazar la id=' + id
+      message: 'Algún error ha surgido al actualizar la id=' + id
     })
-  })
+  }
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id
 
-  SocialNetwork.destroy({
-    where: { id }
-  }).then((numberRowsAffected) => {
-    if (numberRowsAffected === 1) {
+  try {
+    const data = await SocialNetwork.findByIdAndUpdate(id, { deletedAt: new Date() })
+
+    if (data) {
       res.status(200).send({
-        message: 'El elemento ha sido borrado correctamente'
+        message: 'El elemento ha sido borrado correctamente.'
       })
     } else {
       res.status(404).send({
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })
-  })
+  }
 }

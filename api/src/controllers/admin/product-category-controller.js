@@ -3,15 +3,14 @@ const mongooseDb = require('../../models/mongoose')
 const ProductCategory = mongooseDb.ProductCategory
 
 exports.create = async (req, res) => {
-  const productCategory = new ProductCategory(req.body)
-  productCategory.save().then(async data => {
+  try {
+    const data = await ProductCategory.create(req.body)
     res.status(200).send(data)
-  }).catch(err => {
-    console.log(err)
+  } catch (err) {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  })
+  }
 }
 
 exports.findAll = async (req, res) => {

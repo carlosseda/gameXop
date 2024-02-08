@@ -3,15 +3,14 @@ const mongooseDb = require('../../models/mongoose')
 const Faq = mongooseDb.Faq
 
 exports.create = async (req, res) => {
-  const faq = new Faq(req.body)
-  faq.save().then(async data => {
+  try {
+    const data = await Faq.create(req.body)
     res.status(200).send(data)
-  }).catch(err => {
-    console.log(err)
+  } catch (err) {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  })
+  }
 }
 
 exports.findAll = async (req, res) => {

@@ -111,10 +111,10 @@ module.exports = class ImageService {
             }
 
             if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
-              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
+              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
             }
 
-            resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
+            resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
             imageConfigurationPromises.push(resizePromise)
           }
 

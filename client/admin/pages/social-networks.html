@@ -32,12 +32,35 @@
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
             {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'half-width'},
-            {'name': 'baseUrl', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'}
+            {'name': 'url', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'}
           ]
         },
         'images': {
           'noLocale': [
-            {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'half-width', 'quantity': 'single'}
+            {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'half-width', 'quantity': 'single', 'imageConfigurations': 
+              {
+                'thumbnail': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'xs': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'sm': {
+                  'widthPx': '100',
+                  'heightPx': '100'
+                },
+                'md': {
+                  'widthPx': '135',
+                  'heightPx': '135'
+                },
+                'lg': {
+                  'widthPx': '135',
+                  'heightPx': '135'
+                }
+              } 
+            }
           ]
         }
       }

@@ -1,32 +1,28 @@
-const sequelizeDb = require('../../models/sequelize')
-const SocialNetwork = sequelizeDb.SocialNetwork
+const mongooseDb = require('../../models/mongoose')
+const SocialNetwork = mongooseDb.SocialNetwork
 
-exports.findAll = (req, res) => {
-  SocialNetwork.findAll({
-    attributes: ['baseUrl'],
-    include: [
-      {
-        attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
-        model: sequelizeDb.Image,
-        as: 'images',
-        where: {
-          languageAlias: req.userLanguage,
-          mediaQuery: 'lg'
-        },
-        required: false
-      }
-    ]
-  })
-    .then(async result => {
-      result = await Promise.all(result.map(async item => {
-        item.dataValues.images = await req.imageService.parseImages(item.images)
-        return item
-      }))
+exports.findAll = async (req, res) => {
+  const whereStatement = {}
+  whereStatement.deletedAt = { $exists: false }
 
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+  try {
+    const result = await SocialNetwork.find()
+      .select('url images')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
+
+    const response = result.map((doc) => ({
+      url: doc.url,
+      filename: doc.images.lg[req.userLanguage].icon.resizedFilename,
+      alt: doc.images.lg[req.userLanguage].icon.alt,
+      title: doc.images.lg[req.userLanguage].icon.title
+    }))
+
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }

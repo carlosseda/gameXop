@@ -13,7 +13,6 @@ class Faqs extends HTMLElement {
 
     if (response.ok) {
       this.faqs = await response.json()
-      console.log(this.faqs)
     } else {
       console.log(response)
     }

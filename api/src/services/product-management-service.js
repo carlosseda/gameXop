@@ -5,8 +5,7 @@ module.exports = class ProductManagementService {
   createSpecifications = async (productId, specifications) => {
     try {
       specifications.productId = productId
-      const productSpecification = new ProductSpecification(specifications)
-      await productSpecification.save()
+      await ProductSpecification.create(specifications)
     } catch (err) {
       console.log(err)
     }

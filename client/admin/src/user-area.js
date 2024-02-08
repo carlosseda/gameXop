@@ -72,9 +72,9 @@ class UserArea extends HTMLElement {
         </div>
       `
 
-    if (this.user.images.avatar?.filename) {
+    if (this.user.images.avatar?.resizedFilename) {
       const image = document.createElement('img')
-      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.filename}`
+      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.resizedFilename}`
       image.alt = this.user.images.avatar.alt
       image.title = this.user.images.avatar.title
       this.shadow.querySelector('.user-avatar').innerHTML = ''

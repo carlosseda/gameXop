@@ -71,7 +71,6 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   AdminTracking.associate = function (models) {
-    AdminTracking.belongsTo(models.User, { as: 'user', foreignKey: 'userId' })
   }
 
   return AdminTracking

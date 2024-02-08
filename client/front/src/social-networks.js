@@ -50,13 +50,13 @@ class socialNetworks extends HTMLElement {
       socialNetworkContainer.classList.add('social-network')
 
       const socialNetworkLink = document.createElement('a')
-      socialNetworkLink.href = socialNetwork.baseUrl
+      socialNetworkLink.href = socialNetwork.url
       socialNetworkLink.target = '_blank'
 
       const socialNetworkImage = document.createElement('img')
-      socialNetworkImage.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${socialNetwork.images.icon.filename}`
-      socialNetworkImage.alt = socialNetwork.images.icon.alt
-      socialNetworkImage.title = socialNetwork.images.icon.title
+      socialNetworkImage.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${socialNetwork.filename}`
+      socialNetworkImage.alt = socialNetwork.alt
+      socialNetworkImage.title = socialNetwork.title
 
       socialNetworkLink.appendChild(socialNetworkImage)
       socialNetworkContainer.appendChild(socialNetworkLink)

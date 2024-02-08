@@ -1,30 +1,26 @@
-const sequelizeDb = require('../../models/sequelize')
-const ProductCategory = sequelizeDb.ProductCategory
+const mongooseDb = require('../../models/mongoose')
+const ProductCategory = mongooseDb.ProductCategory
 
-exports.findAll = (req, res) => {
-  ProductCategory.findAll({
-    attributes: [],
-    where: {
-      visible: true
-    },
-    include: [
-      {
-        attributes: ['key', 'value'],
-        model: sequelizeDb.Locale,
-        as: 'locales',
-        where: {
-          languageAlias: req.userLanguage
-        },
-        required: false
-      }
-    ]
-  })
-    .then(async result => {
-      result = await req.localeService.parseLocales(result)
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+exports.findAll = async (req, res) => {
+  const whereStatement = {}
+  whereStatement.deletedAt = { $exists: false }
+
+  try {
+    const result = await ProductCategory.find()
+      .select('locales')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
+
+    const response = result.map((doc) => ({
+      id: doc._id,
+      title: doc.locales[req.userLanguage].title
+    }))
+
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }

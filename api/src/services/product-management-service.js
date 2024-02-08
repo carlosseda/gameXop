@@ -13,11 +13,13 @@ module.exports = class ProductManagementService {
 
   updateSpecifications = async (productId, specifications) => {
     try {
-      await ProductSpecification.findOneAndUpdate(
+      const updatedProduct = await ProductSpecification.findOneAndUpdate(
         { productId },
         specifications,
         { new: true }
       )
+
+      return updatedProduct
     } catch (err) {
       console.log(err)
     }

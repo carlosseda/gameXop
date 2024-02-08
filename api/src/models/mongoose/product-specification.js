@@ -25,6 +25,10 @@ module.exports = (mongoose) => {
       price: {
         type: Map,
         of: mongoose.Schema.Types.Mixed
+      },
+      links: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
       }
     },
     { timestamps: true }

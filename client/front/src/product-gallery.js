@@ -12,7 +12,12 @@ class ProductGallery extends HTMLElement {
 
   handleFilterByCategory (event) {
     const categoryId = event.detail.categoryId
-    const products = categoryId === 'null' ? this.products : this.products.filter(product => product.categoryId === Number(categoryId))
+
+    const products = this.products.filter(product => {
+      if (categoryId === 'null') return true
+      return product.categories.includes(categoryId)
+    })
+
     this.render(products)
   }
 
@@ -21,100 +26,9 @@ class ProductGallery extends HTMLElement {
 
     if (response.ok) {
       this.products = await response.json()
-      console.log(this.products)
     } else {
       console.log(response)
     }
-
-    // this.products = [
-    //   {
-    //     id: 1,
-    //     path: '/juegos/call-of-duty',
-    //     categoryId: 1,
-    //     price: 100,
-    //     priceBeforeDiscount: 120,
-    //     percentage: 20,
-    //     endOfDiscount: '31 de diciembre',
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Call of Duty Modern Warfare 3'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/call-of-duty.jpg',
-    //       alt: 'Call of Duty'
-    //     }
-    //   },
-    //   {
-    //     id: 2,
-    //     path: '/juegos/payday-3',
-    //     categoryId: 1,
-    //     price: 100,
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Payday 3'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/payday-3.jpg',
-    //       alt: 'Payday 3'
-    //     }
-    //   },
-    //   {
-    //     id: 3,
-    //     path: '/juegos/persona-5',
-    //     categoryId: 2,
-    //     price: 100,
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Persona 5'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/persona-5.jpg',
-    //       alt: 'Persona 5'
-    //     }
-    //   },
-    //   {
-    //     id: 4,
-    //     path: '/juegos/red-dead-redemption-2',
-    //     categoryId: 2,
-    //     price: 100,
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Red Dead Redemption 2'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/red-dead.jpg',
-    //       alt: 'Red Dead Redemption 2'
-    //     }
-    //   },
-    //   {
-    //     id: 5,
-    //     path: '/juegos/starfield',
-    //     categoryId: 3,
-    //     price: 100,
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Starfield'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/starfield.jpg',
-    //       alt: 'Starfield'
-    //     }
-    //   },
-    //   {
-    //     id: 6,
-    //     path: '/juegos/street-fighter-6',
-    //     categoryId: 3,
-    //     price: 100,
-    //     platforms: ['windows', 'apple'],
-    //     locale: {
-    //       title: 'Street Fighter 6'
-    //     },
-    //     image: {
-    //       url: 'http://localhost:5175/public/street-fighter.jpg',
-    //       alt: 'Street Fighter 6'
-    //     }
-    //   }
-    // ]
   }
 
   render (products = this.products) {
@@ -281,14 +195,14 @@ class ProductGallery extends HTMLElement {
 
     products.forEach(product => {
       const productElementLink = document.createElement('a')
-      productElementLink.href = product.path
+      productElementLink.href = product.url
 
       const productElement = document.createElement('div')
       productElementLink.appendChild(productElement)
 
       productElement.classList.add('product')
       productElement.dataset.endpoint = product.id
-      // productElement.dataset.categoryId = product.categoryId
+      productElement.dataset.categories = product.categories
 
       const productTitleContainer = document.createElement('div')
       productTitleContainer.classList.add('product-title')
@@ -312,18 +226,18 @@ class ProductGallery extends HTMLElement {
       const productDetails = document.createElement('div')
       productDetails.classList.add('product-details')
 
-      if (product.priceBeforeDiscount) {
+      if (product.priceAfterDiscount) {
         const productInfoContainer = document.createElement('div')
         productInfoContainer.classList.add('product-info')
 
         const productDiscountPercentage = document.createElement('span')
         productDiscountPercentage.classList.add('product-discount-percentage')
-        productDiscountPercentage.innerText = `- ${product.percentage}%`
+        productDiscountPercentage.innerText = `- ${product.discountPercentage}%`
 
         productInfoContainer.appendChild(productDiscountPercentage)
 
         const productDiscountEnd = document.createElement('span')
-        productDiscountEnd.innerText = `hasta el ${product.endOfDiscount}`
+        productDiscountEnd.innerText = `hasta el ${product.endsAt}`
         productInfoContainer.appendChild(productDiscountEnd)
 
         productDetails.appendChild(productInfoContainer)
@@ -337,8 +251,9 @@ class ProductGallery extends HTMLElement {
 
         product.platforms.forEach(platform => {
           const productPlatform = document.createElement('img')
-          productPlatform.src = `http://localhost:5175/public/${platform}.svg`
-          productPlatform.alt = platform
+          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${platform.filename}`
+          productPlatform.alt = platform.alt
+          productPlatform.alt = platform.title
           productPlatforms.appendChild(productPlatform)
         })
 
@@ -350,15 +265,15 @@ class ProductGallery extends HTMLElement {
         const productPriceDiscountContainer = document.createElement('div')
         productPriceDiscountContainer.classList.add('product-price-discount')
 
-        const productPriceBeforeDiscount = document.createElement('span')
-        productPriceBeforeDiscount.classList.add('product-price-before-discount')
-        productPriceBeforeDiscount.innerText = `${product.priceBeforeDiscount} €`
-        productPriceContainer.appendChild(productPriceBeforeDiscount)
-
         const productPrice = document.createElement('span')
-        productPrice.classList.add('product-price-after-discount')
+        productPrice.classList.add('product-price-before-discount')
         productPrice.innerText = `${product.price} €`
         productPriceContainer.appendChild(productPrice)
+
+        const productPriceAfterDiscount = document.createElement('span')
+        productPriceAfterDiscount.classList.add('product-price-after-discount')
+        productPriceAfterDiscount.innerText = `${product.priceAfterDiscount} €`
+        productPriceContainer.appendChild(productPriceAfterDiscount)
 
         productSpecifications.appendChild(productPriceContainer)
       } else {
@@ -369,22 +284,23 @@ class ProductGallery extends HTMLElement {
         const productPlatforms = document.createElement('div')
         productPlatforms.classList.add('product-platforms')
 
-        // product.platforms.forEach(platform => {
-        //   const productPlatform = document.createElement('img')
-        //   productPlatform.src = `http://localhost:5175/public/${platform}.svg`
-        //   productPlatform.alt = platform
-        //   productPlatforms.appendChild(productPlatform)
-        // })
+        product.platforms.forEach(platform => {
+          const productPlatform = document.createElement('img')
+          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${platform.filename}`
+          productPlatform.alt = platform.alt
+          productPlatform.alt = platform.title
+          productPlatforms.appendChild(productPlatform)
+        })
 
         productSpecifications.appendChild(productPlatforms)
 
         const productPriceContainer = document.createElement('div')
         productPriceContainer.classList.add('product-price')
 
-        // const productPrice = document.createElement('span')
-        // productPrice.classList.add('product-price')
-        // productPrice.innerText = `${product.price} €`
-        // productPriceContainer.appendChild(productPrice)
+        const productPrice = document.createElement('span')
+        productPrice.classList.add('product-price')
+        productPrice.innerText = `${product.price} €`
+        productPriceContainer.appendChild(productPrice)
 
         productSpecifications.appendChild(productPriceContainer)
       }
@@ -394,7 +310,7 @@ class ProductGallery extends HTMLElement {
 
       productElementLink.addEventListener('click', event => {
         event.preventDefault()
-        window.history.pushState({}, '', product.path)
+        window.history.pushState({}, '', product.url)
         window.dispatchEvent(new Event('popstate'))
       })
 

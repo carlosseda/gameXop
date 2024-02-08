@@ -190,6 +190,7 @@ class UploadImageButton extends HTMLElement {
     uploadImageContainer.appendChild(imageContainer)
 
     image.imageConfigurations = this.imageConfigurations
+    image.quantity = this.quantity
 
     document.dispatchEvent(new CustomEvent('attachImageToForm', {
       detail: {

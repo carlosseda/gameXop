@@ -44,7 +44,7 @@ class PageComponent extends HTMLElement {
     if (path === '/') {
       filename = 'home.html'
     } else if (path.startsWith('/juegos/')) {
-      filename = '/game.html'
+      filename = '/product.html'
     } else {
       filename = '404.html'
     }

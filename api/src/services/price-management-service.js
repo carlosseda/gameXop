@@ -14,6 +14,7 @@ module.exports = class PriceManagementService {
       const priceDiscountData = {
         discountPercentage: data.discountPercentage ?? null,
         multiplier: data.discountPercentage ? parseFloat((1 - data.discountPercentage / 100).toFixed(2)) : null,
+        current: true,
         startsAt: data.startsAt ?? null,
         endsAt: data.endsAt ?? null
       }
@@ -54,7 +55,7 @@ module.exports = class PriceManagementService {
       delete priceData.current
       delete priceData.productId
 
-      return [priceData, priceDiscountData]
+      return { ...priceData, ...priceDiscountData }
     } catch (err) {
       console.log(err)
       return false

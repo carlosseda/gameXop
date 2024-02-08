@@ -42,8 +42,6 @@ module.exports = class ImageService {
       }
     }
 
-    console.log(result)
-
     return result
   }
 
@@ -71,21 +69,21 @@ module.exports = class ImageService {
           const imageConfigurationPromises = []
 
           for (const [mediaQuery, imageConfiguration] of Object.entries(images[image].imageConfigurations)) {
-            const resizedFilename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
+            const filename = `${path.parse(images[image].filename).name}-${imageConfiguration.widthPx}x${imageConfiguration.heightPx}.webp`
 
             const imageResize = {
               originalFilename: images[image].filename,
-              resizedFilename,
+              filename,
               title: images[image].title,
               alt: images[image].alt,
               widthPx: imageConfiguration.widthPx,
               heightPx: imageConfiguration.heightPx
             }
 
-            const resizePromise = fs.access(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+            const resizePromise = fs.access(path.join(__dirname, `../storage/images/resized/${filename}`))
               .then(async () => {
                 const start = new Date().getTime()
-                const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+                const stats = await fs.stat(path.join(__dirname, `../storage/images/resized/${filename}`))
                 imageResize.sizeBytes = stats.size
                 const end = new Date().getTime()
                 imageResize.latencyMs = end - start
@@ -95,10 +93,10 @@ module.exports = class ImageService {
                 await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
                   .resize(parseInt(imageConfiguration.widthPx), parseInt(imageConfiguration.heightPx))
                   .webp({ nearLossless: true })
-                  .toFile(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))
+                  .toFile(path.join(__dirname, `../storage/images/resized/${filename}`))
 
                 const end = new Date().getTime()
-                imageResize.sizeBytes = (await fs.stat(path.join(__dirname, `../storage/images/resized/${resizedFilename}`))).size
+                imageResize.sizeBytes = (await fs.stat(path.join(__dirname, `../storage/images/resized/${filename}`))).size
                 imageResize.latencyMs = end - start
               })
 
@@ -111,10 +109,19 @@ module.exports = class ImageService {
             }
 
             if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
-              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
+              if (images[image] === 'single') {
+                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
+              } else {
+                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
+              }
             }
 
-            resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
+            if (images[image].quantity === 'single') {
+              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
+            } else {
+              resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
+            }
+
             imageConfigurationPromises.push(resizePromise)
           }
 

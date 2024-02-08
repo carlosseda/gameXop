@@ -10,16 +10,6 @@ module.exports = {
         autoIncrement: true,
         allowNull: false
       },
-      productId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'products',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'NO ACTION'
-      },
       priceId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -60,10 +50,6 @@ module.exports = {
 
     await queryInterface.addIndex('price_discounts', ['priceId'], {
       name: 'price_discounts_priceId_fk'
-    })
-
-    await queryInterface.addIndex('price_discounts', ['productId'], {
-      name: 'price_discounts_productId_fk'
     })
   },
 

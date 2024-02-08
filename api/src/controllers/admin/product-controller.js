@@ -92,7 +92,8 @@ exports.update = (req, res) => {
     if (numberRowsAffected === 1) {
       req.body.images = await req.imageService.resizeImages(req.body.images)
       req.body.price = await req.priceManagementService.createPrice(id, req.body.price)
-      await req.productManagementService.updateSpecifications(id, req.body)
+      const product = await req.productManagementService.updateSpecifications(id, req.body)
+      req.localeSeoService.createSlug('products', product, req.body.locales)
 
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
@@ -116,7 +117,8 @@ exports.delete = (req, res) => {
     where: { id }
   }).then(async (numberRowsAffected) => {
     if (numberRowsAffected === 1) {
-      await req.localeService.delete('products', id)
+      // req.body.price = await req.priceManagementService.deletePrice(id)
+      // await req.productManagementService.deleteSpecifications(id)
 
       res.status(200).send({
         message: 'El elemento ha sido borrado correctamente'

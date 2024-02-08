@@ -6,10 +6,6 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true,
       allowNull: false
     },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     priceId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -65,13 +61,6 @@ module.exports = function (sequelize, DataTypes) {
         ]
       },
       {
-        name: 'price_discounts_productId_fk',
-        using: 'BTREE',
-        fields: [
-          { name: 'productId' }
-        ]
-      },
-      {
         name: 'price_discounts_priceId_fk',
         using: 'BTREE',
         fields: [
@@ -82,7 +71,6 @@ module.exports = function (sequelize, DataTypes) {
   })
 
   PriceDiscount.associate = function (models) {
-    PriceDiscount.belongsTo(models.Product, { as: 'product', foreignKey: 'productId' })
     PriceDiscount.belongsTo(models.Price, { as: 'price', foreignKey: 'priceId' })
     PriceDiscount.hasMany(models.CartDetail, { as: 'cartDetails', foreignKey: 'priceDiscountId' })
     PriceDiscount.hasMany(models.SaleDetail, { as: 'saleDetails', foreignKey: 'priceDiscountId' })

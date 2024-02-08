@@ -8,8 +8,10 @@ module.exports = class PriceManagementService {
       const priceData = {
         productId,
         basePrice: data.basePrice,
-        current: true,
-        currency: data.currency ?? 'euro',
+        current: true
+      }
+
+      const priceDiscountData = {
         discountPercentage: data.discountPercentage ?? null,
         multiplier: data.discountPercentage ? parseFloat((1 - data.discountPercentage / 100).toFixed(2)) : null,
         startsAt: data.startsAt ?? null,
@@ -31,7 +33,7 @@ module.exports = class PriceManagementService {
         price = await Price.create(priceData)
       }
 
-      priceData.priceId = price.id
+      priceDiscountData.priceId = price.id
 
       if (data.discountPercentage) {
         await PriceDiscount.update(
@@ -39,7 +41,7 @@ module.exports = class PriceManagementService {
           { where: { priceId: price.id, current: true } }
         )
 
-        const priceDiscount = await PriceDiscount.create(priceData)
+        const priceDiscount = await PriceDiscount.create(priceDiscountData)
 
         priceData.priceDiscountId = priceDiscount.id
       } else {
@@ -52,7 +54,7 @@ module.exports = class PriceManagementService {
       delete priceData.current
       delete priceData.productId
 
-      return priceData
+      return [priceData, priceDiscountData]
     } catch (err) {
       console.log(err)
       return false

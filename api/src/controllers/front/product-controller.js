@@ -1,49 +1,29 @@
-const sequelizeDb = require('../../models/sequelize')
-const Product = sequelizeDb.Product
+const mongooseDb = require('../../models/mongoose')
+const ProductSpecification = mongooseDb.ProductSpecification
 
-exports.findAll = (req, res) => {
-  Product.findAll({
-    attributes: ['id', 'visible'],
-    where: {
-      visible: true
-    },
-    include: [
-      {
-        attributes: [['resizedFilename', 'filename'], 'name', 'alt', 'title'],
-        model: sequelizeDb.Image,
-        as: 'images',
-        where: {
-          languageAlias: req.userLanguage,
-          mediaQuery: 'lg',
-          name: 'home-product-gallery'
-        },
-        required: false
-      },
-      {
-        attributes: ['key', 'value'],
-        model: sequelizeDb.Locale,
-        as: 'locales',
-        where: {
-          key: 'title',
-          languageAlias: req.userLanguage
-        },
-        required: false
-      }
-    ]
-  })
-    .then(async result => {
-      console.log(result)
-      result = await req.localeService.parseLocales(result)
+exports.findAll = async (req, res) => {
+  try {
+    const whereStatement = {}
+    whereStatement.deletedAt = { $exists: false }
 
-      result = await Promise.all(result.map(async item => {
-        item.dataValues.images = await req.imageService.parseImages(item.images)
-        return item
-      }))
+    const result = await ProductSpecification.find(whereStatement)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
 
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+    const response = result.map(doc => ({
+      title: doc.locales[req.userLanguage].title,
+      images: doc.images[req.session.screenWidth][req.userLanguage],
+      categories: doc.categories,
+      platforms: doc.platforms
+    }))
+
+    console.log(response)
+
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }

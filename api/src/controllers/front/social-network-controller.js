@@ -15,8 +15,8 @@ exports.findAll = async (req, res) => {
     const response = result.map((doc) => ({
       url: doc.url,
       filename: doc.images.lg[req.userLanguage].icon.resizedFilename,
-      alt: doc.images.lg[req.userLanguage].icon.alt,
-      title: doc.images.lg[req.userLanguage].icon.title
+      alt: doc.images[req.session.screenWidth][req.userLanguage].icon.alt,
+      title: doc.images[req.session.screenWidth][req.userLanguage].icon.title
     }))
 
     res.status(200).send(response)

@@ -1,7 +1,13 @@
+import _ from 'lodash'
+import { store } from '../redux/store.js'
+import { setImageGallery, addImage, removeImage } from '../redux/images-slice.js'
+
 class UploadImageButton extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
+    this.unsubscribe = null
+    this.images = []
   }
 
   connectedCallback () {
@@ -10,33 +16,50 @@ class UploadImageButton extends HTMLElement {
     this.quantity = this.getAttribute('quantity')
     this.imageConfigurations = JSON.parse(this.getAttribute('image-configurations'))
 
-    document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
-    document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
-    document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
-    document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
+    // document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
+    // document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
+    // document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
+    // document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
+
+    this.unsubscribe = store.subscribe(() => {
+      const currentState = store.getState()
+
+      if (currentState.images.showedImages.length > 0 && !_.isEqual(this.images, currentState.images.showedImages)) {
+        this.images = currentState.images.showedImages
+        this.showThumbnails(this.images)
+      }
+
+      if (currentState.images.showedImages.length === 0) {
+        this.deleteThumbnails()
+      }
+    })
 
     this.render()
   }
 
-  handleShowThumbnails = event => {
-    this.showThumbnails(event.detail.images)
+  disconnectedCallback () {
+    this.unsubscribe && this.unsubscribe()
   }
 
-  handleCreateThumbnail = event => {
-    if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
-      this.createThumbnail(event.detail.image)
-    }
-  }
+  // handleShowThumbnails = event => {
+  //   this.showThumbnails(event.detail.images)
+  // }
 
-  handleUpdateThumbnail = event => {
-    if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
-      this.updateThumbnail(event.detail.image, event.detail.previousImage)
-    }
-  }
+  // handleCreateThumbnail = event => {
+  //   if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
+  //     this.createThumbnail(event.detail.image)
+  //   }
+  // }
 
-  handleDeleteThumbnails = event => {
-    this.deleteThumbnails()
-  }
+  // handleUpdateThumbnail = event => {
+  //   if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
+  //     this.updateThumbnail(event.detail.image, event.detail.previousImage)
+  //   }
+  // }
+
+  // handleDeleteThumbnails = event => {
+  //   this.deleteThumbnails()
+  // }
 
   render () {
     this.shadow.innerHTML =
@@ -151,14 +174,12 @@ class UploadImageButton extends HTMLElement {
       if (event.target.closest('.square-button')) {
         const image = {
           name: this.getAttribute('name'),
-          languageAlias: this.languageAlias
+          languageAlias: this.languageAlias,
+          imageConfigurations: this.imageConfigurations
         }
 
-        document.dispatchEvent(new CustomEvent('openGallery', {
-          detail: {
-            image
-          }
-        }))
+        store.dispatch(setImageGallery(image))
+        document.dispatchEvent(new CustomEvent('openGallery'))
       }
     })
   }
@@ -199,23 +220,20 @@ class UploadImageButton extends HTMLElement {
     }))
 
     file.addEventListener('click', (event) => {
-      image.filename = imageContainer.dataset.filename
-
-      document.dispatchEvent(new CustomEvent('showElementGallery', {
-        detail: {
-          image
-        }
-      }))
+      image = { ...image, filename: imageContainer.dataset.filename }
+      store.dispatch(setImageGallery(image))
+      document.dispatchEvent(new CustomEvent('openGallery'))
     })
 
     deleteButton.addEventListener('click', (event) => {
       deleteButton.parentElement.remove()
+      store.dispatch(removeImage(image))
 
-      document.dispatchEvent(new CustomEvent('removeImageFromForm', {
-        detail: {
-          image
-        }
-      }))
+      // document.dispatchEvent(new CustomEvent('removeImageFromForm', {
+      //   detail: {
+      //     image
+      //   }
+      // }))
 
       if (this.getAttribute('quantity') === 'single') {
         this.shadow.querySelector('.upload-image-container').innerHTML = `
@@ -236,6 +254,8 @@ class UploadImageButton extends HTMLElement {
 
     images.forEach(image => {
       if (image.name === this.name && image.languageAlias === this.languageAlias) {
+        image = { ...image, imageConfigurations: this.imageConfigurations }
+        store.dispatch(addImage(image))
         this.createThumbnail(image)
       }
     })

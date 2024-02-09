@@ -1,18 +1,27 @@
+import { store } from '../redux/store.js'
+import { addImage, removeImage } from '../redux/images-slice.js'
+
 class ImageGallery extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
+    this.unsubscribe = null
     this.image = {}
   }
 
   connectedCallback () {
     document.addEventListener('openGallery', this.handleOpenGallery.bind(this))
-    document.addEventListener('showElementGallery', this.handleShowElementGallery.bind(this))
+    // document.addEventListener('showElementGallery', this.handleShowElementGallery.bind(this))
+
     this.render()
   }
 
+  disconnectedCallback () {
+    this.unsubscribe && this.unsubscribe()
+  }
+
   handleOpenGallery (event) {
-    this.openGallery(event.detail.image)
+    this.openGallery()
   }
 
   handleShowElementGallery (event) {
@@ -312,23 +321,19 @@ class ImageGallery extends HTMLElement {
     })
   }
 
-  async openGallery (image) {
-    this.shadow.querySelector('.overlayer').classList.add('active')
-    this.image = image
-  }
+  async openGallery () {
+    const image = store.getState().images.imageGallery
 
-  async showElementGallery (image) {
     this.shadow.querySelector('.overlayer').classList.add('active')
-    this.shadow.querySelector('input[name="title"]').value = image.title
-    this.shadow.querySelector('input[name="alt"]').value = image.alt
+    this.shadow.querySelector('input[name="title"]').value = image.title || ''
+    this.shadow.querySelector('input[name="alt"]').value = image.alt || ''
 
-    this.image = image
+    // this.image = image
     const imageElement = this.shadow.querySelector(`.image[data-filename="${image.filename}"]`)
 
     if (imageElement) {
       imageElement.classList.add('selected')
       this.shadow.querySelector('.modal-footer button').classList.add('active')
-      this.previousImage = image.filename
     }
   }
 
@@ -441,19 +446,23 @@ class ImageGallery extends HTMLElement {
   }
 
   async createThumbnail () {
-    this.image.alt = this.shadow.querySelector('input[name="alt"]').value
-    this.image.title = this.shadow.querySelector('input[name="title"]').value
-    this.image.filename = this.shadow.querySelector('.image.selected').getAttribute('data-filename')
+    let image = store.getState().images.imageGallery
+    const alt = this.shadow.querySelector('input[name="alt"]').value
+    const title = this.shadow.querySelector('input[name="title"]').value
+    const filename = this.shadow.querySelector('.image.selected').getAttribute('data-filename')
+    image = { ...image, alt, title, filename }
 
-    if (this.previousImage) {
-      this.image.previousImage = this.previousImage
+    if (store.getState().images.imageGallery.filename) {
+      store.dispatch(removeImage(store.getState().images.imageGallery))
     }
 
-    document.dispatchEvent(new CustomEvent('createThumbnail', {
-      detail: {
-        image: this.image
-      }
-    }))
+    store.dispatch(addImage(image))
+
+    // document.dispatchEvent(new CustomEvent('createThumbnail', {
+    //   detail: {
+    //     image: this.image
+    //   }
+    // }))
 
     this.closeGallery()
   }

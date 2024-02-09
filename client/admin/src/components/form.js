@@ -1,3 +1,6 @@
+import { store } from '../redux/store.js'
+import { showImages, removeImages } from '../redux/images-slice.js'
+
 class Form extends HTMLElement {
   constructor () {
     super()
@@ -12,8 +15,8 @@ class Form extends HTMLElement {
     document.addEventListener('refreshForm', this.handleRefreshForm.bind(this))
     document.addEventListener('showDependants', this.handleShowDependants.bind(this))
     document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
-    document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
-    document.addEventListener('removeImageFromForm', this.handleRemoveImageFromForm.bind(this))
+    // document.addEventListener('attachImageToForm', this.handleAttachImageToForm.bind(this))
+    // document.addEventListener('removeImageFromForm', this.handleRemoveImageFromForm.bind(this))
 
     await this.getLanguages()
     this.render()
@@ -771,9 +774,12 @@ class Form extends HTMLElement {
         })
       }
 
-      if (this.images) {
-        formDataJson.images = this.images
-      }
+      const currentState = store.getState()
+      formDataJson.images = currentState.images.selectedImages
+
+      // if (this.images) {
+      //   formDataJson.images = this.images
+      // }
 
       const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
@@ -883,9 +889,7 @@ class Form extends HTMLElement {
       select.selectedIndex = 0
     })
 
-    this.images = []
-
-    document.dispatchEvent(new CustomEvent('deleteThumbnails'))
+    store.dispatch(removeImages())
   }
 
   showElement = async element => {
@@ -938,11 +942,12 @@ class Form extends HTMLElement {
 
       if (typeof value === 'object') {
         if (key === 'images') {
-          document.dispatchEvent(new CustomEvent('showThumbnails', {
-            detail: {
-              images: value
-            }
-          }))
+          store.dispatch(showImages(value))
+          // document.dispatchEvent(new CustomEvent('showThumbnails', {
+          //   detail: {
+          //     images: value
+          //   }
+          // }))
         } else if (key === 'locales') {
           Object.entries(value).forEach(([languageAlias, localeValue]) => {
             Object.entries(localeValue).forEach(([name, fieldValue]) => {
@@ -994,17 +999,17 @@ class Form extends HTMLElement {
     }
   }
 
-  removeImageFromForm = async removedImage => {
-    const index = this.images.findIndex(image =>
-      image.filename === removedImage.filename &&
-      image.languageAlias === removedImage.languageAlias &&
-      image.name === removedImage.name
-    )
+  // removeImageFromForm = async removedImage => {
+  //   const index = this.images.findIndex(image =>
+  //     image.filename === removedImage.filename &&
+  //     image.languageAlias === removedImage.languageAlias &&
+  //     image.name === removedImage.name
+  //   )
 
-    if (index !== -1) {
-      this.images.splice(index, 1)
-    }
-  }
+  //   if (index !== -1) {
+  //     this.images.splice(index, 1)
+  //   }
+  // }
 
   validateForm = formInputs => {
     let validForm = true

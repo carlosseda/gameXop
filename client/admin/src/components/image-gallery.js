@@ -1,5 +1,5 @@
 import { store } from '../redux/store.js'
-import { addImage, removeImage } from '../redux/images-slice.js'
+import { showImage, removeImage } from '../redux/images-slice.js'
 
 class ImageGallery extends HTMLElement {
   constructor () {
@@ -11,8 +11,6 @@ class ImageGallery extends HTMLElement {
 
   connectedCallback () {
     document.addEventListener('openGallery', this.handleOpenGallery.bind(this))
-    // document.addEventListener('showElementGallery', this.handleShowElementGallery.bind(this))
-
     this.render()
   }
 
@@ -328,7 +326,6 @@ class ImageGallery extends HTMLElement {
     this.shadow.querySelector('input[name="title"]').value = image.title || ''
     this.shadow.querySelector('input[name="alt"]').value = image.alt || ''
 
-    // this.image = image
     const imageElement = this.shadow.querySelector(`.image[data-filename="${image.filename}"]`)
 
     if (imageElement) {
@@ -456,13 +453,7 @@ class ImageGallery extends HTMLElement {
       store.dispatch(removeImage(store.getState().images.imageGallery))
     }
 
-    store.dispatch(addImage(image))
-
-    // document.dispatchEvent(new CustomEvent('createThumbnail', {
-    //   detail: {
-    //     image: this.image
-    //   }
-    // }))
+    store.dispatch(showImage(image))
 
     this.closeGallery()
   }

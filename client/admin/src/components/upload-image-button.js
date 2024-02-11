@@ -16,16 +16,12 @@ class UploadImageButton extends HTMLElement {
     this.quantity = this.getAttribute('quantity')
     this.imageConfigurations = JSON.parse(this.getAttribute('image-configurations'))
 
-    // document.addEventListener('showThumbnails', this.handleShowThumbnails.bind(this))
-    // document.addEventListener('createThumbnail', this.handleCreateThumbnail.bind(this))
-    // document.addEventListener('updateThumbnail', this.handleUpdateThumbnail.bind(this))
-    // document.addEventListener('deleteThumbnails', this.handleDeleteThumbnails.bind(this))
-
     this.unsubscribe = store.subscribe(() => {
       const currentState = store.getState()
 
       if (currentState.images.showedImages.length > 0 && !_.isEqual(this.images, currentState.images.showedImages)) {
         this.images = currentState.images.showedImages
+        console.log(this.images)
         this.showThumbnails(this.images)
       }
 
@@ -40,26 +36,6 @@ class UploadImageButton extends HTMLElement {
   disconnectedCallback () {
     this.unsubscribe && this.unsubscribe()
   }
-
-  // handleShowThumbnails = event => {
-  //   this.showThumbnails(event.detail.images)
-  // }
-
-  // handleCreateThumbnail = event => {
-  //   if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
-  //     this.createThumbnail(event.detail.image)
-  //   }
-  // }
-
-  // handleUpdateThumbnail = event => {
-  //   if (event.detail.image.name === this.name && event.detail.image.languageAlias === this.languageAlias) {
-  //     this.updateThumbnail(event.detail.image, event.detail.previousImage)
-  //   }
-  // }
-
-  // handleDeleteThumbnails = event => {
-  //   this.deleteThumbnails()
-  // }
 
   render () {
     this.shadow.innerHTML =
@@ -210,15 +186,6 @@ class UploadImageButton extends HTMLElement {
     imageContainer.appendChild(file)
     uploadImageContainer.appendChild(imageContainer)
 
-    image.imageConfigurations = this.imageConfigurations
-    image.quantity = this.quantity
-
-    document.dispatchEvent(new CustomEvent('attachImageToForm', {
-      detail: {
-        image
-      }
-    }))
-
     file.addEventListener('click', (event) => {
       image = { ...image, filename: imageContainer.dataset.filename }
       store.dispatch(setImageGallery(image))
@@ -228,12 +195,6 @@ class UploadImageButton extends HTMLElement {
     deleteButton.addEventListener('click', (event) => {
       deleteButton.parentElement.remove()
       store.dispatch(removeImage(image))
-
-      // document.dispatchEvent(new CustomEvent('removeImageFromForm', {
-      //   detail: {
-      //     image
-      //   }
-      // }))
 
       if (this.getAttribute('quantity') === 'single') {
         this.shadow.querySelector('.upload-image-container').innerHTML = `
@@ -254,7 +215,7 @@ class UploadImageButton extends HTMLElement {
 
     images.forEach(image => {
       if (image.name === this.name && image.languageAlias === this.languageAlias) {
-        image = { ...image, imageConfigurations: this.imageConfigurations }
+        image = { ...image, imageConfigurations: this.imageConfigurations, quantity: this.quantity }
         store.dispatch(addImage(image))
         this.createThumbnail(image)
       }

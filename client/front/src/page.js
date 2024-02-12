@@ -27,7 +27,6 @@ class PageComponent extends HTMLElement {
 
     if (response.ok) {
       this.routes = await response.json()
-      console.log(this.routes)
     } else {
       console.log(response)
     }
@@ -39,15 +38,9 @@ class PageComponent extends HTMLElement {
   }
 
   async getTemplate (path) {
-    let filename
-
-    if (path === '/') {
-      filename = 'home.html'
-    } else if (path.startsWith('/juegos/')) {
-      filename = '/product.html'
-    } else {
-      filename = '404.html'
-    }
+    const filename = this.routes[path]?.filename ?? '404.html'
+    document.title = this.routes[path]?.title ?? '404'
+    document.querySelector('meta[name="description"]').setAttribute('content', this.routes[path]?.description)
 
     await this.loadPage(filename)
   }

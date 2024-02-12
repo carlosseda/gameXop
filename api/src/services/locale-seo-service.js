@@ -15,6 +15,7 @@ module.exports = class LocaleSeoService {
       if (existingSlugIndex !== -1) {
         localeSeo.slugs[existingSlugIndex].url = url
         localeSeo.slugs[existingSlugIndex].title = locale.title
+        localeSeo.slugs[existingSlugIndex].description = locale['short-description']
       } else {
         while (localeSeo.slugs.some(slug => slug.url === url)) {
           url = `${baseUrl}-${counter}`
@@ -24,7 +25,8 @@ module.exports = class LocaleSeoService {
         localeSeo.slugs.push({
           entityId,
           url,
-          title: locale.title
+          title: locale.title,
+          description: locale['short-description']
         })
       }
 

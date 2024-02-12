@@ -17,7 +17,7 @@ exports.findAll = async (req, res) => {
       id: doc._id,
       url: doc.links[req.userLanguage] || null,
       title: doc.locales[req.userLanguage].title,
-      images: doc.images[req.session.screenWidth][req.userLanguage],
+      images: doc.images?.[req.session.screenWidth]?.[req.userLanguage] || [],
       discountPercentage: doc.price.discountPercentage || null,
       priceAfterDiscount: doc.price.discountPercentage ? doc.price.basePrice * doc.price.multiplier : null,
       endsAt: doc.price.endsAt ? moment(doc.price.endsAt).format('DD-MM-YY') : null,

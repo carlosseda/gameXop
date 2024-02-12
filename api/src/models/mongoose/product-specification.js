@@ -29,7 +29,8 @@ module.exports = (mongoose) => {
       links: {
         type: Map,
         of: mongoose.Schema.Types.Mixed
-      }
+      },
+      deletedAt: Date
     },
     { timestamps: true }
   )

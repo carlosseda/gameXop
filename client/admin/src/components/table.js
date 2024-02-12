@@ -1,24 +1,32 @@
+import { store } from '../redux/store.js'
+import { showFormElement } from '../redux/crud-slice.js'
+
 class Table extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.eventsAdded = new Set()
+    this.unsubscribe = null
     this.data = []
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
   }
 
   async connectedCallback () {
-    document.addEventListener('refreshTable', this.handleRefreshTable.bind(this))
     document.addEventListener('newFilter', this.handleNewFilter.bind(this))
     document.addEventListener('showSubtable', this.handleShowSubtable.bind(this))
+
+    this.unsubscribe = store.subscribe(() => {
+      const currentState = store.getState()
+
+      if (currentState.crud.tableEndpoint === this.getAttribute('endpoint')) {
+        this.loadData().then(() => this.render())
+      }
+    })
 
     this.loadData().then(() => this.render())
   }
 
-  async handleRefreshTable (event) {
-    if (event.detail.endpoint === this.getAttribute('endpoint')) {
-      this.loadData(event.detail.data).then(() => this.render())
-    }
+  disconnectedCallback () {
+    this.unsubscribe && this.unsubscribe()
   }
 
   async handleNewFilter (event) {
@@ -400,12 +408,13 @@ class Table extends HTMLElement {
 
           if (response.status === 200) {
             const data = await response.json()
-            document.dispatchEvent(new CustomEvent('showElement', {
-              detail: {
-                endpoint: this.getAttribute('endpoint'),
-                element: data
-              }
-            }))
+
+            const formElement = {
+              endpoint: this.getAttribute('endpoint'),
+              data
+            }
+
+            store.dispatch(showFormElement(formElement))
           }
         } catch (error) {
           const data = await error.json()
@@ -422,12 +431,12 @@ class Table extends HTMLElement {
 
     removeButtons.forEach(removeButton => {
       removeButton.addEventListener('click', () => {
-        const endPoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + removeButton.dataset.id
+        const element = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + removeButton.dataset.id
 
         document.dispatchEvent(new CustomEvent('showDeleteModal', {
           detail: {
-            endPoint,
-            endpoint: this.getAttribute('endpoint'),
+            element,
+            endPoint: this.getAttribute('endpoint'),
             subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null
           }
         }))

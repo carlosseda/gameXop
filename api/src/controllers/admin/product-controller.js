@@ -8,7 +8,10 @@ exports.create = (req, res) => {
     try {
       req.body.images = await req.imageService.resizeImages(req.body.images)
       req.body.price = await req.priceManagementService.createPrice(data.id, req.body.price)
-      await req.productManagementService.createSpecifications(data.id, req.body)
+      const product = await req.productManagementService.createSpecifications(data.id, req.body)
+      console.log(req.body.locales)
+      console.log(req.body.seo)
+      req.localeSeoService.createSlug('products', product, req.body.locales)
       res.status(200).send(data)
     } catch (err) {
       console.log(err)

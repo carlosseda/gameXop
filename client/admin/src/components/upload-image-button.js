@@ -21,7 +21,6 @@ class UploadImageButton extends HTMLElement {
 
       if (currentState.images.showedImages.length > 0 && !_.isEqual(this.images, currentState.images.showedImages)) {
         this.images = currentState.images.showedImages
-        console.log(this.images)
         this.showThumbnails(this.images)
       }
 

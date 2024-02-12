@@ -1,35 +1,41 @@
+import _ from 'lodash'
 import { store } from '../redux/store.js'
+import { refreshTable } from '../redux/crud-slice.js'
 import { showImages, removeImages } from '../redux/images-slice.js'
 
 class Form extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.languages = []
-    this.images = []
+    this.unsubscribe = null
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
+    this.formElementData = null
+    this.languages = []
   }
 
   async connectedCallback () {
-    document.addEventListener('showElement', this.handleShowElement.bind(this))
-    document.addEventListener('refreshForm', this.handleRefreshForm.bind(this))
     document.addEventListener('showDependants', this.handleShowDependants.bind(this))
     document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
+
+    this.unsubscribe = store.subscribe(() => {
+      const currentState = store.getState()
+
+      if (currentState.crud.formElement && currentState.crud.formElement.endpoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
+        this.formElementData = currentState.crud.formElement.data
+        this.showElement(this.formElementData)
+      }
+
+      if (currentState.crud.formElement.data === null && currentState.crud.formElement.endpoint === this.getAttribute('endpoint')) {
+        this.resetForm(this.shadow.querySelector('form'))
+      }
+    })
 
     await this.getLanguages()
     this.render()
   }
 
-  handleShowElement = event => {
-    if (event.detail.endpoint === this.getAttribute('endpoint')) {
-      this.showElement(event.detail.element)
-    }
-  }
-
-  handleRefreshForm = event => {
-    if (event.detail.subtable === this.getAttribute('subtable')) {
-      this.render()
-    }
+  disconnectedCallback () {
+    this.unsubscribe && this.unsubscribe()
   }
 
   handleShowDependants = event => {
@@ -785,8 +791,6 @@ class Form extends HTMLElement {
         }
 
         if (response.status === 200) {
-          const data = await response.json()
-
           document.dispatchEvent(new CustomEvent('message', {
             detail: {
               message: 'Datos guardados correctamente',
@@ -795,14 +799,7 @@ class Form extends HTMLElement {
           }))
 
           this.resetForm(form)
-
-          document.dispatchEvent(new CustomEvent('refreshTable', {
-            detail: {
-              subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null,
-              endpoint: this.getAttribute('endpoint'),
-              data: data.rows ? data.rows : null
-            }
-          }))
+          store.dispatch(refreshTable(this.getAttribute('endpoint')))
         }
       } catch (error) {
         const data = await error.json()

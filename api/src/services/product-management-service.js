@@ -5,7 +5,9 @@ module.exports = class ProductManagementService {
   createSpecifications = async (productId, specifications) => {
     try {
       specifications.productId = productId
-      await ProductSpecification.create(specifications)
+      const product = await ProductSpecification.create(specifications)
+
+      return product
     } catch (err) {
       console.log(err)
     }
@@ -13,13 +15,13 @@ module.exports = class ProductManagementService {
 
   updateSpecifications = async (productId, specifications) => {
     try {
-      const updatedProduct = await ProductSpecification.findOneAndUpdate(
+      const product = await ProductSpecification.findOneAndUpdate(
         { productId },
         specifications,
         { new: true }
       )
 
-      return updatedProduct
+      return product
     } catch (err) {
       console.log(err)
     }

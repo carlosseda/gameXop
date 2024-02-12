@@ -1,3 +1,6 @@
+import { store } from '../redux/store.js'
+import { showFormElement, refreshTable } from '../redux/crud-slice.js'
+
 class DeleteElementModal extends HTMLElement {
   constructor () {
     super()
@@ -10,8 +13,8 @@ class DeleteElementModal extends HTMLElement {
   }
 
   handleShowDeleteModal (event) {
+    this.element = event.detail.element
     this.endPoint = event.detail.endPoint
-    this.endpoint = event.detail.endpoint
     this.subtable = event.detail.subtable
     this.shadow.querySelector('.overlayer').classList.add('active')
   }
@@ -109,23 +112,17 @@ class DeleteElementModal extends HTMLElement {
       `
 
     this.shadow.querySelector('#delete-confirm').addEventListener('click', () => {
-      fetch(this.endPoint, {
+      fetch(this.element, {
         method: 'DELETE'
       }).then(response => {
         return response.json()
       }).then(data => {
-        document.dispatchEvent(new CustomEvent('refreshTable', {
-          detail: {
-            endpoint: this.endpoint
-            // data: data.result.rows ? data.result.rows : null
-          }
+        store.dispatch(showFormElement({
+          endpoint: this.endpoint,
+          data: null
         }))
 
-        document.dispatchEvent(new CustomEvent('refreshForm', {
-          detail: {
-            endpoint: this.endpoint
-          }
-        }))
+        store.dispatch(refreshTable(this.endPoint))
 
         document.dispatchEvent(new CustomEvent('message', {
           detail: {
@@ -136,7 +133,6 @@ class DeleteElementModal extends HTMLElement {
 
         this.shadow.querySelector('.overlayer').classList.remove('active')
       }).catch(error => {
-        console.log(error)
         document.dispatchEvent(new CustomEvent('message', {
           detail: {
             message: error.message,

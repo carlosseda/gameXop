@@ -4,22 +4,23 @@ const LocaleSeo = mongooseDb.LocaleSeo
 exports.findAll = async (req, res) => {
   const result = await LocaleSeo.find({ environment: 'front', languageAlias: req.userLanguage })
 
-  const response = result.map(item => {
-    const baseUrls = [
-      { url: item.url }
-    ]
-    // TODO
-    const slugUrls = item.slugs.map(slug => {
-      return {
-        url: `${item.url}/${slug.url}`,
-        filename: item.filename
+  const response = result.reduce((acc, item) => {
+    acc[item.url] = {
+      filename: item.filename,
+      title: item.title,
+      description: item.description
+    }
+
+    item.slugs.forEach(slug => {
+      acc[`${item.url}/${slug.url}`] = {
+        filename: item.filename,
+        title: slug.title,
+        description: slug.description ?? item.description
       }
     })
 
-    return [...baseUrls, ...slugUrls]
-  }).flat()
-
-  console.log(response)
+    return acc
+  }, {})
 
   res.status(200).send(response)
 }

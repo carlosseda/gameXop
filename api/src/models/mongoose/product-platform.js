@@ -5,7 +5,8 @@ module.exports = (mongoose) => {
       images: {
         type: Map,
         of: mongoose.Schema.Types.Mixed
-      }
+      },
+      deletedAt: Date
     },
     { timestamps: true }
   )

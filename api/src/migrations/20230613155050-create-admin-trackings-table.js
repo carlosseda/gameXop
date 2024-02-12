@@ -12,13 +12,7 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'users',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'NO ACTION'
+        allowNull: false
       },
       entity: {
         type: Sequelize.STRING,
@@ -43,10 +37,6 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE
       }
-    })
-
-    await queryInterface.addIndex('admin_trackings', ['userId'], {
-      name: 'admin_trackings_userId_fk'
     })
 
     await queryInterface.addIndex('admin_trackings', ['entity', 'entityId'], {

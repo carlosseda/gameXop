@@ -2,6 +2,8 @@ module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
       entity: String,
+      environment: String,
+      filename: String,
       languageAlias: String,
       url: String,
       title: String,

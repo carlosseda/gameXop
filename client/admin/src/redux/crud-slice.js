@@ -11,7 +11,6 @@ export const crudSlice = createSlice({
   },
   reducers: {
     showFormElement: (state, action) => {
-      console.log('showFormElement', action.payload)
       state.formElement = action.payload
     },
     refreshTable: (state, action) => {

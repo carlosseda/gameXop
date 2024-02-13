@@ -786,7 +786,7 @@ class Form extends HTMLElement {
           body: JSON.stringify(formDataJson)
         })
 
-        if (response.status === 500) {
+        if (response.status === 500 || response.status === 422) {
           throw response
         }
 

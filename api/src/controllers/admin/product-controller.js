@@ -3,26 +3,19 @@ const sequelizeDb = require('../../models/sequelize')
 const Product = sequelizeDb.Product
 const Op = sequelizeDb.Sequelize.Op
 
-exports.create = (req, res) => {
-  Product.create(req.body).then(async data => {
-    try {
-      req.body.images = await req.imageService.resizeImages(req.body.images)
-      req.body.price = await req.priceManagementService.createPrice(data.id, req.body.price)
-      const product = await req.productManagementService.createSpecifications(data.id, req.body)
-      console.log(req.body.locales)
-      console.log(req.body.seo)
-      req.localeSeoService.createSlug('products', product, req.body.locales)
-      res.status(200).send(data)
-    } catch (err) {
-      console.log(err)
-    }
-  }).catch(err => {
-    console.log(err)
-
+exports.create = async (req, res) => {
+  try {
+    const data = await Product.create(req.body)
+    req.body.images = await req.imageService.resizeImages(req.body.images)
+    req.body.price = await req.priceManagementService.createPrice(data.id, req.body.price)
+    const product = await req.productManagementService.createSpecifications(data.id, req.body)
+    req.localeSeoService.createSlug('products', product, req.body.locales)
+    res.status(200).send(data)
+  } catch (err) {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  })
+  }
 }
 
 exports.findAll = (req, res) => {
@@ -79,7 +72,6 @@ exports.findOne = (req, res) => {
       })
     }
   }).catch(_ => {
-    console.log(_)
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })

@@ -109,3 +109,13 @@ exports.delete = (req, res) => {
     })
   })
 }
+
+exports.getUrls = (req, res) => {
+  LocaleSeo.findAll({ attributes: ['url'] }).then(data => {
+    res.status(200).send(data)
+  }).catch(err => {
+    res.status(500).send({
+      message: err.errors || 'Algún error ha surgido al recuperar los datos.'
+    })
+  })
+}

@@ -8,14 +8,12 @@ class Form extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
-    this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
     this.formElementData = null
     this.languages = []
   }
 
   async connectedCallback () {
-    document.addEventListener('showDependants', this.handleShowDependants.bind(this))
-    document.addEventListener('hideDependants', this.handleHideDependants.bind(this))
+    this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     this.unsubscribe = store.subscribe(() => {
       const currentState = store.getState()
@@ -36,20 +34,6 @@ class Form extends HTMLElement {
 
   disconnectedCallback () {
     this.unsubscribe && this.unsubscribe()
-  }
-
-  handleShowDependants = event => {
-    if (this.getAttribute('')) {
-      this.parentFormId = event.detail.parentFormId
-      this.classList.remove('dependant')
-    }
-  }
-
-  handleHideDependants = event => {
-    if (this.getAttribute('dependant')) {
-      this.parentFormId = null
-      this.classList.add('dependant')
-    }
   }
 
   getLanguages = async () => {
@@ -76,10 +60,6 @@ class Form extends HTMLElement {
     this.shadow.innerHTML =
       /* html */`
         <style>
-          :host(.dependant) {
-            display: none;
-          }
-
           .tabs-container-menu{
             background-color: hsl(100, 100%, 100%);
             display: flex;
@@ -93,7 +73,7 @@ class Form extends HTMLElement {
           }
           
           .tabs-container-menu ul{
-            height: 2.5em;
+            height: 2.5rem;
             display: flex;
             margin: 0;
             padding: 0;
@@ -107,7 +87,7 @@ class Form extends HTMLElement {
             font-family: 'Lato' , sans-serif;
             list-style: none;
             font-weight: 600;
-            padding: 0.5em;
+            padding: 0.5rem;
             text-align: center;
           }
           
@@ -117,14 +97,10 @@ class Form extends HTMLElement {
             color: white;
           }
 
-          .childrens-container.dependant{
-            display: none;
-          }
-          
           .tabs-container-buttons{
             display: flex;
             gap: 0.5rem;
-            padding: 0 0.5em;
+            padding: 0 0.5rem;
           }
 
           .tabs-container-buttons svg{
@@ -142,9 +118,9 @@ class Form extends HTMLElement {
             background-color: hsl(0, 0%, 100%);
             display: none;
             flex-direction: column;
-            gap: 1em;
-            margin-top: 1em;
-            padding: 1em;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
           }
 
           .errors-container.active{
@@ -158,7 +134,7 @@ class Form extends HTMLElement {
           .errors-container .error-container span{
             color: hsl(0, 0%, 50%);
             font-family: 'Lato' , sans-serif;
-            font-size: 1em;
+            font-size: 1rem;
             font-weight: 600;
           }
           
@@ -170,7 +146,7 @@ class Form extends HTMLElement {
             display: flex;
             flex-wrap: wrap;
             gap: 1%;
-            padding: 1em 0;
+            padding: 1rem 0;
             width: 100%;
           }
 
@@ -198,7 +174,7 @@ class Form extends HTMLElement {
           .form-element-label{
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1em;
+            margin-bottom: 1rem;
             width: 100%;
           }
           
@@ -207,15 +183,15 @@ class Form extends HTMLElement {
             color: hsl(0, 0%, 100%);
             font-family: 'Lato' , sans-serif;
             font-weight: 600;
-            font-size: 1em;
+            font-size: 1rem;
             transition: color 0.5s;
           }
 
           .form-element-label label.invalid::after{
             content: '*';
             color: hsl(0, 100%, 50%);
-            font-size: 1.5em;
-            margin-left: 0.2em;
+            font-size: 1.5rem;
+            margin-left: 0.2rem;
           }
 
           .form-element-label,
@@ -246,7 +222,7 @@ class Form extends HTMLElement {
             font-family: 'Lato' , sans-serif;
             font-size: 1rem;
             font-weight: 600;
-            padding: 0.5em;
+            padding: 0.5rem;
             width: 100%;
           }
 
@@ -254,29 +230,29 @@ class Form extends HTMLElement {
           .form-element-input textarea:focus,
           .form-element-input select:focus{
             outline: none;
-            border-bottom: 0.1em solid hsl(207, 85%, 69%);
+            border-bottom: 0.1rem solid hsl(207, 85%, 69%);
           }
 
           .form-element-input input.invalid,
           .form-element-input textarea.invalid{
-            border-bottom: 0.2em solid hsl(0, 100%, 50%);
+            border-bottom: 0.2rem solid hsl(0, 100%, 50%);
           }
 
           .form-element-input textarea{
-            height: 10em;
+            height: 10rem;
           }
 
           .form-element-input .checkbox-container,
           .form-element-input .radio-container{
             display: flex;
             align-items: center;
-            gap: 0.5em;
+            gap: 0.5rem;
           }
 
           .form-element-input .checkbox-container input,
           .form-element-input .radio-container input{
-            width: 1em;
-            height: 1em;
+            width: 1rem;
+            height: 1rem;
           }
 
           .form-element-input .checkbox-container label,
@@ -284,13 +260,13 @@ class Form extends HTMLElement {
             color: hsl(0, 0%, 100%);
             font-family: 'Lato' , sans-serif;
             font-weight: 600;
-            font-size: 1em;
+            font-size: 1rem;
           }
 
           .form-element-input .range-container{
             display: flex;
             align-items: center;
-            gap: 0.5em;
+            gap: 0.5rem;
           }
 
           .form-element-input .range-container input{
@@ -301,21 +277,21 @@ class Form extends HTMLElement {
             color: hsl(0, 0%, 100%);
             font-family: 'Lato' , sans-serif;
             font-weight: 600;
-            font-size: 1em;
+            font-size: 1rem;
           }
 
           .form-element-input .range-container .range-value{
             color: hsl(0, 0%, 100%);
             font-family: 'Lato' , sans-serif;
             font-weight: 600;
-            font-size: 1em;
+            font-size: 1rem;
           }
 
           .form-element-input .range-container input[type="range"]{
             -webkit-appearance: none;
             width: 100%;
-            height: 0.5em;
-            border-radius: 0.5em;
+            height: 0.5rem;
+            border-radius: 0.5rem;
             background: hsl(0, 0%, 100%);
             outline: none;
             opacity: 0.7;
@@ -328,14 +304,43 @@ class Form extends HTMLElement {
             filter: invert(1);
           }
 
-          .childrens-container{
+          .dependants-container{
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 1rem;
             width: 100%;
           }
 
-          .childrens-container div{
-            width: 48%;
+          .dependants-container .dependant-container{
+            background-color: hsl(272deg 40% 35% / 30%);
+            height: auto;
+            padding: 1rem;
+          }
+
+          .dependants-container .dependant-header{
+            align-items: center;
+            display: flex;
+            height: 2.5rem;
+          }
+
+          .dependants-container .dependant-header span{
+            color: hsl(0 0% 100%);
+            font-family: 'Lato' , sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+          }
+
+          .dependants-container .dependants-components{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1%;
+            justify-content: space-between;
+            padding: 1rem 0;
+            width: 100%
+          }
+
+          .dependants-container .dependants-components div{
+            width: 49%;
           }
         </style>
         
@@ -373,7 +378,7 @@ class Form extends HTMLElement {
 
             <div class="tabs-container-content"></div>
         </form>
-        <div class="childrens-container dependant"></div>
+        <div class="dependants-container"></div>
       `
 
     const form = this.shadow.querySelector('form')
@@ -642,6 +647,11 @@ class Form extends HTMLElement {
         select.required = formElement.required || false
         select.multiple = formElement.multiple || false
 
+        if (formElement.endpoint) {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}${formElement.endpoint}`)
+          formElement.options = await response.json()
+        }
+
         formElement.options.forEach(option => {
           const optionElement = document.createElement('option')
           optionElement.value = option.value
@@ -650,32 +660,6 @@ class Form extends HTMLElement {
         })
 
         formElementInput.append(select)
-      }
-
-      if (formElement.element === 'subform') {
-        const formContainer = document.createElement('div')
-        formContainer.classList.add('subform-container')
-
-        const formComponent = document.createElement('form-component')
-        formComponent.setAttribute('subform', formElement.name)
-        formComponent.setAttribute('endpoint', formElement.endpoint)
-        formContainer.append(formComponent)
-
-        const childrens = this.shadow.querySelector('.childrens-container')
-        childrens.append(formContainer)
-      }
-
-      if (formElement.element === 'subtable') {
-        const tableContainer = document.createElement('div')
-        tableContainer.classList.add('subtable-container')
-
-        const tableComponent = document.createElement('table-component')
-        tableComponent.setAttribute('subtable', formElement.name)
-        tableComponent.setAttribute('endpoint', formElement.endpoint)
-        tableContainer.append(tableComponent)
-
-        const childrens = this.shadow.querySelector('.childrens-container')
-        childrens.append(tableContainer)
       }
 
       tabPanel.append(formElementContainer)
@@ -770,8 +754,11 @@ class Form extends HTMLElement {
         })
       }
 
-      const currentState = store.getState()
-      formDataJson.images = currentState.images.selectedImages
+      formDataJson.images = store.getState().images.selectedImages
+
+      if (this.getAttribute('parent')) {
+        formDataJson.parentId = this.getAttribute('parent')
+      }
 
       const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
@@ -791,6 +778,8 @@ class Form extends HTMLElement {
         }
 
         if (response.status === 200) {
+          const data = await response.json()
+
           document.dispatchEvent(new CustomEvent('message', {
             detail: {
               message: 'Datos guardados correctamente',
@@ -798,7 +787,12 @@ class Form extends HTMLElement {
             }
           }))
 
-          this.resetForm(form)
+          if (!this.getAttribute('dependants')) {
+            this.resetForm(form)
+          } else if (!this.shadow.querySelector('.dependant-container')) {
+            this.showDependants(data._id)
+          }
+
           store.dispatch(refreshTable(this.getAttribute('endpoint')))
         }
       } catch (error) {
@@ -872,6 +866,8 @@ class Form extends HTMLElement {
       select.selectedIndex = 0
     })
 
+    this.shadow.querySelector('.dependants-container').innerHTML = ''
+
     store.dispatch(removeImages())
   }
 
@@ -941,15 +937,67 @@ class Form extends HTMLElement {
               field.value = fieldValue !== 'null' ? fieldValue : ''
             }
           })
-          // document.dispatchEvent(new CustomEvent('showDependants', {
-          //   detail: {
-          //     subtable: key,
-          //     data: value,
-          //     parentFormId: element.id
-          //   }
-          // }))
         }
       }
+    })
+
+    if (this.getAttribute('dependants')) {
+      this.showDependants(element.id)
+    }
+  }
+
+  showDependants = parentId => {
+    const dependants = JSON.parse(this.getAttribute('dependants').replaceAll("'", '"'))
+    const dependantsContainer = this.shadow.querySelector('.dependants-container')
+
+    dependants.forEach(dependant => {
+      const dependantContainer = document.createElement('div')
+      dependantContainer.classList.add('dependant-container')
+      dependantsContainer.append(dependantContainer)
+
+      const dependantHeader = document.createElement('div')
+      dependantHeader.classList.add('dependant-header')
+      dependantContainer.append(dependantHeader)
+
+      const dependantTitle = document.createElement('span')
+      dependantTitle.innerText = dependant.label
+      dependantHeader.append(dependantTitle)
+
+      const dependantsComponents = document.createElement('div')
+      dependantsComponents.classList.add('dependants-components')
+      dependantContainer.append(dependantsComponents)
+
+      dependant.structure.forEach(component => {
+        if (component.element === 'subform') {
+          const formContainer = document.createElement('div')
+          formContainer.classList.add('subform-container')
+
+          const formComponent = document.createElement('form-component')
+          formComponent.classList.add('dependant')
+          formComponent.setAttribute('parent', parentId)
+          formComponent.setAttribute('subform', dependant.name)
+          formComponent.setAttribute('endpoint', component.endpoint)
+          formComponent.setAttribute('structure', JSON.stringify(component.structure))
+          formContainer.append(formComponent)
+
+          dependantsComponents.append(formContainer)
+        }
+
+        if (component.element === 'subtable') {
+          const tableContainer = document.createElement('div')
+          tableContainer.classList.add('subtable-container')
+
+          const tableComponent = document.createElement('table-component')
+          tableComponent.classList.add('dependant')
+          tableComponent.setAttribute('parent', parentId)
+          tableComponent.setAttribute('subtable', dependant.name)
+          tableComponent.setAttribute('endpoint', component.endpoint)
+          tableComponent.setAttribute('structure', JSON.stringify(component.structure))
+          tableContainer.append(tableComponent)
+
+          dependantsComponents.append(tableContainer)
+        }
+      })
     })
   }
 

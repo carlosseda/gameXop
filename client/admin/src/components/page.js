@@ -29,6 +29,7 @@ class PageComponent extends HTMLElement {
 
     const routes = {
       '/admin': 'dashboard.html',
+      '/admin/menus': 'menus.html',
       '/admin/usuarios': 'users.html',
       '/admin/faqs': 'faqs.html',
       '/admin/categoria-productos': 'product-categories.html',

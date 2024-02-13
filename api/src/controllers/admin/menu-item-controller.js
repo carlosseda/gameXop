@@ -1,80 +1,81 @@
-const sequelizeDb = require('../../models/sequelize')
-const MenuItem = sequelizeDb.MenuItem
-const Op = sequelizeDb.Sequelize.Op
+const moment = require('moment')
+const mongooseDb = require('../../models/mongoose')
+const Menu = mongooseDb.Menu
+const MenuItem = mongooseDb.MenuItem
 
-exports.create = (req, res) => {
-  MenuItem.create(req.body).then(data => {
+exports.create = async (req, res) => {
+  try {
+    const data = await MenuItem.create(req.body)
+    await Menu.findByIdAndUpdate(req.body.parentId, { $push: { items: data._id } })
     res.status(200).send(data)
-  }).catch(err => {
+  } catch (err) {
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
-  })
+  }
 }
 
-exports.findAll = (req, res) => {
-  const page = req.query.page || 1
-  const limit = parseInt(req.query.size) || 10
-  const offset = (page - 1) * limit
-
+exports.findAll = async (req, res) => {
   const whereStatement = {}
-  const condition = Object.keys(whereStatement).length > 0 ? { [Op.and]: [whereStatement] } : {}
+  whereStatement.deletedAt = { $exists: false }
+  whereStatement.parentId = req.query.parent
 
-  MenuItem.findAndCountAll({
-    where: condition,
-    attributes: ['id', 'name', 'visible'],
-    limit,
-    offset,
-    order: [['createdAt', 'DESC']]
-  })
-    .then(result => {
-      result.meta = {
-        total: result.count,
-        pages: Math.ceil(result.count / limit),
-        currentPage: page
-      }
+  try {
+    const result = await MenuItem.find(whereStatement)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
 
-      res.status(200).send(result)
-    }).catch(err => {
-      res.status(500).send({
-        message: err.errors || 'Algún error ha surgido al recuperar los datos.'
-      })
+    const response = {
+      rows: result.map(doc => ({
+        ...doc,
+        id: doc._id,
+        _id: undefined,
+        createdAt: moment(doc.createdAt).format('YYYY-MM-DD HH:mm'),
+        updatedAt: moment(doc.updatedAt).format('YYYY-MM-DD HH:mm')
+      }))
+    }
+
+    res.status(200).send(response)
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
+  }
 }
 
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id
 
-  MenuItem.findByPk(id).then(data => {
-    if (data) {
-      data.dataValues.link = data.localeSeoId
-        ? 'localeSeoId'
-        : data.localeSeoSlugId
-          ? 'localeSeoSlugId'
-          : data.customUrl
-            ? 'customUrl'
-            : null
+  try {
+    const data = await MenuItem.findById(id).lean().exec()
 
+    if (data) {
+      data.id = data._id
+      delete data._id
+    }
+
+    if (data) {
       res.status(200).send(data)
     } else {
       res.status(404).send({
         message: `No se puede encontrar el elemento con la id=${id}.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al recuperar la id=' + id
     })
-  })
+  }
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id
 
-  MenuItem.update(req.body, {
-    where: { id }
-  }).then(([numberRowsAffected]) => {
-    if (numberRowsAffected === 1) {
+  try {
+    const data = await MenuItem.findByIdAndUpdate(id, req.body, { new: true })
+
+    if (data) {
       res.status(200).send({
         message: 'El elemento ha sido actualizado correctamente.'
       })
@@ -83,31 +84,32 @@ exports.update = (req, res) => {
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
-      message: 'Algún error ha surgido al actualiazar la id=' + id
+      message: 'Algún error ha surgido al actualizar la id=' + id
     })
-  })
+  }
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id
 
-  MenuItem.destroy({
-    where: { id }
-  }).then((numberRowsAffected) => {
-    if (numberRowsAffected === 1) {
+  try {
+    const data = await MenuItem.findByIdAndUpdate(id, { deletedAt: new Date() })
+    await Menu.findByIdAndUpdate(data.parentId, { $pull: { items: id } })
+
+    if (data) {
       res.status(200).send({
-        message: 'El elemento ha sido borrado correctamente'
+        message: 'El elemento ha sido borrado correctamente.'
       })
     } else {
       res.status(404).send({
         message: `No se puede borrar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento.`
       })
     }
-  }).catch(_ => {
+  } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
     })
-  })
+  }
 }

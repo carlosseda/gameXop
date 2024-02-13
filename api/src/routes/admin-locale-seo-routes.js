@@ -3,6 +3,7 @@ module.exports = (app) => {
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/locale-seo-controller.js')
 
+  router.get('/get-urls', [authCookie.verifyUserCookie], controller.getUrls)
   router.post('/', [authCookie.verifyUserCookie], controller.create)
   router.get('/', [authCookie.verifyUserCookie], controller.findAll)
   router.get('/:id', [authCookie.verifyUserCookie], controller.findOne)

@@ -10,6 +10,8 @@
     structure="{
       'headers': [
         {'label': 'Nombre', 'field': 'name'},
+        {'label': 'Entorno', 'field': 'environment'},
+        {'label': 'Idioma', 'field': 'languageAlias'},
         {'label': 'Fecha de creación', 'field': 'createdAt'},
         {'label': 'Fecha de actualización', 'field': 'updatedAt'}
       ],
@@ -29,19 +31,20 @@
         'general': {
           'noLocale': [
             {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'one-third-width'},
-            {'name': 'environment', 'element':'select', 'label': 'Entorno', 'width': 'one-third-width', 'options': 
+            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'one-quarter-width'},
+            {'name': 'environment', 'element':'select', 'label': 'Entorno', 'width': 'one-quarter-width', 'options': 
               [
                 {'label': 'Administración', 'value': 'admin'},
                 {'label': 'Front', 'value': 'front'}
               ]
             },
-            {'name': 'private', 'element':'select', 'label': 'Privado', 'width': 'one-third-width', 'options': 
+            {'name': 'private', 'element':'select', 'label': 'Privado', 'width': 'one-quarter-width', 'options': 
               [
                 {'label': 'Sí', 'value': 'true'},
                 {'label': 'No', 'value': 'false'}
               ]
-            }
+            },
+            {'name': 'languageAlias', 'element':'select', 'label': 'Idioma', 'width': 'one-quarter-width', 'endpoint': '/api/admin/languages/get-languages'}
           ]
         }
       }
@@ -58,10 +61,8 @@
             'inputs': {
               'general': {
                 'noLocale': [
-                  {'name': 'id', 'element':'input', 'type': 'hidden'}
-                ],
-                'locale': [
-                  {'name': 'url', 'element':'select', 'label': 'Url', 'width': 'half-width', 'endpoint': '/api/admin/locale-seos/get-urls'},
+                  {'name': 'id', 'element':'input', 'type': 'hidden'},
+                  {'name': 'url', 'element':'select', 'label': 'Url', 'width': 'half-width', 'endpoint': '/api/admin/locale-seos/get-urls', 'parent-filter': ['environment', 'languageAlias']},
                   {'name': 'private', 'element':'select', 'label': 'Privado', 'width': 'half-width', 'options': 
                     [
                       {'label': 'Sí', 'value': 'true'},

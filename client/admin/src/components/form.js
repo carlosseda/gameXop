@@ -9,21 +9,22 @@ class Form extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
     this.formElementData = null
-    this.languages = []
+    this.languages = null
   }
 
   async connectedCallback () {
+    this.parent = this.getAttribute('parent') ? JSON.parse(this.getAttribute('parent')) : null
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     this.unsubscribe = store.subscribe(() => {
       const currentState = store.getState()
 
-      if (currentState.crud.formElement && currentState.crud.formElement.endpoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
+      if (currentState.crud.formElement && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.formElementData = currentState.crud.formElement.data
         this.showElement(this.formElementData)
       }
 
-      if (currentState.crud.formElement.data === null && currentState.crud.formElement.endpoint === this.getAttribute('endpoint')) {
+      if (currentState.crud.formElement.data === null && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.resetForm(this.shadow.querySelector('form'))
       }
     })
@@ -418,12 +419,12 @@ class Form extends HTMLElement {
         this.languages.forEach((language, index) => {
           const localeTabElement = document.createElement('li')
           localeTabElement.classList.add('tab-item')
-          localeTabElement.dataset.tab = `${tabName}-${language.alias}`
-          localeTabElement.innerHTML = language.name
+          localeTabElement.dataset.tab = `${tabName}-${language.value}`
+          localeTabElement.innerHTML = language.label
           localeTabsContainerItemsUl.append(localeTabElement)
 
           const localeTabPanel = document.createElement('div')
-          localeTabPanel.dataset.tab = `${tabName}-${language.alias}`
+          localeTabPanel.dataset.tab = `${tabName}-${language.value}`
           localeTabPanel.classList.add('tab-panel')
           tabPanel.append(localeTabPanel)
 
@@ -432,7 +433,7 @@ class Form extends HTMLElement {
             localeTabPanel.classList.add('active')
           }
 
-          this.createFormElements(form, localeTabPanel, this.structure.inputs[tabName].locale, language.alias)
+          this.createFormElements(form, localeTabPanel, this.structure.inputs[tabName].locale, language.value)
         })
       }
     }
@@ -648,7 +649,19 @@ class Form extends HTMLElement {
         select.multiple = formElement.multiple || false
 
         if (formElement.endpoint) {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}${formElement.endpoint}`)
+          let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
+
+          if (formElement['parent-filter']) {
+            const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter])}`)
+
+            if (languageAlias) {
+              query.push(`languageAlias=${languageAlias}`)
+            }
+
+            url += `?${query.join('&')}`
+          }
+
+          const response = await fetch(url)
           formElement.options = await response.json()
         }
 
@@ -756,8 +769,8 @@ class Form extends HTMLElement {
 
       formDataJson.images = store.getState().images.selectedImages
 
-      if (this.getAttribute('parent')) {
-        formDataJson.parentId = this.getAttribute('parent')
+      if (this.parent) {
+        formDataJson.parentId = this.parent.id
       }
 
       const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
@@ -789,8 +802,12 @@ class Form extends HTMLElement {
 
           if (!this.getAttribute('dependants')) {
             this.resetForm(form)
-          } else if (!this.shadow.querySelector('.dependant-container')) {
-            this.showDependants(data._id)
+          } else {
+            this.shadow.querySelector('.errors-container').classList.remove('active')
+            this.shadow.querySelector('.dependants-container').innerHTML = ''
+            this.shadow.querySelector('.errors-container').innerHTML = ''
+            this.shadow.querySelector("[name='id']").value = data.id
+            this.showDependants(data)
           }
 
           store.dispatch(refreshTable(this.getAttribute('endpoint')))
@@ -892,8 +909,8 @@ class Form extends HTMLElement {
           const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
 
           options.forEach(option => {
-            if (option.value === value) {
-              option.setAttribute('selected', true)
+            if (option.value === value.toString()) {
+              option.setAttribute('selected', 'selected')
             }
           })
         }
@@ -942,11 +959,11 @@ class Form extends HTMLElement {
     })
 
     if (this.getAttribute('dependants')) {
-      this.showDependants(element.id)
+      this.showDependants(element)
     }
   }
 
-  showDependants = parentId => {
+  showDependants = element => {
     const dependants = JSON.parse(this.getAttribute('dependants').replaceAll("'", '"'))
     const dependantsContainer = this.shadow.querySelector('.dependants-container')
 
@@ -974,7 +991,7 @@ class Form extends HTMLElement {
 
           const formComponent = document.createElement('form-component')
           formComponent.classList.add('dependant')
-          formComponent.setAttribute('parent', parentId)
+          formComponent.setAttribute('parent', JSON.stringify(element))
           formComponent.setAttribute('subform', dependant.name)
           formComponent.setAttribute('endpoint', component.endpoint)
           formComponent.setAttribute('structure', JSON.stringify(component.structure))
@@ -989,7 +1006,7 @@ class Form extends HTMLElement {
 
           const tableComponent = document.createElement('table-component')
           tableComponent.classList.add('dependant')
-          tableComponent.setAttribute('parent', parentId)
+          tableComponent.setAttribute('parent', JSON.stringify(element))
           tableComponent.setAttribute('subtable', dependant.name)
           tableComponent.setAttribute('endpoint', component.endpoint)
           tableComponent.setAttribute('structure', JSON.stringify(component.structure))

@@ -4,7 +4,9 @@ const Menu = mongooseDb.Menu
 
 exports.create = async (req, res) => {
   try {
-    const data = await Menu.create(req.body)
+    let data = await Menu.create(req.body)
+    data = data.toObject()
+    data.id = data._id
     res.status(200).send(data)
   } catch (err) {
     res.status(500).send({
@@ -67,7 +69,6 @@ exports.findOne = async (req, res) => {
 
     if (data) {
       data.id = data._id
-      delete data._id
     }
 
     if (data) {
@@ -88,12 +89,15 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findByIdAndUpdate(id, req.body, { new: true })
+    const data = await Menu.findByIdAndUpdate(id, req.body, { new: true }).lean().exec()
 
     if (data) {
-      res.status(200).send({
-        message: 'El elemento ha sido actualizado correctamente.'
-      })
+      data.id = data._id
+
+      res.status(200).send(data)
+      // res.status(200).send({
+      //   message: 'El elemento ha sido actualizado correctamente.'
+      // })
     } else {
       res.status(404).send({
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`

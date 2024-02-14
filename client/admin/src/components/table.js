@@ -10,6 +10,7 @@ class Table extends HTMLElement {
   }
 
   async connectedCallback () {
+    this.parent = this.getAttribute('parent') ? JSON.parse(this.getAttribute('parent')) : null
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     document.addEventListener('newFilter', this.handleNewFilter.bind(this))
@@ -47,7 +48,7 @@ class Table extends HTMLElement {
       return
     }
 
-    const endpoint = this.getAttribute('parent') ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?parent=${this.getAttribute('parent')}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
+    const endpoint = this.parent ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?parent=${this.parent.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
 
     try {
       const response = await fetch(endpoint)
@@ -411,7 +412,7 @@ class Table extends HTMLElement {
             const data = await response.json()
 
             const formElement = {
-              endpoint: this.getAttribute('endpoint'),
+              endPoint: this.getAttribute('endpoint'),
               data
             }
 

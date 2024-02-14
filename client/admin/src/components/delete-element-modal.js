@@ -118,7 +118,7 @@ class DeleteElementModal extends HTMLElement {
         return response.json()
       }).then(data => {
         store.dispatch(showFormElement({
-          endpoint: this.endpoint,
+          endPoint: this.endPoint,
           data: null
         }))
 

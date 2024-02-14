@@ -136,8 +136,8 @@ exports.getLanguages = async (req, res) => {
     }).sort({ default: -1 }).lean().exec()
 
     const response = result.map(element => ({
-      alias: element.alias,
-      name: element.name
+      label: element.name,
+      value: element.alias
     }))
 
     res.status(200).send(response)
@@ -146,17 +146,4 @@ exports.getLanguages = async (req, res) => {
       message: err.message || 'Algún error ha surgido al recuperar los datos.'
     })
   }
-}
-
-exports.localeList = (req, res) => {
-  Language.findAll({
-    attributes: ['alias', 'name'],
-    where: { selected: true }
-  }).then(data => {
-    res.status(200).send(data)
-  }).catch(_ => {
-    res.status(500).send({
-      message: 'Algún error ha surgido al recuperar los datos.'
-    })
-  })
 }

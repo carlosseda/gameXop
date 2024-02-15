@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { create } from 'lodash'
 import { store } from '../redux/store.js'
 import { refreshTable } from '../redux/crud-slice.js'
 import { showImages, removeImages } from '../redux/images-slice.js'
@@ -223,7 +223,7 @@ class Form extends HTMLElement {
             font-family: 'Lato' , sans-serif;
             font-size: 1rem;
             font-weight: 600;
-            padding: 0.5rem;
+            padding: 0 0.5rem;
             width: 100%;
           }
 
@@ -241,6 +241,7 @@ class Form extends HTMLElement {
 
           .form-element-input textarea{
             height: 10rem;
+            padding: 0.5rem;
           }
 
           .form-element-input .checkbox-container,
@@ -345,46 +346,76 @@ class Form extends HTMLElement {
           }
         </style>
         
-        <form autocomplete="off">
-                                
-            <input autocomplete="false" name="hidden" type="text" style="display:none;">
-
-            <div class="tabs-container-menu">
-                <div class="tabs-container-items">
-                   <ul>
-                   </ul>
-                </div>
-
-                <div class="tabs-container-buttons">
-                    <div id="create-button"> 
-                        <svg viewBox="0 0 24 24">
-                            <path d="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z" />
-                        </svg>
-                    </div>
-                    <div id="store-button"> 
-                        <label>
-                            <input type="submit" value="">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M0 0h24v24H0z" fill="none"/>
-                                <path class="crud__create-button-icon" d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
-                            </svg>
-                        </label> 
-                    </div>
-                </div>
-            </div>
-
-            <div class="errors-container">
-
-            </div>
-
-            <div class="tabs-container-content"></div>
-        </form>
+        <form autocomplete="off"></form>
         <div class="dependants-container"></div>
       `
 
-    const form = this.shadow.querySelector('form')
-    const tabsContainerItems = this.shadow.querySelector('.tabs-container-items ul')
-    const tabsContainerContent = this.shadow.querySelector('.tabs-container-content')
+    const form = this.createFormTemplate(this.shadow.querySelector('form'))
+    this.createTabsContent(form)
+    this.renderTabs()
+    this.renderSubmitForm()
+    this.renderCreateForm()
+  }
+
+  createFormTemplate (form) {
+    const autocompleteInput = document.createElement('input')
+    autocompleteInput.setAttribute('autocomplete', 'false')
+    autocompleteInput.setAttribute('name', 'hidden')
+    autocompleteInput.setAttribute('type', 'text')
+    autocompleteInput.style.display = 'none'
+    form.append(autocompleteInput)
+
+    const errorsContainer = document.createElement('div')
+    errorsContainer.classList.add('errors-container')
+    form.append(errorsContainer)
+
+    return form
+  }
+
+  createTabsContent = (form) => {
+    const tabsCointainerMenu = document.createElement('div')
+    tabsCointainerMenu.classList.add('tabs-container-menu')
+    form.append(tabsCointainerMenu)
+
+    const tabsContainerItems = document.createElement('div')
+    tabsContainerItems.classList.add('tabs-container-items')
+    tabsCointainerMenu.append(tabsContainerItems)
+
+    const tabsContainerItemsUl = document.createElement('ul')
+    tabsContainerItems.append(tabsContainerItemsUl)
+
+    const tabsContainerButtons = document.createElement('div')
+    tabsContainerButtons.classList.add('tabs-container-buttons')
+    tabsCointainerMenu.append(tabsContainerButtons)
+
+    const createButton = document.createElement('div')
+    createButton.id = 'create-button'
+    tabsContainerButtons.append(createButton)
+    createButton.innerHTML = `
+      <svg viewBox="0 0 24 24">
+        <path d="M19.36,2.72L20.78,4.14L15.06,9.85C16.13,11.39 16.28,13.24 15.38,14.44L9.06,8.12C10.26,7.22 12.11,7.37 13.65,8.44L19.36,2.72M5.93,17.57C3.92,15.56 2.69,13.16 2.35,10.92L7.23,8.83L14.67,16.27L12.58,21.15C10.34,20.81 7.94,19.58 5.93,17.57Z" />
+      </svg>
+    `
+
+    const storeButton = document.createElement('div')
+    storeButton.id = 'store-button'
+    tabsContainerButtons.append(storeButton)
+    const label = document.createElement('label')
+    storeButton.append(label)
+    const input = document.createElement('input')
+    input.type = 'submit'
+    input.value = ''
+    label.append(input)
+    label.innerHTML += `
+      <svg viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path class="crud__create-button-icon" d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+      </svg>
+    `
+
+    const tabsContainerContent = document.createElement('div')
+    tabsContainerContent.classList.add('tabs-container-content')
+    form.append(tabsContainerContent)
 
     for (const tab in this.structure.tabs) {
       const tabName = this.structure.tabs[tab].name
@@ -393,7 +424,7 @@ class Form extends HTMLElement {
       tabElement.classList.add('tab-item')
       tabElement.dataset.tab = tabName
       tabElement.innerHTML = this.structure.tabs[tab].label
-      tabsContainerItems.append(tabElement)
+      tabsContainerItemsUl.append(tabElement)
 
       const tabPanel = document.createElement('div')
       tabPanel.dataset.tab = tabName
@@ -437,10 +468,6 @@ class Form extends HTMLElement {
         })
       }
     }
-
-    this.renderTabs()
-    this.renderSubmitForm()
-    this.renderCreateForm()
   }
 
   createFormElements = async (form, tabPanel, elements, languageAlias = null) => {
@@ -483,7 +510,19 @@ class Form extends HTMLElement {
             inputContainer.classList.add(`${formElement.type}-container`)
 
             if (formElement.endpoint) {
-              const response = await fetch(`${import.meta.env.VITE_API_URL}${formElement.endpoint}`)
+              let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
+
+              if (formElement['parent-filter']) {
+                const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter])}`)
+
+                if (languageAlias) {
+                  query.push(`languageAlias=${languageAlias}`)
+                }
+
+                url += `?${query.join('&')}`
+              }
+
+              const response = await fetch(url)
               formElement.options = await response.json()
             }
 
@@ -665,6 +704,11 @@ class Form extends HTMLElement {
           formElement.options = await response.json()
         }
 
+        const defaultOption = document.createElement('option')
+        defaultOption.value = ''
+        defaultOption.innerText = 'Selecciona una opción'
+        select.append(defaultOption)
+
         formElement.options.forEach(option => {
           const optionElement = document.createElement('option')
           optionElement.value = option.value
@@ -675,8 +719,64 @@ class Form extends HTMLElement {
         formElementInput.append(select)
       }
 
+      if (formElement.element === 'dependants') {
+        const dependantsContainer = document.createElement('div')
+        dependantsContainer.classList.add('dependants-container')
+        tabPanel.append(dependantsContainer)
+
+        formElement.childs.forEach(dependant => {
+          const dependantContainer = document.createElement('div')
+          dependantContainer.classList.add('dependant-container')
+          dependantsContainer.append(dependantContainer)
+
+          const dependantHeader = document.createElement('div')
+          dependantHeader.classList.add('dependant-header')
+          dependantContainer.append(dependantHeader)
+
+          const dependantTitle = document.createElement('span')
+          dependantTitle.innerText = dependant.label
+          dependantHeader.append(dependantTitle)
+
+          const dependantsComponents = document.createElement('div')
+          dependantsComponents.classList.add('dependants-components')
+          dependantContainer.append(dependantsComponents)
+
+          dependant.structure.forEach(component => {
+            if (component.element === 'subform') {
+              const formContainer = document.createElement('div')
+              formContainer.classList.add('subform-container')
+
+              const formComponent = document.createElement('form-component')
+              formComponent.classList.add('dependant')
+              // formComponent.setAttribute('parent', JSON.stringify(element))
+              formComponent.setAttribute('subform', dependant.name)
+              formComponent.setAttribute('endpoint', component.endpoint)
+              formComponent.setAttribute('structure', JSON.stringify(component.structure))
+              formContainer.append(formComponent)
+
+              dependantsComponents.append(formContainer)
+            }
+
+            if (component.element === 'subtable') {
+              const tableContainer = document.createElement('div')
+              tableContainer.classList.add('subtable-container')
+
+              const tableComponent = document.createElement('table-component')
+              tableComponent.classList.add('dependant')
+              // tableComponent.setAttribute('parent', JSON.stringify(element))
+              tableComponent.setAttribute('subtable', dependant.name)
+              tableComponent.setAttribute('endpoint', component.endpoint)
+              tableComponent.setAttribute('structure', JSON.stringify(component.structure))
+              tableContainer.append(tableComponent)
+
+              dependantsComponents.append(tableContainer)
+            }
+          })
+        })
+      }
+
       tabPanel.append(formElementContainer)
-    };
+    }
   }
 
   renderTabs = () => {

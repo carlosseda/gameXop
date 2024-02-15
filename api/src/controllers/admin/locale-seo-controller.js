@@ -139,7 +139,7 @@ exports.getUrls = async (req, res) => {
 
     const response = result.map(item => ({
       label: item.url,
-      value: item._id
+      value: item.url
     }))
 
     res.status(200).send(response)

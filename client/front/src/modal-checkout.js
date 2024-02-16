@@ -306,6 +306,7 @@ class ModalCheckout extends HTMLElement {
         gap: 1rem;
         height: 35vh;
         max-height: 35vh;
+        overscroll-behavior-y: contain;
         overflow-y: auto;
         scroll-behavior: smooth;
         padding: 0 2%;

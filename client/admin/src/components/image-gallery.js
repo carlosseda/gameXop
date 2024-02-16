@@ -114,6 +114,7 @@ class ImageGallery extends HTMLElement {
             flex-wrap: wrap;
             height: 96%;
             overflow: scroll;
+            overscroll-behavior-y: contain;
             overflow-y: auto;
             overflow-x: hidden;
             padding: 1%;
@@ -125,6 +126,7 @@ class ImageGallery extends HTMLElement {
             border-left: 1px solid hsl(0, 0%, 80%);
             height: 100%;
             overflow: scroll;
+            overscroll-behavior-y: contain;
             overflow-y: auto;
             overflow-x: hidden;
             width: 20%;

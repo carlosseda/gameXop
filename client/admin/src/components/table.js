@@ -167,6 +167,10 @@ class Table extends HTMLElement {
           padding: 0.7rem;
         }
 
+        :host(.dependant) .table-no-records {
+          width: 100%;
+        }
+
         .table-no-records p {
           color: hsl(0, 0%, 100%);
           font-family: 'Lato', sans-serif;

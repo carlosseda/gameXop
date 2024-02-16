@@ -4,7 +4,6 @@ module.exports = (mongoose) => {
       name: String,
       environment: String,
       private: Boolean,
-      languageAlias: String,
       items: [
         {
           type: mongoose.Schema.Types.ObjectId,

@@ -1,4 +1,4 @@
-import _, { create } from 'lodash'
+import { isEqual } from 'lodash'
 import { store } from '../redux/store.js'
 import { refreshTable } from '../redux/crud-slice.js'
 import { showImages, removeImages } from '../redux/images-slice.js'
@@ -19,12 +19,12 @@ class Form extends HTMLElement {
     this.unsubscribe = store.subscribe(() => {
       const currentState = store.getState()
 
-      if (currentState.crud.formElement && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
+      if (currentState.crud.formElement && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.formElementData = currentState.crud.formElement.data
         this.showElement(this.formElementData)
       }
 
-      if (currentState.crud.formElement.data === null && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !_.isEqual(this.formElementData, currentState.crud.formElement.data)) {
+      if (currentState.crud.formElement.data === null && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.resetForm(this.shadow.querySelector('form'))
       }
     })
@@ -307,32 +307,47 @@ class Form extends HTMLElement {
           }
 
           .dependants-container{
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+          }
+
+          .dependants-container.active{
+            display: flex;
+          }
+
+          .relateds-container{
             display: flex;
             flex-direction: column;
             gap: 1rem;
             width: 100%;
           }
 
-          .dependants-container .dependant-container{
+          .dependants-container .dependant-container,
+          .relateds-container .related-container{
             background-color: hsl(272deg 40% 35% / 30%);
             height: auto;
             padding: 1rem;
           }
 
-          .dependants-container .dependant-header{
+          .dependants-container .dependant-header,
+          .relateds-container .related-header{
             align-items: center;
             display: flex;
             height: 2.5rem;
           }
 
-          .dependants-container .dependant-header span{
+          .dependants-container .dependant-header span,
+          .relateds-container .related-header span{
             color: hsl(0 0% 100%);
             font-family: 'Lato' , sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
           }
 
-          .dependants-container .dependants-components{
+          .dependants-container .dependants-components,
+          .relateds-container .relateds-components{
             display: flex;
             flex-wrap: wrap;
             gap: 1%;
@@ -341,16 +356,22 @@ class Form extends HTMLElement {
             width: 100%
           }
 
-          .dependants-container .dependants-components div{
+          .dependants-container .dependants-components div,
+          .relateds-container .relateds-components div{
             width: 49%;
           }
         </style>
-        
-        <form autocomplete="off"></form>
-        <div class="dependants-container"></div>
       `
 
-    const form = this.createFormTemplate(this.shadow.querySelector('form'))
+    const form = document.createElement('form')
+    form.setAttribute('autocomplete', 'off')
+    this.shadow.append(form)
+
+    // const dependantsContainer = document.createElement('div')
+    // dependantsContainer.classList.add('dependants-container')
+    // this.shadow.append(dependantsContainer)
+
+    this.createFormTemplate(form)
     this.createTabsContent(form)
     this.renderTabs()
     this.renderSubmitForm()
@@ -690,8 +711,8 @@ class Form extends HTMLElement {
         if (formElement.endpoint) {
           let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
 
-          if (formElement['parent-filter']) {
-            const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter])}`)
+          if (formElement['parent-filter'] && this.parent) {
+            const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter] ?? '')}`)
 
             if (languageAlias) {
               query.push(`languageAlias=${languageAlias}`)
@@ -737,41 +758,108 @@ class Form extends HTMLElement {
           dependantTitle.innerText = dependant.label
           dependantHeader.append(dependantTitle)
 
-          const dependantsComponents = document.createElement('div')
-          dependantsComponents.classList.add('dependants-components')
-          dependantContainer.append(dependantsComponents)
+          if (dependant.locale) {
+            const localeTabsContainer = document.createElement('div')
+            localeTabsContainer.classList.add('tabs-container-menu')
+            dependantContainer.append(localeTabsContainer)
 
-          dependant.structure.forEach(component => {
-            if (component.element === 'subform') {
-              const formContainer = document.createElement('div')
-              formContainer.classList.add('subform-container')
+            const localeTabsContainerItems = document.createElement('div')
+            localeTabsContainerItems.classList.add('tabs-container-items')
+            localeTabsContainer.append(localeTabsContainerItems)
 
-              const formComponent = document.createElement('form-component')
-              formComponent.classList.add('dependant')
-              // formComponent.setAttribute('parent', JSON.stringify(element))
-              formComponent.setAttribute('subform', dependant.name)
-              formComponent.setAttribute('endpoint', component.endpoint)
-              formComponent.setAttribute('structure', JSON.stringify(component.structure))
-              formContainer.append(formComponent)
+            const localeTabsContainerItemsUl = document.createElement('ul')
+            localeTabsContainerItems.append(localeTabsContainerItemsUl)
 
-              dependantsComponents.append(formContainer)
-            }
+            this.languages.forEach((language, index) => {
+              const localeTabElement = document.createElement('li')
+              localeTabElement.classList.add('tab-item')
+              localeTabElement.dataset.tab = `${dependant.name}-${language.value}`
+              localeTabElement.innerHTML = language.label
+              localeTabsContainerItemsUl.append(localeTabElement)
 
-            if (component.element === 'subtable') {
-              const tableContainer = document.createElement('div')
-              tableContainer.classList.add('subtable-container')
+              const localeTabPanel = document.createElement('div')
+              localeTabPanel.dataset.tab = `${dependant.name}-${language.value}`
+              localeTabPanel.classList.add('tab-panel')
+              dependantContainer.append(localeTabPanel)
 
-              const tableComponent = document.createElement('table-component')
-              tableComponent.classList.add('dependant')
-              // tableComponent.setAttribute('parent', JSON.stringify(element))
-              tableComponent.setAttribute('subtable', dependant.name)
-              tableComponent.setAttribute('endpoint', component.endpoint)
-              tableComponent.setAttribute('structure', JSON.stringify(component.structure))
-              tableContainer.append(tableComponent)
+              const dependantsComponents = document.createElement('div')
+              dependantsComponents.classList.add('dependants-components')
+              localeTabPanel.append(dependantsComponents)
 
-              dependantsComponents.append(tableContainer)
-            }
-          })
+              if (index === 0) {
+                localeTabElement.classList.add('active')
+                localeTabPanel.classList.add('active')
+              }
+
+              dependant.structure.forEach(component => {
+                if (component.element === 'subform') {
+                  const subformContainer = document.createElement('div')
+                  subformContainer.classList.add('subform-container')
+
+                  const formComponent = document.createElement('form-component')
+                  formComponent.classList.add('dependant')
+                  // formComponent.setAttribute('parent', JSON.stringify(element))
+                  formComponent.setAttribute('subform', dependant.name)
+                  formComponent.setAttribute('endpoint', component.endpoint)
+                  formComponent.setAttribute('structure', JSON.stringify(component.structure))
+                  subformContainer.append(formComponent)
+
+                  dependantsComponents.append(subformContainer)
+                }
+
+                if (component.element === 'subtable') {
+                  const subtableContainer = document.createElement('div')
+                  subtableContainer.classList.add('subtable-container')
+
+                  const tableComponent = document.createElement('table-component')
+                  tableComponent.classList.add('dependant')
+                  // tableComponent.setAttribute('parent', JSON.stringify(element))
+                  tableComponent.setAttribute('subtable', dependant.name)
+                  tableComponent.setAttribute('endpoint', component.endpoint)
+                  tableComponent.setAttribute('structure', JSON.stringify(component.structure))
+                  subtableContainer.append(tableComponent)
+
+                  dependantsComponents.append(subtableContainer)
+                }
+              })
+            })
+          } else {
+            const dependantsComponents = document.createElement('div')
+            dependantsComponents.classList.add('dependants-components')
+            dependantContainer.append(dependantsComponents)
+
+            dependant.structure.forEach(component => {
+              if (component.element === 'subform') {
+                const subformContainer = document.createElement('div')
+                subformContainer.classList.add('subform-container')
+
+                const formComponent = document.createElement('form-component')
+                formComponent.classList.add('dependant')
+                // formComponent.setAttribute('parent', JSON.stringify(element))
+                formComponent.setAttribute('subform', dependant.name)
+                formComponent.setAttribute('endpoint', component.endpoint)
+                formComponent.setAttribute('structure', JSON.stringify(component.structure))
+                subformContainer.append(formComponent)
+
+                dependantsComponents.append(subformContainer)
+              }
+
+              if (component.element === 'subtable') {
+                const subtableContainer = document.createElement('div')
+                subtableContainer.classList.add('subtable-container')
+
+                const tableComponent = document.createElement('table-component')
+                tableComponent.classList.add('dependant')
+                // tableComponent.setAttribute('parent', JSON.stringify(element))
+                tableComponent.setAttribute('subtable', dependant.name)
+                tableComponent.setAttribute('endpoint', component.endpoint)
+                tableComponent.setAttribute('structure', JSON.stringify(component.structure))
+                subtableContainer.append(tableComponent)
+
+                dependantsComponents.append(subtableContainer)
+              }
+            })
+          }
         })
       }
 
@@ -900,14 +988,17 @@ class Form extends HTMLElement {
             }
           }))
 
-          if (!this.getAttribute('dependants')) {
+          if (!this.shadow.querySelector('.dependants-container')) {
             this.resetForm(form)
           } else {
             this.shadow.querySelector('.errors-container').classList.remove('active')
-            this.shadow.querySelector('.dependants-container').innerHTML = ''
             this.shadow.querySelector('.errors-container').innerHTML = ''
             this.shadow.querySelector("[name='id']").value = data.id
-            this.showDependants(data)
+            this.shadow.querySelector('.dependants-container').classList.add('active')
+
+            if (this.getAttribute('relateds')) {
+              this.showRelateds(data)
+            }
           }
 
           store.dispatch(refreshTable(this.getAttribute('endpoint')))
@@ -983,7 +1074,7 @@ class Form extends HTMLElement {
       select.selectedIndex = 0
     })
 
-    this.shadow.querySelector('.dependants-container').innerHTML = ''
+    this.shadow.querySelector('.dependants-container').classList.remove('active')
 
     store.dispatch(removeImages())
   }
@@ -1058,33 +1149,39 @@ class Form extends HTMLElement {
       }
     })
 
-    if (this.getAttribute('dependants')) {
-      this.showDependants(element)
+    if (this.shadow.querySelector('.dependants-container')) {
+      this.shadow.querySelector('.dependants-container').classList.add('active')
+    }
+
+    if (this.getAttribute('relateds')) {
+      this.showRelateds(element)
     }
   }
 
-  showDependants = element => {
-    const dependants = JSON.parse(this.getAttribute('dependants').replaceAll("'", '"'))
-    const dependantsContainer = this.shadow.querySelector('.dependants-container')
+  showRelateds = element => {
+    const relateds = JSON.parse(this.getAttribute('relateds').replaceAll("'", '"'))
+    const relatedsContainer = document.createElement('div')
+    relatedsContainer.classList.add('relateds-container')
+    this.shadow.append(relatedsContainer)
 
-    dependants.forEach(dependant => {
-      const dependantContainer = document.createElement('div')
-      dependantContainer.classList.add('dependant-container')
-      dependantsContainer.append(dependantContainer)
+    relateds.forEach(related => {
+      const relatedContainer = document.createElement('div')
+      relatedContainer.classList.add('related-container')
+      relatedsContainer.append(relatedContainer)
 
-      const dependantHeader = document.createElement('div')
-      dependantHeader.classList.add('dependant-header')
-      dependantContainer.append(dependantHeader)
+      const relatedHeader = document.createElement('div')
+      relatedHeader.classList.add('related-header')
+      relatedContainer.append(relatedHeader)
 
-      const dependantTitle = document.createElement('span')
-      dependantTitle.innerText = dependant.label
-      dependantHeader.append(dependantTitle)
+      const relatedTitle = document.createElement('span')
+      relatedTitle.innerText = related.label
+      relatedHeader.append(relatedTitle)
 
-      const dependantsComponents = document.createElement('div')
-      dependantsComponents.classList.add('dependants-components')
-      dependantContainer.append(dependantsComponents)
+      const relatedsComponents = document.createElement('div')
+      relatedsComponents.classList.add('relateds-components')
+      relatedContainer.append(relatedsComponents)
 
-      dependant.structure.forEach(component => {
+      related.structure.forEach(component => {
         if (component.element === 'subform') {
           const formContainer = document.createElement('div')
           formContainer.classList.add('subform-container')
@@ -1092,12 +1189,12 @@ class Form extends HTMLElement {
           const formComponent = document.createElement('form-component')
           formComponent.classList.add('dependant')
           formComponent.setAttribute('parent', JSON.stringify(element))
-          formComponent.setAttribute('subform', dependant.name)
+          formComponent.setAttribute('subform', related.name)
           formComponent.setAttribute('endpoint', component.endpoint)
           formComponent.setAttribute('structure', JSON.stringify(component.structure))
           formContainer.append(formComponent)
 
-          dependantsComponents.append(formContainer)
+          relatedsComponents.append(formContainer)
         }
 
         if (component.element === 'subtable') {
@@ -1107,12 +1204,12 @@ class Form extends HTMLElement {
           const tableComponent = document.createElement('table-component')
           tableComponent.classList.add('dependant')
           tableComponent.setAttribute('parent', JSON.stringify(element))
-          tableComponent.setAttribute('subtable', dependant.name)
+          tableComponent.setAttribute('subtable', related.name)
           tableComponent.setAttribute('endpoint', component.endpoint)
           tableComponent.setAttribute('structure', JSON.stringify(component.structure))
           tableContainer.append(tableComponent)
 
-          dependantsComponents.append(tableContainer)
+          relatedsComponents.append(tableContainer)
         }
       })
     })

@@ -11,6 +11,7 @@
       'headers': [
         {'label': 'Nombre', 'field': 'name'},
         {'label': 'Entorno', 'field': 'environment'},
+        {'label': 'Idioma', 'field': 'languageAlias'},
         {'label': 'Fecha de creación', 'field': 'createdAt'},
         {'label': 'Fecha de actualización', 'field': 'updatedAt'}
       ],
@@ -46,7 +47,7 @@
             {'element': 'dependants', 'childs': [
               {
                 'name': 'menu-items', 
-                'label': 'Items del menú',
+                'label': 'Items de menú',
                 'locale': true,
                 'structure': [
                   {'element': 'subform', 'width': 'half-width', 'endpoint': '/api/admin/menu-items', 'structure': 
@@ -87,6 +88,44 @@
         }
       }
     }"
+    relateds="[
+    {
+      'label': 'Items de menú',
+      'structure': [
+        {'element': 'subform', 'width': 'half-width', 'endpoint': '/api/admin/menu-items', 'structure': 
+          {
+            'tabs': [
+              {'name': 'general', 'label': 'General'}
+            ],
+            'inputs': {
+              'general': {
+                'noLocale': [
+                  {'name': 'id', 'element':'input', 'type': 'hidden'},
+                  {'name': 'url', 'element':'select', 'label': 'Url', 'width': 'half-width', 'endpoint': '/api/admin/locale-seos/get-urls', 'parent-filter': ['environment', 'languageAlias']},
+                  {'name': 'private', 'element':'select', 'label': 'Privado', 'width': 'half-width', 'options': 
+                    [
+                      {'label': 'Sí', 'value': 'true'},
+                      {'label': 'No', 'value': 'false'}
+                    ]
+                  },
+                  {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'},
+                  {'name': 'description', 'element':'textarea', 'label': 'Descripción', 'width': 'full-width'}
+                ]
+              }
+            }
+          }
+        },
+        {'element': 'subtable', 'width': 'half-width', 'endpoint': '/api/admin/menu-items', 'structure': 
+          {
+            'headers': [
+              {'label': 'Url', 'field': 'url'}
+            ],
+            'recordButtons': ['edit', 'remove']
+          }
+        }
+      ]
+    }
+  ]"
   />
   </form-component>
   

@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { isEqual } from 'lodash'
 import { store } from '../redux/store.js'
 import { setImageGallery, addImage, removeImage } from '../redux/images-slice.js'
 
@@ -19,7 +19,7 @@ class UploadImageButton extends HTMLElement {
     this.unsubscribe = store.subscribe(() => {
       const currentState = store.getState()
 
-      if (currentState.images.showedImages.length > 0 && !_.isEqual(this.images, currentState.images.showedImages)) {
+      if (currentState.images.showedImages.length > 0 && !isEqual(this.images, currentState.images.showedImages)) {
         this.images = currentState.images.showedImages
         this.showThumbnails(this.images)
       }

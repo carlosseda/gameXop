@@ -255,6 +255,7 @@ class Cart extends HTMLElement {
         display: flex;
         flex-direction: column;
         max-height: 75vh;
+        scrollbar-gutter: stable;
         overscroll-behavior-y: contain;
         overflow-y: auto;
         padding: 1rem 0.5rem;

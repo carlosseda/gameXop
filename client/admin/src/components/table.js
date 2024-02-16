@@ -121,6 +121,7 @@ class Table extends HTMLElement {
           min-height: 70vh;
           max-height: 70vh;
           padding: 1rem 10%;
+          scrollbar-gutter: stable;
           overflow-x: hidden;
           overscroll-behavior-y: contain;
           overflow-y: auto;

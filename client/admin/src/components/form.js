@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash'
 import { store } from '../redux/store.js'
-import { refreshTable } from '../redux/crud-slice.js'
+import { refreshTable, setParentElement } from '../redux/crud-slice.js'
 import { showImages, removeImages } from '../redux/images-slice.js'
 
 class Form extends HTMLElement {
@@ -8,6 +8,7 @@ class Form extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
+    this.parent = null
     this.formElementData = null
     this.languages = null
   }
@@ -21,15 +22,28 @@ class Form extends HTMLElement {
 
       if (currentState.crud.formElement && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.formElementData = currentState.crud.formElement.data
-        this.showElement(this.formElementData)
+
+        if (!this.formElementData.locales || Object.keys(this.formElementData.locales)[0] === this.languages.value) {
+          this.showElement(this.formElementData)
+        }
       }
 
       if (currentState.crud.formElement.data === null && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.resetForm(this.shadow.querySelector('form'))
       }
+
+      if (currentState.crud.parentElement && this.getAttribute('subform') && !isEqual(this.parent, currentState.crud.parentElement.data)) {
+        this.parent = currentState.crud.parentElement.data
+        this.render()
+      }
     })
 
-    await this.getLanguages()
+    if (this.getAttribute('language')) {
+      this.languages = JSON.parse(this.getAttribute('language'))
+    } else {
+      await this.getLanguages()
+    }
+
     this.render()
   }
 
@@ -154,6 +168,10 @@ class Form extends HTMLElement {
           .form-element{
             margin-bottom: 1em;
             width: 100%;
+          }
+
+          .form-element.hidden{
+            display: none;
           }
 
           .form-element.full-width {
@@ -453,7 +471,7 @@ class Form extends HTMLElement {
       tabsContainerContent.append(tabPanel)
 
       if (this.structure.inputs[tabName].noLocale) {
-        this.createFormElements(form, tabPanel, this.structure.inputs[tabName].noLocale)
+        this.createFormElements(form, tabPanel, this.structure.inputs[tabName].noLocale, this.getAttribute('language') ? this.languages.value : null)
       }
 
       if (this.structure.inputs[tabName].locale) {
@@ -517,7 +535,7 @@ class Form extends HTMLElement {
           case 'hidden': {
             const input = document.createElement('input')
             input.type = formElement.type
-            input.name = languageAlias ? `locales.${languageAlias}.${formElement.name}` : formElement.name
+            input.name = (languageAlias && formElement.name !== 'id') ? `locales.${languageAlias}.${formElement.name}` : formElement.name
             input.value = formElement.value || ''
 
             form.append(input)
@@ -533,8 +551,8 @@ class Form extends HTMLElement {
             if (formElement.endpoint) {
               let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
 
-              if (formElement['parent-filter']) {
-                const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter])}`)
+              if (formElement['parent-filter'] && this.parent) {
+                const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter] ?? '')}`)
 
                 if (languageAlias) {
                   query.push(`languageAlias=${languageAlias}`)
@@ -583,6 +601,13 @@ class Form extends HTMLElement {
             input.value = formElement.value || ''
             rangeContainer.append(input)
 
+            if (formElement.relatedvalue) {
+              formElementContainer.classList.add('hidden')
+              input.dataset.relatedInput = formElement.relatedinput
+              input.dataset.relatedValue = formElement.relatedvalue
+              input.disabled = true
+            }
+
             const rangeValue = document.createElement('span')
             rangeValue.classList.add('range-value')
             rangeValue.innerText = formElement.value
@@ -616,6 +641,13 @@ class Form extends HTMLElement {
             input.readOnly = formElement.readOnly || false
             input.dataset.validate = formElement.validate || ''
 
+            if (formElement.relatedvalue) {
+              formElementContainer.classList.add('hidden')
+              input.dataset.relatedInput = formElement.relatedinput
+              input.dataset.relatedValue = formElement.relatedvalue
+              input.disabled = true
+            }
+
             formElementInput.append(input)
 
             break
@@ -628,11 +660,6 @@ class Form extends HTMLElement {
             languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
             input.setAttribute('quantity', formElement.quantity)
             input.setAttribute('image-configurations', JSON.stringify(formElement.imageConfigurations))
-
-            // input.accept = formElement.accept || '';
-            // input.multiple = formElement.multiple || false;
-            // input.required = formElement.required || false;
-            // input.dataset.validate = formElement.validate || '';
 
             formElementInput.append(input)
 
@@ -648,6 +675,13 @@ class Form extends HTMLElement {
             input.value = formElement.value || ''
             input.placeholder = formElement.placeholder || ''
             input.dataset.validate = formElement.validate || ''
+
+            if (formElement.relatedvalue) {
+              formElementContainer.classList.add('hidden')
+              input.dataset.relatedInput = formElement.relatedinput
+              input.dataset.relatedValue = formElement.relatedvalue
+              input.disabled = true
+            }
 
             if (formElement.maxLength) {
               input.maxLength = formElement.maxLength || ''
@@ -683,10 +717,28 @@ class Form extends HTMLElement {
         textarea.placeholder = formElement.placeholder || ''
         textarea.dataset.validate = formElement.validate || ''
 
+        if (formElement.relatedvalue) {
+          formElementContainer.classList.add('hidden')
+          textarea.dataset.relatedInput = formElement.relatedinput
+          textarea.dataset.relatedValue = formElement.relatedvalue
+          textarea.disabled = true
+        }
+
         if (formElement.maxLength) {
           textarea.maxLength = formElement.maxLength || ''
           const counter = document.createElement('span')
           formElementLabel.append(counter)
+
+          textarea.addEventListener('keydown', event => {
+            if (event.key === 'Tab') {
+              event.preventDefault()
+              alert('hoa')
+              const start = this.selectionStart
+              const end = this.selectionEnd
+              this.value = this.value.substring(0, start) + '  ' + this.value.substring(end)
+              this.selectionStart = this.selectionEnd = start + 2
+            }
+          })
 
           textarea.addEventListener('input', () => {
             if (textarea.value.length > 0) {
@@ -707,6 +759,30 @@ class Form extends HTMLElement {
         select.disabled = formElement.disabled || false
         select.required = formElement.required || false
         select.multiple = formElement.multiple || false
+
+        if (formElement.relatedvalue) {
+          formElementContainer.classList.add('hidden')
+          select.dataset.relatedInput = formElement.relatedinput
+          select.dataset.relatedValue = formElement.relatedvalue
+          select.disabled = true
+        }
+
+        if (formElement.related) {
+          select.addEventListener('change', async (event) => {
+            this.shadow.querySelectorAll(`[data-related-input="${formElement.name}"]`).forEach(input => {
+              const isDifferent = input.dataset.relatedValue !== event.target.value
+              input.disabled = isDifferent
+              const parentFormElement = input.closest('.form-element')
+              if (parentFormElement) {
+                if (isDifferent) {
+                  parentFormElement.classList.add('hidden')
+                } else {
+                  parentFormElement.classList.remove('hidden')
+                }
+              }
+            })
+          })
+        }
 
         if (formElement.endpoint) {
           let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
@@ -798,9 +874,9 @@ class Form extends HTMLElement {
 
                   const formComponent = document.createElement('form-component')
                   formComponent.classList.add('dependant')
-                  // formComponent.setAttribute('parent', JSON.stringify(element))
                   formComponent.setAttribute('subform', dependant.name)
                   formComponent.setAttribute('endpoint', component.endpoint)
+                  formComponent.setAttribute('language', JSON.stringify(language))
                   formComponent.setAttribute('structure', JSON.stringify(component.structure))
                   subformContainer.append(formComponent)
 
@@ -813,9 +889,9 @@ class Form extends HTMLElement {
 
                   const tableComponent = document.createElement('table-component')
                   tableComponent.classList.add('dependant')
-                  // tableComponent.setAttribute('parent', JSON.stringify(element))
                   tableComponent.setAttribute('subtable', dependant.name)
                   tableComponent.setAttribute('endpoint', component.endpoint)
+                  tableComponent.setAttribute('language', language.value)
                   tableComponent.setAttribute('structure', JSON.stringify(component.structure))
                   subtableContainer.append(tableComponent)
 
@@ -835,7 +911,6 @@ class Form extends HTMLElement {
 
                 const formComponent = document.createElement('form-component')
                 formComponent.classList.add('dependant')
-                // formComponent.setAttribute('parent', JSON.stringify(element))
                 formComponent.setAttribute('subform', dependant.name)
                 formComponent.setAttribute('endpoint', component.endpoint)
                 formComponent.setAttribute('structure', JSON.stringify(component.structure))
@@ -850,7 +925,6 @@ class Form extends HTMLElement {
 
                 const tableComponent = document.createElement('table-component')
                 tableComponent.classList.add('dependant')
-                // tableComponent.setAttribute('parent', JSON.stringify(element))
                 tableComponent.setAttribute('subtable', dependant.name)
                 tableComponent.setAttribute('endpoint', component.endpoint)
                 tableComponent.setAttribute('structure', JSON.stringify(component.structure))
@@ -901,11 +975,6 @@ class Form extends HTMLElement {
       }
 
       const formData = new FormData(form)
-
-      if (this.parentFormId) {
-        formData.append('parentFormId', this.parentFormId)
-      }
-
       const formDataJson = {}
 
       for (const [key, value] of formData.entries()) {
@@ -957,9 +1026,8 @@ class Form extends HTMLElement {
 
       formDataJson.images = store.getState().images.selectedImages
 
-      if (this.parent) {
-        formDataJson.parentId = this.parent.id
-      }
+      this.parent && (formDataJson.parentId = this.parent.id)
+      this.languages.value && (formDataJson.language = this.languages.value)
 
       const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
@@ -991,6 +1059,7 @@ class Form extends HTMLElement {
           if (!this.shadow.querySelector('.dependants-container')) {
             this.resetForm(form)
           } else {
+            store.dispatch(setParentElement({ endPoint: this.getAttribute('endpoint'), data }))
             this.shadow.querySelector('.errors-container').classList.remove('active')
             this.shadow.querySelector('.errors-container').innerHTML = ''
             this.shadow.querySelector("[name='id']").value = data.id
@@ -1074,7 +1143,7 @@ class Form extends HTMLElement {
       select.selectedIndex = 0
     })
 
-    this.shadow.querySelector('.dependants-container').classList.remove('active')
+    this.shadow.querySelector('.dependants-container')?.classList.remove('active')
 
     store.dispatch(removeImages())
   }
@@ -1097,13 +1166,13 @@ class Form extends HTMLElement {
         }
 
         if (input.tagName === 'SELECT') {
-          const options = this.shadow.querySelector(`[name="${key}"]`).querySelectorAll('option')
-
+          const options = input.querySelectorAll('option')
           options.forEach(option => {
             if (option.value === value.toString()) {
-              option.setAttribute('selected', 'selected')
+              option.selected = true
             }
           })
+          input.dispatchEvent(new Event('change'))
         }
 
         if (input.type === 'radio') {
@@ -1133,8 +1202,21 @@ class Form extends HTMLElement {
         } else if (key === 'locales') {
           Object.entries(value).forEach(([languageAlias, localeValue]) => {
             Object.entries(localeValue).forEach(([name, fieldValue]) => {
-              if (this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`)) {
-                this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`).value = fieldValue !== 'null' ? fieldValue : ''
+              const input = this.shadow.querySelector(`[name="locales\\.${languageAlias}\\.${name}"]`)
+              if (input) {
+                input.value = fieldValue !== 'null' ? fieldValue : ''
+
+                console.log(input)
+
+                if (input.tagName === 'SELECT') {
+                  const options = input.querySelectorAll('option')
+                  options.forEach(option => {
+                    if (option.value === fieldValue.toString()) {
+                      option.selected = true
+                    }
+                  })
+                  input.dispatchEvent(new Event('change'))
+                }
               }
             })
           })
@@ -1150,6 +1232,7 @@ class Form extends HTMLElement {
     })
 
     if (this.shadow.querySelector('.dependants-container')) {
+      store.dispatch(setParentElement({ endPoint: this.getAttribute('endpoint'), data: element }))
       this.shadow.querySelector('.dependants-container').classList.add('active')
     }
 

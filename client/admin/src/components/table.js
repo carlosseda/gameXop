@@ -1,5 +1,7 @@
+import { isEqual } from 'lodash'
 import { store } from '../redux/store.js'
 import { showFormElement } from '../redux/crud-slice.js'
+import Sortable from 'sortablejs'
 
 class Table extends HTMLElement {
   constructor () {
@@ -11,6 +13,7 @@ class Table extends HTMLElement {
 
   async connectedCallback () {
     this.parent = this.getAttribute('parent') ? JSON.parse(this.getAttribute('parent')) : null
+    this.language = this.getAttribute('language') || null
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
 
     document.addEventListener('newFilter', this.handleNewFilter.bind(this))
@@ -21,9 +24,16 @@ class Table extends HTMLElement {
       if (currentState.crud.tableEndpoint === this.getAttribute('endpoint')) {
         this.loadData().then(() => this.render())
       }
+
+      if (currentState.crud.parentElement && this.getAttribute('subtable') && !isEqual(this.parent, currentState.crud.parentElement.data)) {
+        this.parent = currentState.crud.parentElement.data
+        this.loadData().then(() => this.render())
+      }
     })
 
-    this.loadData().then(() => this.render())
+    if (!this.getAttribute('subtable')) {
+      this.loadData().then(() => this.render())
+    }
   }
 
   disconnectedCallback () {
@@ -48,7 +58,14 @@ class Table extends HTMLElement {
       return
     }
 
-    const endpoint = this.parent ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?parent=${this.parent.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
+    let endpoint = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
+
+    const query = [
+      this.parent ? `parent=${this.parent.id}` : null,
+      this.language ? `language=${this.language}` : null
+    ].filter(Boolean).join('&')
+
+    endpoint += query ? `?${query}` : ''
 
     try {
       const response = await fetch(endpoint)
@@ -121,7 +138,6 @@ class Table extends HTMLElement {
           min-height: 70vh;
           max-height: 70vh;
           padding: 1rem 10%;
-          scrollbar-gutter: stable;
           overflow-x: hidden;
           overscroll-behavior-y: contain;
           overflow-y: auto;
@@ -129,7 +145,7 @@ class Table extends HTMLElement {
 
         :host(.dependant) .table-records {
           min-height: 0;
-          padding: 0;
+          padding: 1rem 0;
         }
 
         .table-records::-webkit-scrollbar{
@@ -252,11 +268,33 @@ class Table extends HTMLElement {
           cursor: not-allowed;
         }
 
+        .sortable-group {
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+          padding: 1rem 0;
+        }
 
+        .sortable-row {
+          background-color: hsl(272 40% 35%);
+          border: 1px solid #ddd;
+          color: hsl(100, 100%, 100%);
+          cursor: move;
+          font-family: 'Roboto', sans-serif;
+          font-weight: 700;
+          margin: 0.5rem 0;
+          padding: 1em;
+        }
+
+        .sortable-row.sortable-ghost {
+          background-color: hsl(19, 100%, 50%);
+        }
       </style>
 
-      <section class="table-buttons"></section>
-      <div class="table"></div>
+      <section class="table-section">
+        <div class="table-buttons"></div>
+        <div class="table"></div>
+      </section>
     `
 
     if (this.structure.tableButtons) {
@@ -270,6 +308,13 @@ class Table extends HTMLElement {
           tableButtonElement.classList.add('table-filter-button')
           tableButtonElement.innerHTML = `
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 11L16.76 3.62A1 1 0 0 0 16.59 2.22A1 1 0 0 0 16 2H2A1 1 0 0 0 1.38 2.22A1 1 0 0 0 1.21 3.62L7 11V16.87A1 1 0 0 0 7.29 17.7L9.29 19.7A1 1 0 0 0 10.7 19.7A1 1 0 0 0 11 18.87V11M13 16L18 21L23 16Z" /></svg>
+          `
+        }
+
+        if (this.structure.tableButtons[tableButton] === 'sortableButton') {
+          tableButtonElement.classList.add('sortable-button')
+          tableButtonElement.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,3L5,7H8V14H10V7H13M16,17V10H14V17H11L15,21L19,17H16Z" /></svg>
           `
         }
 
@@ -344,6 +389,10 @@ class Table extends HTMLElement {
       const tableRow = document.createElement('div')
       tableRow.classList.add('table-row')
 
+      if (this.structure.sortable) {
+        tableRow.dataset.id = element.id
+      }
+
       const tableButtons = document.createElement('div')
       tableButtons.classList.add('table-record-buttons')
       tableRow.appendChild(tableButtons)
@@ -400,12 +449,49 @@ class Table extends HTMLElement {
   }
 
   async renderTableButtons () {
-    const editButtons = this.shadow.querySelectorAll('.edit-button')
-    const removeButtons = this.shadow.querySelectorAll('.remove-button')
+    const tableSection = this.shadow.querySelector('.table-section')
 
-    editButtons.forEach(editButton => {
-      editButton.addEventListener('click', async () => {
-        const endpoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + editButton.dataset.id
+    tableSection.addEventListener('click', async (event) => {
+      if (event.target.closest('.sortable-button')) {
+        const sortableButton = event.target.closest('.sortable-button')
+
+        if (sortableButton.classList.contains('active')) {
+          sortableButton.classList.remove('active')
+          sortableButton.querySelector('path').setAttribute('d', 'M9,3L5,7H8V14H10V7H13M16,17V10H14V17H11L15,21L19,17H16Z')
+          this.shadow.querySelector('.table').innerHTML = ''
+          await this.getTableData()
+        } else {
+          sortableButton.classList.add('active')
+          sortableButton.querySelector('path').setAttribute('d', 'M22,14A2,2 0 0,1 20,16H4A2,2 0 0,1 2,14V10A2,2 0 0,1 4,8H20A2,2 0 0,1 22,10V14M4,14H8V10H4V14M10,14H14V10H10V14M16,14H20V10H16V14Z')
+          this.shadow.querySelector('.table').innerHTML = ''
+          const table = this.shadow.querySelector('.table')
+
+          let url = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/sortable`
+
+          const query = [
+            this.parent ? `parent=${this.parent.id}` : null,
+            this.language ? `language=${this.language}` : null
+          ].filter(Boolean).join('&')
+
+          url += query ? `?${query}` : ''
+
+          this.sortableData = await fetch(url).then(response => response.json())
+
+          console.log(this.sortableData)
+          await this.renderSortable(table, this.sortableData)
+        }
+      }
+
+      if (event.target.closest('.edit-button')) {
+        const editButton = event.target.closest('.edit-button')
+        let endpoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + editButton.dataset.id
+
+        const query = [
+          this.parent ? `parent=${this.parent.id}` : null,
+          this.language ? `language=${this.language}` : null
+        ].filter(Boolean).join('&')
+
+        endpoint += query ? `?${query}` : ''
 
         try {
           const response = await fetch(endpoint)
@@ -434,22 +520,124 @@ class Table extends HTMLElement {
             }
           }))
         }
-      })
-    })
+      }
 
-    removeButtons.forEach(removeButton => {
-      removeButton.addEventListener('click', () => {
-        const element = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + removeButton.dataset.id
+      if (event.target.closest('.remove-button')) {
+        const removeButton = event.target.closest('.remove-button')
+
+        let element = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${removeButton.dataset.id}`
+
+        const query = [
+          this.parent ? `parent=${this.parent.id}` : null,
+          this.language ? `language=${this.language}` : null
+        ].filter(Boolean).join('&')
+
+        element += query ? `?${query}` : ''
 
         document.dispatchEvent(new CustomEvent('showDeleteModal', {
           detail: {
             element,
-            endPoint: this.getAttribute('endpoint'),
-            subtable: this.getAttribute('subtable') ? this.getAttribute('subtable') : null
+            endPoint: this.getAttribute('endpoint')
           }
         }))
-      })
+      }
     })
+  }
+
+  async renderSortable (parentElement, elements, nestedElement = false) {
+    const table = this.shadow.querySelector('.table')
+    const group = nestedElement ? parentElement : document.createElement('div')
+    group.classList.add('sortable-group')
+
+    if (!nestedElement) {
+      parentElement.appendChild(group)
+    }
+
+    for (const item in elements) {
+      const element = elements[item]
+
+      if (element.parent && !nestedElement) {
+        continue
+      }
+
+      const row = document.createElement('div')
+      row.classList.add('sortable-row')
+      console.log(element)
+      row.textContent = `${element.label}: ${element.value}`
+      row.dataset.id = element.id
+
+      const nestedGroup = document.createElement('div')
+      nestedGroup.classList.add('sortable-group')
+      row.appendChild(nestedGroup)
+
+      if (element.children) {
+        await this.renderSortable(nestedGroup, element.children, true)
+      }
+
+      group.appendChild(row)
+    }
+
+    if (!nestedElement) {
+      table.querySelectorAll('.sortable-group').forEach(group => {
+        // eslint-disable-next-line no-new
+        new Sortable(group, {
+          group: 'nested',
+          sort: true,
+          animation: 150,
+          fallbackOnBody: true,
+          swapThreshold: 1,
+          onEnd: async (event) => {
+            const items = []
+            const sortableElements = event.to.querySelectorAll('.sortable-row')
+            sortableElements.forEach((element, index) => {
+              items.push({
+                id: element.dataset.id,
+                parent: element.parentElement.parentElement.dataset.id ? element.parentElement.parentElement.dataset.id : null,
+                order: index
+              })
+            })
+
+            let data = {
+              items
+            }
+
+            data = {
+              ...data,
+              ...(this.parent && { parent: this.parent.id }),
+              ...(this.language && { language: this.language })
+            }
+
+            try {
+              const url = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/update-order`
+
+              const response = fetch(url, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+              })
+
+              if (response.status === 200) {
+                document.dispatchEvent(new CustomEvent('message', {
+                  detail: {
+                    message: data.message || 'Orden guardado correctamente',
+                    type: 'success'
+                  }
+                }))
+              }
+            } catch (error) {
+              document.dispatchEvent(new CustomEvent('message', {
+                detail: {
+                  message: data.message || 'Fallo al guardar el orden',
+                  type: 'error'
+                }
+              }))
+            }
+          }
+        })
+      })
+    }
   }
 
   async renderPaginationButtons () {

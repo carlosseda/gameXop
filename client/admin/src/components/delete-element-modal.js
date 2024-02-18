@@ -15,7 +15,6 @@ class DeleteElementModal extends HTMLElement {
   handleShowDeleteModal (event) {
     this.element = event.detail.element
     this.endPoint = event.detail.endPoint
-    this.subtable = event.detail.subtable
     this.shadow.querySelector('.overlayer').classList.add('active')
   }
 

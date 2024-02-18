@@ -2,6 +2,22 @@ const mongooseDb = require('../models/mongoose')
 const LocaleSeo = mongooseDb.LocaleSeo
 
 module.exports = class LocaleSeoService {
+  createUrl = async (entity, entityElement, locales, environment) => {
+    for (const [languageAlias, locale] of Object.entries(locales)) {
+      const url = {
+        entity,
+        environment,
+        languageAlias,
+        entityId: entityElement._id,
+        title: locale.title,
+        description: locale['short-description'],
+        changeFrequency: 'daily',
+        priority: 1,
+        sitemap: true
+      }
+    }
+  }
+
   createSlug = async (entity, entityElement, locales) => {
     for (const [languageAlias, locale] of Object.entries(locales)) {
       const entityId = entityElement._id

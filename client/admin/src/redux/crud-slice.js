@@ -3,6 +3,10 @@ import { createSlice } from '@reduxjs/toolkit'
 export const crudSlice = createSlice({
   name: 'crud',
   initialState: {
+    parentElement: {
+      endPoint: null,
+      data: null
+    },
     formElement: {
       endPoint: null,
       data: null
@@ -10,6 +14,9 @@ export const crudSlice = createSlice({
     tableEndpoint: null
   },
   reducers: {
+    setParentElement: (state, action) => {
+      state.parentElement = action.payload
+    },
     showFormElement: (state, action) => {
       state.formElement = action.payload
     },
@@ -19,6 +26,6 @@ export const crudSlice = createSlice({
   }
 })
 
-export const { showFormElement, refreshTable } = crudSlice.actions
+export const { showFormElement, refreshTable, setParentElement } = crudSlice.actions
 
 export default crudSlice.reducer

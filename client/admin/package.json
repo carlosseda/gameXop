@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "^2.1.0",
     "lodash": "^4.17.21",
     "redux": "^5.0.1",
+    "sortablejs": "^1.15.2",
     "webfontloader": "^1.6.28"
   }
 }

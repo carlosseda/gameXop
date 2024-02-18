@@ -4,12 +4,10 @@ module.exports = (mongoose) => {
       name: String,
       environment: String,
       private: Boolean,
-      items: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'MenuItem'
-        }
-      ],
+      items: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
+      },
       deletedAt: Date
     },
     { timestamps: true }

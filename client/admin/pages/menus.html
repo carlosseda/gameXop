@@ -58,14 +58,21 @@
                         'general': {
                           'noLocale': [
                             {'name': 'id', 'element':'input', 'type': 'hidden'},
-                            {'name': 'url', 'element':'select', 'label': 'Url', 'width': 'half-width', 'endpoint': '/api/admin/locale-seos/get-urls', 'parent-filter': ['environment', 'languageAlias']},
+                            {'name': 'type', 'element':'select', 'label': 'Tipo de enlace', 'width': 'full-width', 'related': 'true', 'options': 
+                              [
+                                {'label': 'Enlace interno', 'value': 'internal'},
+                                {'label': 'Enlace externo', 'value': 'external'}
+                              ]
+                            },
+                            {'name': 'urlExternal', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'full-width', 'relatedinput': 'type', 'relatedvalue': 'external'},
+                            {'name': 'urlInternal', 'element':'select', 'label': 'Url', 'width': 'full-width', 'related': 'type', 'relatedinput': 'type', 'relatedvalue': 'internal', 'endpoint': '/api/admin/locale-seos/get-urls', 'parent-filter': ['environment']},
                             {'name': 'private', 'element':'select', 'label': 'Privado', 'width': 'half-width', 'options': 
                               [
                                 {'label': 'Sí', 'value': 'true'},
                                 {'label': 'No', 'value': 'false'}
                               ]
                             },
-                            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'full-width'},
+                            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título', 'width': 'half-width'},
                             {'name': 'description', 'element':'textarea', 'label': 'Descripción', 'width': 'full-width'}
                           ]
                         }
@@ -74,10 +81,13 @@
                   },
                   {'element': 'subtable', 'width': 'half-width', 'endpoint': '/api/admin/menu-items', 'structure': 
                     {
+                      'sortable': true,
                       'headers': [
+                        {'label': 'Título', 'field': 'title'},
                         {'label': 'Url', 'field': 'url'}
                       ],
-                      'recordButtons': ['edit', 'remove']
+                      'recordButtons': ['sortable', 'edit', 'remove'],
+                      'tableButtons': ['sortableButton']
                     }
                   }
                 ]

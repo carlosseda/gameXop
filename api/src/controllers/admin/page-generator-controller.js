@@ -1,14 +1,15 @@
 const moment = require('moment')
 const mongooseDb = require('../../models/mongoose')
-const Menu = mongooseDb.Menu
+const AdminPage = mongooseDb.AdminPage
 
 exports.create = async (req, res) => {
   try {
-    let data = await Menu.create(req.body)
-    data = data.toObject()
-    data.id = data._id
+    req.body.structure = JSON.parse(req.body.structure)
+    let data = await AdminPage.create(req.body)
+    data = req.localeSeoService.createUrl(req.body.entity, data, req.body.locale)
     res.status(200).send(data)
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
@@ -29,14 +30,14 @@ exports.findAll = async (req, res) => {
   }
 
   try {
-    const result = await Menu.find(whereStatement)
+    const result = await AdminPage.find(whereStatement)
       .skip(offset)
       .limit(limit)
       .sort({ createdAt: -1 })
       .lean()
       .exec()
 
-    const count = await Menu.countDocuments(whereStatement)
+    const count = await AdminPage.countDocuments(whereStatement)
 
     const response = {
       rows: result.map(doc => ({
@@ -65,10 +66,11 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findById(id).lean().exec()
+    const data = await AdminPage.findById(id).lean().exec()
 
     if (data) {
       data.id = data._id
+      delete data._id
     }
 
     if (data) {
@@ -89,18 +91,19 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findByIdAndUpdate(id, req.body, { new: true }).lean().exec()
+    const data = await AdminPage.findByIdAndUpdate(id, req.body, { new: true })
 
     if (data) {
-      data.id = data._id
-
-      res.status(200).send(data)
+      res.status(200).send({
+        message: 'El elemento ha sido actualizado correctamente.'
+      })
     } else {
       res.status(404).send({
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: 'Algún error ha surgido al actualizar la id=' + id
     })
@@ -111,7 +114,7 @@ exports.delete = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findByIdAndUpdate(id, { deletedAt: new Date() })
+    const data = await AdminPage.findByIdAndUpdate(id, { deletedAt: new Date() })
 
     if (data) {
       res.status(200).send({

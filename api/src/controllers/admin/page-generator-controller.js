@@ -10,7 +10,6 @@ exports.create = async (req, res) => {
 
     res.status(200).send(data)
   } catch (err) {
-    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
@@ -93,7 +92,9 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
+    if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.findByIdAndUpdate(id, req.body, { new: true })
+    req.localeSeoService.createUrl(data, 'admin')
 
     if (data) {
       res.status(200).send({

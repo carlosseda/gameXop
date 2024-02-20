@@ -19,11 +19,15 @@ module.exports = class LocaleSeoService {
         sitemap: environment !== 'admin'
       }
 
-      const localeSeo = await LocaleSeo.findOneAndUpdate(
-        { languageAlias, entityId },
-        url,
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      )
+      const localeSeo = await LocaleSeo.create(url)
+
+      if (locale.localeSeo) {
+        await LocaleSeo.findByIdAndUpdate(
+          locale.localeSeo,
+          { $set: { redirect: localeSeo.id } },
+          { new: true }
+        )
+      }
 
       locale.localeSeo = localeSeo._id
       page.locales.set(languageAlias, locale)

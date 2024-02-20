@@ -23,7 +23,7 @@ class Form extends HTMLElement {
       if (currentState.crud.formElement && currentState.crud.formElement.endPoint === this.getAttribute('endpoint') && !isEqual(this.formElementData, currentState.crud.formElement.data)) {
         this.formElementData = currentState.crud.formElement.data
 
-        if (!this.formElementData.locales || Object.keys(this.formElementData.locales)[0] === this.languages.value) {
+        if (!this.parent || !this.formElementData.locales || Object.keys(this.formElementData.locales)[0] === this.languages.value) {
           this.showElement(this.formElementData)
         }
       }

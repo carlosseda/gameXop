@@ -2,12 +2,12 @@ class Message extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    document.addEventListener('message', this.handleMessage.bind(this))
   }
 
   static get observedAttributes () { return ['message', 'type'] }
 
   connectedCallback () {
+    document.addEventListener('message', this.handleMessage.bind(this))
     this.render()
   }
 

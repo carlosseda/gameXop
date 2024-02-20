@@ -3,11 +3,11 @@ module.exports = (mongoose) => {
     {
       entity: String,
       endpoint: String,
-      localeSeo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'LocaleSeo'
-      },
       structure: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
+      },
+      locales: {
         type: Map,
         of: mongoose.Schema.Types.Mixed
       },

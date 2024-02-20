@@ -2,6 +2,7 @@ module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
       entity: String,
+      entityId: mongoose.Schema.Types.ObjectId,
       environment: String,
       filename: String,
       languageAlias: String,
@@ -14,10 +15,7 @@ module.exports = (mongoose) => {
       sitemap: Boolean,
       slugs: [
         {
-          entityId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'ProductSpecification'
-          },
+          entityId: mongoose.Schema.Types.ObjectId,
           url: String,
           title: String,
           description: String,

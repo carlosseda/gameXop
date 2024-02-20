@@ -2,19 +2,33 @@ const mongooseDb = require('../models/mongoose')
 const LocaleSeo = mongooseDb.LocaleSeo
 
 module.exports = class LocaleSeoService {
-  createUrl = async (entity, entityElement, locales, environment) => {
-    for (const [languageAlias, locale] of Object.entries(locales)) {
+  createUrl = async (page, environment) => {
+    const entityId = page._id
+
+    for (const [languageAlias, locale] of page.locales) {
       const url = {
-        entity,
+        entity: page.entity,
         environment,
         languageAlias,
-        entityId: entityElement._id,
+        entityId,
+        url: locale.url,
         title: locale.title,
         description: locale['short-description'],
-        changeFrequency: 'daily',
+        changeFrequency: 'monthly',
         priority: 1,
-        sitemap: true
+        sitemap: environment !== 'admin'
       }
+
+      const localeSeo = await LocaleSeo.findOneAndUpdate(
+        { languageAlias, entityId },
+        url,
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      )
+
+      locale.localeSeo = localeSeo._id
+      page.locales.set(languageAlias, locale)
+      page.markModified('locales')
+      await page.save()
     }
   }
 

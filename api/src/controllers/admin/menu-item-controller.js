@@ -15,6 +15,7 @@ exports.create = async (req, res) => {
     await Menu.findByIdAndUpdate(req.body.parentId, { $push: update })
     res.status(200).send(req.body.locales[localeKey])
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })

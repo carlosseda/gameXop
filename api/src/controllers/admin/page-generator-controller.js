@@ -4,9 +4,10 @@ const AdminPage = mongooseDb.AdminPage
 
 exports.create = async (req, res) => {
   try {
-    req.body.structure = JSON.parse(req.body.structure)
-    let data = await AdminPage.create(req.body)
-    data = req.localeSeoService.createUrl(req.body.entity, data, req.body.locale)
+    if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
+    const data = await AdminPage.create(req.body)
+    req.localeSeoService.createUrl(data, 'admin')
+
     res.status(200).send(data)
   } catch (err) {
     console.log(err)
@@ -67,6 +68,7 @@ exports.findOne = async (req, res) => {
 
   try {
     const data = await AdminPage.findById(id).lean().exec()
+    data.structure = JSON.stringify(data.structure)
 
     if (data) {
       data.id = data._id

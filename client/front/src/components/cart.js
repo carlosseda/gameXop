@@ -7,15 +7,8 @@ class Cart extends HTMLElement {
   }
 
   async connectedCallback () {
-    if (!document.setFingerprint) {
-      document.addEventListener('setFingerprint', this.handleSetFingerprint.bind(this))
-      document.setFingerprint = true
-    }
-
-    if (!document.addToCart) {
-      document.addEventListener('addToCart', this.handleAddToCart.bind(this))
-      document.addToCart = true
-    }
+    document.addEventListener('setFingerprint', this.handleSetFingerprint.bind(this))
+    document.addEventListener('addToCart', this.handleAddToCart.bind(this))
 
     if (!localStorage.getItem('cartUuid')) {
       const json = {
@@ -31,6 +24,8 @@ class Cart extends HTMLElement {
     } else {
       this.uuid = localStorage.getItem('cartUuid')
     }
+
+    this.loadData().then(() => this.render())
   }
 
   async handleSetFingerprint (event) {

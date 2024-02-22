@@ -1,52 +1,69 @@
-<crud-component>
-  <!-- <table-filter
-    slot='filter'
-    url='/api/admin/users'
-  /> -->
+<alert-message-component></alert-message-component>
+<delete-element-modal-component></delete-element-modal-component>
+<image-gallery-component></image-gallery-component>
+<message-component></message-component>
 
-  <table-component
-    slot="table"
-    endpoint="/api/admin/page-generator"
-    structure="{
-      'headers': [
-        {'label': 'Entidad', 'field': 'entity'},
-        {'label': 'Fecha de creación', 'field': 'createdAt'},
-        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
-      ],
-      'recordButtons': ['edit', 'remove'],
-      'tableButtons': ['filterButton']
-    }"/>
-  </table-component>
+<header-component>
+  <row-component columns="1">
+    <logo-component title="GameXop"></logo-component>
+  </row-component>
+  <row-component columns="2">
+    <menu-component></menu-component>
+    <user-area-component></user-area-component>
+  </row-component>
+</header-component>
 
-  <form-component
-    slot="form"
-    endpoint="/api/admin/page-generator"
-    structure="{
-      'tabs': [
-        {'name': 'general', 'label': 'General'},
-        {'name': 'structure', 'label': 'Estructura'}
-      ],
-      'inputs': {
-        'general': {
-          'noLocale': [
-            {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'entity', 'element':'input', 'type': 'text', 'label': 'Entidad', 'width': 'half-width'},
-            {'name': 'endpoint', 'element':'input', 'type': 'text', 'label': 'Endpoint', 'width': 'half-width'}
-          ],
-          'locale': [
-            {'name': 'localeSeo', 'element':'input', 'type': 'hidden'},
-            {'name': 'url', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'},
-            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título de la página', 'width': 'half-width'},
-            {'name': 'description', 'element':'input', 'type': 'text', 'label': 'Descripción de la página', 'width': 'full-width'}    
-          ]
-        },
-        'structure': {
-          'noLocale': [
-            {'name': 'structure', 'element':'textarea', 'label': 'Estructura', 'width': 'full-width'}
-          ]
+<main-component>
+  <crud-component>
+    <!-- <table-filter
+      slot='filter'
+      url='/api/admin/users'
+    /> -->
+
+    <table-component
+      slot="table"
+      endpoint="/api/admin/page-generator"
+      structure="{
+        'headers': [
+          {'label': 'Entidad', 'field': 'entity'},
+          {'label': 'Fecha de creación', 'field': 'createdAt'},
+          {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+        ],
+        'recordButtons': ['edit', 'remove'],
+        'tableButtons': ['filterButton']
+      }"/>
+    </table-component>
+
+    <form-component
+      slot="form"
+      endpoint="/api/admin/page-generator"
+      structure="{
+        'tabs': [
+          {'name': 'general', 'label': 'General'},
+          {'name': 'structure', 'label': 'Estructura'}
+        ],
+        'inputs': {
+          'general': {
+            'noLocale': [
+              {'name': 'id', 'element':'input', 'type': 'hidden'},
+              {'name': 'entity', 'element':'input', 'type': 'text', 'label': 'Entidad', 'width': 'half-width'},
+              {'name': 'endpoint', 'element':'input', 'type': 'text', 'label': 'Endpoint', 'width': 'half-width'}
+            ],
+            'locale': [
+              {'name': 'localeSeo', 'element':'input', 'type': 'hidden'},
+              {'name': 'url', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'},
+              {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título de la página', 'width': 'half-width'},
+              {'name': 'description', 'element':'input', 'type': 'text', 'label': 'Descripción de la página', 'width': 'full-width'}    
+            ]
+          },
+          'structure': {
+            'noLocale': [
+              {'name': 'structure', 'element':'textarea', 'label': 'Estructura', 'width': 'full-width'}
+            ]
+          }
         }
-      }
-    }"/>
-  </form-component>
-  
-</crud-component>
+      }"/>
+    </form-component>
+    
+  </crud-component>
+</main-component>

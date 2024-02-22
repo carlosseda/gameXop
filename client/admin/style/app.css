@@ -48,25 +48,4 @@ body::-webkit-scrollbar-thumb {
   background: #6649b8;
 }
 
-header{
-  align-items: center;
-  background-color: hsla(0, 0%, 0%);
-  display: flex;
-  justify-content: space-between;
-  min-height: 5vh;
-  padding: 0.5rem 2rem;
-}
 
-.header-group{
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-}
-
-main{
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  height: 100%;
-  padding: 2rem;
-}

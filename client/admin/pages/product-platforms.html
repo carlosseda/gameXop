@@ -1,68 +1,85 @@
-<crud-component>
-  <!-- <table-filter 
-    slot="filter"
-    url="/api/admin/users">
-  </table-filter> -->
+<alert-message-component></alert-message-component>
+<delete-element-modal-component></delete-element-modal-component>
+<image-gallery-component></image-gallery-component>
+<message-component></message-component>
 
-  <table-component 
-    slot="table"
-    endpoint="/api/admin/product-platforms"
-    structure="{
-      'headers': [
-        {'label': 'Nombre', 'field': 'name'},
-        {'label': 'Fecha de creación', 'field': 'createdAt'},
-        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
-      ],
-      'recordButtons': ['edit', 'remove'],
-      'tableButtons': ['filterButton']
-    }"
-  >
-  </table-component>
+<header-component>
+  <row-component columns="1">
+    <logo-component title="GameXop"></logo-component>
+  </row-component>
+  <row-component columns="2">
+    <menu-component></menu-component>
+    <user-area-component></user-area-component>
+  </row-component>
+</header-component>
 
-  <form-component 
-    slot="form"
-    endpoint="/api/admin/product-platforms"
-    structure="{
-      'tabs': [
-        {'name': 'general', 'label': 'General'},
-        {'name': 'images', 'label': 'Imágenes'}
-      ],
-      'inputs': {
-        'general': {
-          'noLocale': [
-            {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
-          ]
-        },
-        'images': {
-          'noLocale': [
-            {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
-              {
-                'thumbnail': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'xs': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'sm': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'md': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                },
-                'lg': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                }
-              } 
-            }
-          ]
+<main-component>
+  <crud-component>
+    <!-- <table-filter 
+      slot="filter"
+      url="/api/admin/users">
+    </table-filter> -->
+
+    <table-component 
+      slot="table"
+      endpoint="/api/admin/product-platforms"
+      structure="{
+        'headers': [
+          {'label': 'Nombre', 'field': 'name'},
+          {'label': 'Fecha de creación', 'field': 'createdAt'},
+          {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+        ],
+        'recordButtons': ['edit', 'remove'],
+        'tableButtons': ['filterButton']
+      }"
+    >
+    </table-component>
+
+    <form-component 
+      slot="form"
+      endpoint="/api/admin/product-platforms"
+      structure="{
+        'tabs': [
+          {'name': 'general', 'label': 'General'},
+          {'name': 'images', 'label': 'Imágenes'}
+        ],
+        'inputs': {
+          'general': {
+            'noLocale': [
+              {'name': 'id', 'element':'input', 'type': 'hidden'},
+              {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
+            ]
+          },
+          'images': {
+            'noLocale': [
+              {'name': 'icon', 'element':'input', 'type': 'image', 'label': 'Icono', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
+                {
+                  'thumbnail': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'xs': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'sm': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'md': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  },
+                  'lg': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  }
+                } 
+              }
+            ]
+          }
         }
-      }
-    }">
-  </form-component>
-</crud-component>
+      }">
+    </form-component>
+  </crud-component>
+</main-component>

@@ -6,6 +6,10 @@ module.exports = class LocaleSeoService {
     const entityId = page._id
 
     for (const [languageAlias, locale] of page.locales) {
+      if (!locale.url) {
+        continue
+      }
+
       const url = {
         entity: page.entity,
         environment,
@@ -19,17 +23,26 @@ module.exports = class LocaleSeoService {
         sitemap: environment !== 'admin'
       }
 
-      const localeSeo = await LocaleSeo.create(url)
-
       if (locale.localeSeo) {
-        await LocaleSeo.findByIdAndUpdate(
-          locale.localeSeo,
-          { $set: { redirect: localeSeo.id } },
-          { new: true }
-        )
+        let localeSeo = await LocaleSeo.findOne({ _id: locale.localeSeo, url: locale.url })
+
+        if (!localeSeo) {
+          localeSeo = await LocaleSeo.create(url)
+          await LocaleSeo.findByIdAndUpdate(
+            locale.localeSeo,
+            { $set: { redirect: localeSeo.id } },
+            { new: true }
+          )
+        } else {
+          await localeSeo.updateOne(url)
+        }
+
+        locale.localeSeo = localeSeo._id
+      } else {
+        const localeSeo = await LocaleSeo.create(url)
+        locale.localeSeo = localeSeo._id
       }
 
-      locale.localeSeo = localeSeo._id
       page.locales.set(languageAlias, locale)
       page.markModified('locales')
       await page.save()
@@ -78,6 +91,17 @@ module.exports = class LocaleSeoService {
       entityElement.links.set(languageAlias, url)
 
       await entityElement.save()
+    }
+  }
+
+  deleteUrl = async (page) => {
+    // eslint-disable-next-line no-unused-vars
+    for (const [language, locale] of page.locales) {
+      if (!locale.localeSeo) {
+        continue
+      }
+
+      await LocaleSeo.findByIdAndUpdate(locale.localeSeo, { deletedAt: new Date() })
     }
   }
 }

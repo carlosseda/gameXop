@@ -131,7 +131,7 @@ class TrackingComponent extends HTMLElement {
           fingerprint: this.fingerprint
         }
 
-        fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+        fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -186,7 +186,7 @@ class TrackingComponent extends HTMLElement {
         fingerprint: this.fingerprint
       }
 
-      fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+      fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -213,7 +213,7 @@ class TrackingComponent extends HTMLElement {
           fingerprint: this.fingerprint
         }
 
-        fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+        fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -240,7 +240,7 @@ class TrackingComponent extends HTMLElement {
           fingerprint: this.fingerprint
         }
 
-        fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+        fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -293,7 +293,7 @@ class TrackingComponent extends HTMLElement {
           fingerprint: this.fingerprint
         }
 
-        fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+        fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -320,7 +320,7 @@ class TrackingComponent extends HTMLElement {
         fingerprint: this.fingerprint
       }
 
-      fetch(`${import.meta.env.VITE_import.meta.env.VITE_API_URL}user-trackings`, {
+      fetch(`${import.meta.env.VITE_API_URL}user-trackings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -335,5 +335,3 @@ class TrackingComponent extends HTMLElement {
 }
 
 customElements.define('tracking-component', TrackingComponent)
-
-new TrackingComponent()

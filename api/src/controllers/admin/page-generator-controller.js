@@ -106,7 +106,6 @@ exports.update = async (req, res) => {
       })
     }
   } catch (err) {
-    console.log(err)
     res.status(500).send({
       message: 'Algún error ha surgido al actualizar la id=' + id
     })
@@ -118,6 +117,7 @@ exports.delete = async (req, res) => {
 
   try {
     const data = await AdminPage.findByIdAndUpdate(id, { deletedAt: new Date() })
+    req.localeSeoService.deleteUrl(data)
 
     if (data) {
       res.status(200).send({

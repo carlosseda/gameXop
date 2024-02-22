@@ -1,151 +1,168 @@
-<crud-component>
-  <!-- <table-filter 
-    slot="filter"
-    url="/api/admin/users">
-  </table-filter> -->
+<alert-message-component></alert-message-component>
+<delete-element-modal-component></delete-element-modal-component>
+<image-gallery-component></image-gallery-component>
+<message-component></message-component>
 
-  <table-component 
-    slot="table"
-    endpoint="/api/admin/products"
-    structure="{
-      'headers': [
-        {'label': 'Nombre', 'field': 'name'},
-        {'label': 'Fecha de creación', 'field': 'createdAt'},
-        {'label': 'Fecha de actualización', 'field': 'updatedAt'}
-      ],
-      'recordButtons': ['edit', 'remove'],
-      'tableButtons': ['filterButton']
-    }"
-  >
-  </table-component>
+<header-component>
+  <row-component columns="1">
+    <logo-component title="GameXop"></logo-component>
+  </row-component>
+  <row-component columns="2">
+    <menu-component></menu-component>
+    <user-area-component></user-area-component>
+  </row-component>
+</header-component>
 
-  <form-component 
-    slot="form"
-    endpoint="/api/admin/products"
-    structure="{
-      'tabs': [
-        {'name': 'general', 'label': 'General'},
-        {'name': 'images', 'label': 'Imágenes'},
-        {'name': 'specifications', 'label': 'Especificaciones'},
-        {'name': 'prices', 'label': 'Precios'}
-      ],
-      'inputs': {
-        'general': {
-          'noLocale': [
-            {'name': 'id', 'element':'input', 'type': 'hidden'},
-            {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'one-third-width'},
-            {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'one-third-width', 'options': 
-              [
-                {'label': 'Si', 'value': 'true'},
-                {'label': 'No', 'value': 'false'}
-              ]
-            },
-            {'name': 'featured', 'element':'select', 'label': 'Destacado', 'width': 'one-third-width', 'options': 
-              [
-                {'label': 'Si', 'value': 'true'},
-                {'label': 'No', 'value': 'false'}
-              ]
-            }
-          ],
-          'locale': [
-            {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título del producto', 'width': 'full-width'},
-            {'name': 'short-description', 'element':'input', 'type': 'text', 'label': 'Descripción corta del producto', 'width': 'full-width'},
-            {'name': 'description', 'element':'textarea', 'label': 'Descripción del producto', 'width': 'full-width'}
-          ]
-        },
-        'images': {
-          'locale': [
-            {'name': 'home-product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de la página de inicio', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
-              {
-                'thumbnail': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'xs': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'sm': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'md': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                },
-                'lg': {
-                  'widthPx': '400',
-                  'heightPx': '450'
-                }
-              } 
-            },
-            {'name': 'product-featured', 'element':'input', 'type': 'image', 'label': 'Imagen destacada', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
-              {
-                'thumbnail': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'xs': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'sm': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'md': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                },
-                'lg': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                }
-              } 
-            },
-            {'name': 'product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de producto', 'width': 'one-third-width', 'quantity': 'multiple', 'imageConfigurations': 
-              {
-                'thumbnail': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'xs': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'sm': {
-                  'widthPx': '100',
-                  'heightPx': '100'
-                },
-                'md': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                },
-                'lg': {
-                  'widthPx': '200',
-                  'heightPx': '200'
-                }
-              } 
-            }
-          ]
-        },
-        'specifications': {
-          'noLocale': [
-            {'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
-            {'name': 'releaseDate', 'element':'input', 'type': 'date', 'label': 'Fecha de lanzamiento', 'width': 'half-width'},
-            {'name': 'categories', 'element':'input',  'type': 'checkbox', 'label': 'Categorias', 'width': 'full-width', 'endpoint': '/api/admin/product-categories/get-categories'},
-            {'name': 'platforms', 'element':'input',  'type': 'checkbox', 'label': 'Plataformas', 'width': 'full-width', 'endpoint': '/api/admin/product-platforms/get-platforms'}
-          ]
-        },
-        'prices': {
-          'noLocale': [
-            {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'full-width'},
-            {'prefix': 'price', 'name': 'discountPercentage', 'element':'input', 'type': 'number', 'label': 'Porcentaje de oferta (opcional)', 'width': 'one-third-width'},
-            {'prefix': 'price', 'name': 'startsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Principio de oferta', 'width': 'one-third-width'},
-            {'prefix': 'price', 'name': 'endsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Final de oferta', 'width': 'one-third-width'}
-          ]
+<main-component>
+  <crud-component>
+    <!-- <table-filter 
+      slot="filter"
+      url="/api/admin/users">
+    </table-filter> -->
+
+    <table-component 
+      slot="table"
+      endpoint="/api/admin/products"
+      structure="{
+        'headers': [
+          {'label': 'Nombre', 'field': 'name'},
+          {'label': 'Fecha de creación', 'field': 'createdAt'},
+          {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+        ],
+        'recordButtons': ['edit', 'remove'],
+        'tableButtons': ['filterButton']
+      }"
+    >
+    </table-component>
+
+    <form-component 
+      slot="form"
+      endpoint="/api/admin/products"
+      structure="{
+        'tabs': [
+          {'name': 'general', 'label': 'General'},
+          {'name': 'images', 'label': 'Imágenes'},
+          {'name': 'specifications', 'label': 'Especificaciones'},
+          {'name': 'prices', 'label': 'Precios'}
+        ],
+        'inputs': {
+          'general': {
+            'noLocale': [
+              {'name': 'id', 'element':'input', 'type': 'hidden'},
+              {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'one-third-width'},
+              {'name': 'visible', 'element':'select', 'label': 'Visible', 'width': 'one-third-width', 'options': 
+                [
+                  {'label': 'Si', 'value': 'true'},
+                  {'label': 'No', 'value': 'false'}
+                ]
+              },
+              {'name': 'featured', 'element':'select', 'label': 'Destacado', 'width': 'one-third-width', 'options': 
+                [
+                  {'label': 'Si', 'value': 'true'},
+                  {'label': 'No', 'value': 'false'}
+                ]
+              }
+            ],
+            'locale': [
+              {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título del producto', 'width': 'full-width'},
+              {'name': 'short-description', 'element':'input', 'type': 'text', 'label': 'Descripción corta del producto', 'width': 'full-width'},
+              {'name': 'description', 'element':'textarea', 'label': 'Descripción del producto', 'width': 'full-width'}
+            ]
+          },
+          'images': {
+            'locale': [
+              {'name': 'home-product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de la página de inicio', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
+                {
+                  'thumbnail': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'xs': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'sm': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'md': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  },
+                  'lg': {
+                    'widthPx': '400',
+                    'heightPx': '450'
+                  }
+                } 
+              },
+              {'name': 'product-featured', 'element':'input', 'type': 'image', 'label': 'Imagen destacada', 'width': 'one-third-width', 'quantity': 'single', 'imageConfigurations': 
+                {
+                  'thumbnail': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'xs': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'sm': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'md': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  },
+                  'lg': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  }
+                } 
+              },
+              {'name': 'product-gallery', 'element':'input', 'type': 'image', 'label': 'Galería de producto', 'width': 'one-third-width', 'quantity': 'multiple', 'imageConfigurations': 
+                {
+                  'thumbnail': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'xs': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'sm': {
+                    'widthPx': '100',
+                    'heightPx': '100'
+                  },
+                  'md': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  },
+                  'lg': {
+                    'widthPx': '200',
+                    'heightPx': '200'
+                  }
+                } 
+              }
+            ]
+          },
+          'specifications': {
+            'noLocale': [
+              {'name': 'developer', 'element':'input', 'type': 'text', 'label': 'Desarrollador', 'width': 'half-width'},
+              {'name': 'releaseDate', 'element':'input', 'type': 'date', 'label': 'Fecha de lanzamiento', 'width': 'half-width'},
+              {'name': 'categories', 'element':'input',  'type': 'checkbox', 'label': 'Categorias', 'width': 'full-width', 'endpoint': '/api/admin/product-categories/get-categories'},
+              {'name': 'platforms', 'element':'input',  'type': 'checkbox', 'label': 'Plataformas', 'width': 'full-width', 'endpoint': '/api/admin/product-platforms/get-platforms'}
+            ]
+          },
+          'prices': {
+            'noLocale': [
+              {'prefix': 'price', 'name': 'basePrice', 'element':'input', 'type': 'number', 'label': 'Precio base', 'width': 'full-width'},
+              {'prefix': 'price', 'name': 'discountPercentage', 'element':'input', 'type': 'number', 'label': 'Porcentaje de oferta (opcional)', 'width': 'one-third-width'},
+              {'prefix': 'price', 'name': 'startsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Principio de oferta', 'width': 'one-third-width'},
+              {'prefix': 'price', 'name': 'endsAt', 'element':'input', 'type': 'datetime-local', 'label': 'Final de oferta', 'width': 'one-third-width'}
+            ]
+          }
         }
-      }
-    }">
-  </form-component>
-</crud-component>
+      }">
+    </form-component>
+  </crud-component>
+</main-component>

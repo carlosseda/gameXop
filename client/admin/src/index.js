@@ -1,5 +1,8 @@
 import './components/not-found.js'
 import './components/page.js'
+import './components/header.js'
+import './components/main.js'
+import './components/row.js'
 import './components/font-loader.js'
 import './components/logo.js'
 import './components/user-area.js'

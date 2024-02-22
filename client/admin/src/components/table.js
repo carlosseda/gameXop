@@ -153,11 +153,11 @@ class Table extends HTMLElement {
         }
 
         .table-records::-webkit-scrollbar-thumb{
-          background-color: $secondary-color;
+          background-color: hsl(236 55% 25%);
         }
 
         .table-records::-webkit-scrollbar-thumb:hover{
-          background-color: $hover-color;
+          background-color: hsl(272 40% 35%);
         }
 
         .table-record-buttons {

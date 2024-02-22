@@ -11,5 +11,3 @@ class FontLoader extends HTMLElement {
 }
 
 customElements.define('font-loader-component', FontLoader)
-
-new FontLoader()

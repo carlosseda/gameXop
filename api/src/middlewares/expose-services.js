@@ -3,7 +3,8 @@ const services = {
   imageService: new (require('../services/image-service'))(),
   priceManagementService: new (require('../services/price-management-service'))(),
   productManagementService: new (require('../services/product-management-service'))(),
-  localeSeoService: new (require('../services/locale-seo-service'))()
+  localeSeoService: new (require('../services/locale-seo-service'))(),
+  pageService: new (require('../services/page-service'))()
 }
 
 function createServiceMiddleware (serviceName) {

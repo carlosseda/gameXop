@@ -17,10 +17,11 @@ module.exports = class LocaleSeoService {
         entityId,
         url: locale.url,
         title: locale.title,
-        description: locale['short-description'],
+        description: locale['short-description'] || locale.description,
         changeFrequency: 'monthly',
         priority: 1,
-        sitemap: environment !== 'admin'
+        sitemap: environment !== 'admin',
+        filename: `${page.entity}.html`
       }
 
       if (locale.localeSeo) {

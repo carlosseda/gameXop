@@ -95,8 +95,8 @@ exports.update = async (req, res) => {
   try {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.findByIdAndUpdate(id, req.body, { new: true })
-    await req.pageService.createPage(req.body.structure, 'admin')
     req.localeSeoService.createUrl(data, 'admin')
+    await req.pageService.createPageHtml(data, 'admin', req.body.structure)
 
     if (data) {
       res.status(200).send({

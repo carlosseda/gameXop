@@ -1,7 +1,7 @@
 {
-  "delete-element-modal-component": {},
-  "image-gallery-component": {},
-  "message-component": {},
+  "font-loader-component": {
+    "font": "Lato:wght@400;700"
+  },
   "header-component": {
     "slot": {
       "row-component": [
@@ -25,9 +25,12 @@
   },
   "main-component":{
     "slot": {
+      "delete-element-modal-component": {},
+      "image-gallery-component": {},
+      "message-component": {},
       "crud-component": {
         "slot": {
-          "table-filter": {
+          "table-filter-component": {
             "slot": "filter",
             "endpoint": "/api/admin/users"
           },

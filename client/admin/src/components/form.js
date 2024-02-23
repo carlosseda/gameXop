@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import isEqual from 'lodash-es/isEqual'
 import { store } from '../redux/store.js'
 import { refreshTable, setParentElement } from '../redux/crud-slice.js'
 import { showImages, removeImages } from '../redux/images-slice.js'

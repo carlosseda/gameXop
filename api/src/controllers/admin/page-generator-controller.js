@@ -6,7 +6,7 @@ exports.create = async (req, res) => {
   try {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.create(req.body)
-    await req.pageService.createPage(req.body.structure, 'admin')
+    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
     await req.localeSeoService.createUrl(data, 'admin')
 
     res.status(200).send(data)
@@ -96,7 +96,7 @@ exports.update = async (req, res) => {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.findByIdAndUpdate(id, req.body, { new: true })
     req.localeSeoService.createUrl(data, 'admin')
-    await req.pageService.createPageHtml(data, 'admin', req.body.structure)
+    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
 
     if (data) {
       res.status(200).send({
@@ -108,6 +108,7 @@ exports.update = async (req, res) => {
       })
     }
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: 'Algún error ha surgido al actualizar la id=' + id
     })

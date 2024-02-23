@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash'
+import isEqual from 'lodash-es/isEqual'
 import { store } from '../redux/store.js'
 import { setImageGallery, addImage, removeImage } from '../redux/images-slice.js'
 

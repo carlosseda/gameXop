@@ -1,5 +1,7 @@
 const { Window } = require('happy-dom')
-const { build } = require('vite')
+const { rollup } = require('rollup')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
+const terser = require('terser')
 const fs = require('fs').promises
 const path = require('path')
 const componentsDirectory = `${path.dirname(require.main.filename)}/src/components`
@@ -10,13 +12,36 @@ module.exports = class PageService {
     this.environment = null
   }
 
-  createPageHtml = async (page, environment, structure) => {
+  createStaticPageHtml = async (page, environment, structure) => {
+    console.time('createPageHtml')
+
     if (Object.keys(structure).length === 0 || typeof structure !== 'object') return
     this.environment = environment
     this.entity = page.entity
 
-    Array.from(page.locales.keys()).forEach(async languageAlias => {
+    const documents = await this.generateHtml(structure, page.locales)
+    const bundle = await this.generateJsBundle(structure)
+
+    for (const [index, document] of documents.entries()) {
+      const script = document.createElement('script')
+      script.type = 'module'
+      script.textContent = bundle
+      document.body.appendChild(script)
+
+      const languageAlias = Array.from(page.locales.keys())[index]
+      const pagePath = path.join(pagesDirectory, this.entity, languageAlias, 'index.html')
+      await fs.mkdir(path.dirname(pagePath), { recursive: true })
+      await fs.writeFile(pagePath, document.documentElement.outerHTML)
+    }
+
+    console.timeEnd('createPageHtml')
+  }
+
+  generateHtml = async (structure, locales) => {
+    const documents = await Promise.all(Array.from(locales.keys()).map(async (languageAlias) => {
+      this.importContents = ''
       this.languageAlias = languageAlias
+
       try {
         const window = new Window()
         const document = window.document
@@ -30,61 +55,26 @@ module.exports = class PageService {
         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
 
         const title = document.createElement('title')
-        title.textContent = page.locales.get(languageAlias).title
+        title.textContent = locales.get(languageAlias).title
 
         const metaDescription = document.createElement('meta')
         metaDescription.setAttribute('name', 'description')
-        metaDescription.setAttribute('content', page.locales.get(languageAlias).description)
-
-        const script = document.createElement('script')
-        script.setAttribute('type', 'module')
+        metaDescription.setAttribute('content', locales.get(languageAlias).description)
 
         document.head.appendChild(viewport)
         document.head.appendChild(title)
         document.head.appendChild(metaDescription)
-        document.head.appendChild(script)
 
         this.body = document.createElement('body')
 
-        await this.loadComponentsScripts(structure, document)
         await this.loadComponents(structure, document)
-
-        const directory = `${pagesDirectory}/${this.environment}/${this.languageAlias}/${this.entity}`
-        await fs.mkdir(`${directory}`, { recursive: true })
-        await fs.writeFile(`${directory}/index.html`, document.documentElement.outerHTML)
+        return document
       } catch (err) {
         console.log(err)
       }
-    })
-  }
+    }))
 
-  loadComponentsScripts = async (structure, document) => {
-    let importsContent = ''
-
-    for (const component of Object.keys(structure)) {
-      const componentPath = path.join(componentsDirectory, this.environment, `${component}.js`)
-      importsContent += `import './${path.relative(componentsDirectory, componentPath)}';\n`
-    }
-
-    const indexPath = path.join(componentsDirectory, 'index.js')
-    await fs.writeFile(indexPath, importsContent)
-
-    await build({
-      configFile: false,
-      root: componentsDirectory,
-      build: {
-        outDir: `${pagesDirectory}/${this.environment}/${this.languageAlias}/${this.entity}`,
-        assetsDir: '.',
-        rollupOptions: {
-          input: indexPath
-        },
-        minify: 'terser'
-      }
-    })
-
-    const script = document.createElement('script')
-    script.setAttribute('type', 'module')
-    script.setAttribute('src', '/dist/index.js')
+    return documents
   }
 
   loadComponents = async (structure, document, parent = null) => {
@@ -111,12 +101,53 @@ module.exports = class PageService {
 
     for (let [key, value] of Object.entries(attributes)) {
       if (key === 'slot' && typeof value === 'object' && value !== null) {
-        await this.loadComponentsScripts(value, document)
         await this.loadComponents(value, document, element)
       } else {
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value).replace(/"/g, "'")
         element.setAttribute(key, value)
       }
     }
+  }
+
+  generateJsBundle = async (structure) => {
+    await this.importComponentsScripts(structure)
+    const bundle = await this.createBundle()
+
+    return bundle
+  }
+
+  importComponentsScripts = async (structure) => {
+    // todo
+    for (const [component, attributes] of Object.entries(structure)) {
+      const componentPath = path.join(componentsDirectory, this.environment, `${component}.js`)
+      const relativePath = path.relative(componentsDirectory, componentPath).replace(/\\/g, '/')
+      this.importContents += `import './${relativePath}'\n`
+    }
+  }
+
+  createBundle = async () => {
+    const indexPath = path.join(componentsDirectory, 'index.js')
+    await fs.writeFile(indexPath, this.importContents)
+
+    const bundle = await rollup({
+      input: path.join(componentsDirectory, 'index.js'),
+      plugins: [nodeResolve()]
+    })
+    const { output } = await bundle.generate({
+      format: 'es',
+      sourcemap: true
+    })
+
+    const minifiedCodes = await Promise.all(
+      output.map(async (chunkOrAsset) => {
+        if (chunkOrAsset.type === 'chunk') {
+          const minified = await terser.minify(chunkOrAsset.code)
+          return minified.code
+        }
+        return ''
+      })
+    )
+
+    return minifiedCodes.join('')
   }
 }

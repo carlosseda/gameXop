@@ -2,32 +2,27 @@
   "font-loader-component": {
     "font": "Lato:wght@400;700"
   },
+  "delete-element-modal-component": {},
+  "image-gallery-component": {},
+  "message-component": {},
   "header-component": {
     "slot": {
-      "row-component": [
-        {
-          "columns": 1,
-          "slot": {
-            "logo-component": {
-              "title": "GameXop"
-            }
-          }
-        },
-        {
-          "columns": 2,
-          "slot": {
-            "menu-component": {},
-            "user-area-component": {}
-          }
+      "row-component": {
+        "template-columns": "8fr 2fr", 
+        "element-distribution": "1,2", 
+        "justify-contents": "flex-start,flex-end",
+        "slot": {
+          "logo-component": {
+            "title": "GameXop"
+          },
+          "menu-component": {},
+          "user-area-component": {}
         }
-      ]
+      }
     }
   },
   "main-component":{
     "slot": {
-      "delete-element-modal-component": {},
-      "image-gallery-component": {},
-      "message-component": {},
       "crud-component": {
         "slot": {
           "table-filter-component": {
@@ -36,6 +31,7 @@
           },
           "table-component": {
             "slot": "table",
+            "data": "/api/admin/users",
             "endpoint": "/api/admin/users",
             "structure": {
               "headers": [

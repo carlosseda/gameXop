@@ -315,10 +315,6 @@ class ImageGallery extends HTMLElement {
         }
       }
     })
-
-    this.shadow.querySelector('input[type="file"]').addEventListener('change', async event => {
-      this.uploadImage(event.target.files[0])
-    })
   }
 
   async openGallery () {
@@ -367,6 +363,10 @@ class ImageGallery extends HTMLElement {
       input.setAttribute('id', 'file')
       input.setAttribute('name', 'file')
       input.setAttribute('accept', 'image/*')
+
+      input.addEventListener('change', (event) => {
+        this.uploadImage(event.target.files[0])
+      })
 
       label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" /></svg>'
 

@@ -10,7 +10,7 @@ class Menu extends HTMLElement {
   }
 
   async loadData () {
-    const url = `${import.meta.env.VITE_API_URL}/admin/menus/display/${this.getAttribute('menu')}`
+    const url = `${process.env.API_URL}/api/admin/menus/display/${this.getAttribute('menu')}`
 
     try {
       const response = await fetch(url)

@@ -53,7 +53,7 @@ class Form extends HTMLElement {
 
   getLanguages = async () => {
     if (!window.sessionStorage.getItem('languages')) {
-      const endpoint = `${import.meta.env.VITE_API_URL}/api/admin/languages/get-languages`
+      const endpoint = `${process.env.API_URL}/api/admin/languages/get-languages`
 
       try {
         const response = await fetch(endpoint)
@@ -549,7 +549,7 @@ class Form extends HTMLElement {
             inputContainer.classList.add(`${formElement.type}-container`)
 
             if (formElement.endpoint) {
-              let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
+              let url = `${process.env.API_URL}${formElement.endpoint}`
 
               if (formElement['parent-filter'] && this.parent) {
                 const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter] ?? '')}`)
@@ -657,7 +657,7 @@ class Form extends HTMLElement {
             const input = document.createElement('upload-image-button-component')
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             input.setAttribute('name', formElement.name)
-            languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
+            languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', process.env.DEFAULT_LANGUAGE)
             input.setAttribute('quantity', formElement.quantity)
             input.setAttribute('image-configurations', JSON.stringify(formElement.imageConfigurations))
 
@@ -785,7 +785,7 @@ class Form extends HTMLElement {
         }
 
         if (formElement.endpoint) {
-          let url = `${import.meta.env.VITE_API_URL}${formElement.endpoint}`
+          let url = `${process.env.API_URL}${formElement.endpoint}`
 
           if (formElement['parent-filter'] && this.parent) {
             const query = formElement['parent-filter'].map(filter => `${filter}=${encodeURIComponent(this.parent[filter] ?? '')}`)
@@ -1029,7 +1029,7 @@ class Form extends HTMLElement {
       this.parent && (formDataJson.parentId = this.parent.id)
       this.languages.value && (formDataJson.language = this.languages.value)
 
-      const endpoint = formDataJson.id ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
+      const endpoint = formDataJson.id ? `${process.env.API_URL}${this.getAttribute('endpoint')}/${formDataJson.id}` : `${process.env.API_URL}${this.getAttribute('endpoint')}`
       const method = formDataJson.id ? 'PUT' : 'POST'
       delete formDataJson.id
 

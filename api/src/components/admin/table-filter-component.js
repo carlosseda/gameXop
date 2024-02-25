@@ -587,7 +587,7 @@ class TableFilter extends HTMLElement {
       const formDataJson = Object.fromEntries(formData.entries())
       const queryString = new URLSearchParams(formData).toString()
       const method = formDataJson.prompt ? 'POST' : 'GET'
-      const endpoint = formDataJson.prompt ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/openai-filter` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?${queryString}`
+      const endpoint = formDataJson.prompt ? `${process.env.API_URL}${this.getAttribute('endpoint')}/openai-filter` : `${process.env.API_URL}${this.getAttribute('endpoint')}?${queryString}`
       const fetchOptions = {
         method,
         headers: {

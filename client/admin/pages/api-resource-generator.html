@@ -1,0 +1,55 @@
+<delete-element-modal-component></delete-element-modal-component>
+<image-gallery-component></image-gallery-component>
+<message-component></message-component>
+
+<header-component>
+  <row-component template-columns="8fr 2fr" element-distribution="1,2" justify-contents="flex-start,flex-end">
+    <logo-component title="GameXop"></logo-component>
+    <menu-component></menu-component>
+    <user-area-component></user-area-component>
+  </row-component>
+</header-component>
+
+<main-component>
+  <crud-component>
+    <!-- <table-filter
+      slot='filter'
+      url='/api/admin/users'
+    /> -->
+
+    <table-component
+      slot="table"
+      endpoint="/api/admin/resources"
+      structure="{
+        'headers': [
+          {'label': 'Entidad', 'field': 'entity'},
+          {'label': 'Fecha de creación', 'field': 'createdAt'},
+          {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+        ],
+        'recordButtons': ['edit', 'remove'],
+        'tableButtons': ['filterButton']
+      }"/>
+    </table-component>
+
+    <form-component
+      slot="form"
+      endpoint="/api/admin/resources"
+      structure="{
+        'tabs': [
+          {'name': 'general', 'label': 'General'}
+        ],
+        'inputs': {
+          'general': {
+            'noLocale': [
+              {'name': 'id', 'element':'input', 'type': 'hidden'},
+              {'name': 'entity', 'element':'input', 'type': 'text', 'label': 'Entidad', 'width': 'full-width'},
+              {'name': 'endpoint', 'element':'input', 'type': 'text', 'label': 'Endpoint', 'width': 'full-width'},
+              {'name': 'model', 'element':'input', 'type': 'text', 'label': 'Modelo', 'width': 'full-width'}
+            ]
+          }
+        }
+      }"/>
+    </form-component>
+    
+  </crud-component>
+</main-component>

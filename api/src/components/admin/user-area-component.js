@@ -10,7 +10,7 @@ class UserArea extends HTMLElement {
   }
 
   async loadData () {
-    const url = `${import.meta.env.VITE_API_URL}/api/admin/users/user-area`
+    const url = `${process.env.API_URL}/api/admin/users/user-area`
 
     try {
       const response = await fetch(url)
@@ -74,7 +74,7 @@ class UserArea extends HTMLElement {
 
     if (this.user.images.avatar?.resizedFilename) {
       const image = document.createElement('img')
-      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.resizedFilename}`
+      image.src = `${process.env.API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.resizedFilename}`
       image.alt = this.user.images.avatar.alt
       image.title = this.user.images.avatar.title
       this.shadow.querySelector('.user-avatar').innerHTML = ''

@@ -1,9 +1,16 @@
-const { Window } = require('happy-dom')
+require('dotenv').config()
+const mongooseDb = require('../models/mongoose')
+const Resource = mongooseDb.Resource
+const process = require('process')
+const { Window, Browser } = require('happy-dom')
 const { rollup } = require('rollup')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
+const replace = require('@rollup/plugin-replace')
 const terser = require('terser')
+const htmlMinifier = require('html-minifier')
 const fs = require('fs').promises
 const path = require('path')
+const stylesDirectory = `${path.dirname(require.main.filename)}/src/styles`
 const componentsDirectory = `${path.dirname(require.main.filename)}/src/components`
 const pagesDirectory = `${path.dirname(require.main.filename)}/src/pages`
 
@@ -20,16 +27,21 @@ module.exports = class PageService {
     this.entity = page.entity
 
     const documents = await this.generateHtml(structure, page.locales)
-    const bundle = await this.generateJsBundle(structure)
+    const bundleJs = await this.generateJsBundle(structure)
+    const minifiedCss = await this.generateCss()
 
     for (const [index, document] of documents.entries()) {
       const script = document.createElement('script')
       script.type = 'module'
-      script.textContent = bundle
+      script.textContent = bundleJs
       document.body.appendChild(script)
 
+      const style = document.createElement('style')
+      style.textContent = minifiedCss
+      document.head.appendChild(style)
+
       const languageAlias = Array.from(page.locales.keys())[index]
-      const pagePath = path.join(pagesDirectory, this.entity, languageAlias, 'index.html')
+      const pagePath = path.join(pagesDirectory, this.environment, this.entity, languageAlias, 'index.html')
       await fs.mkdir(path.dirname(pagePath), { recursive: true })
       await fs.writeFile(pagePath, document.documentElement.outerHTML)
     }
@@ -80,6 +92,7 @@ module.exports = class PageService {
   loadComponents = async (structure, document, parent = null) => {
     for (const [component, attributes] of Object.entries(structure)) {
       const components = Array.isArray(attributes) ? attributes : [attributes]
+
       for (const attribute of components) {
         await this.createElement(document, component, attribute, parent)
       }
@@ -95,6 +108,7 @@ module.exports = class PageService {
       if (key === 'slot' && typeof value === 'object' && value !== null) {
         await this.loadComponents(value, document, element)
       } else {
+        if (key === 'data') this.hydrationPage(element, value)
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value).replace(/"/g, "'")
         element.setAttribute(key, value)
       }
@@ -131,7 +145,15 @@ module.exports = class PageService {
 
     const bundle = await rollup({
       input: path.join(componentsDirectory, 'index.js'),
-      plugins: [nodeResolve()]
+      plugins: [
+        nodeResolve(),
+        replace({
+          preventAssignment: true,
+          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+          'process.env.API_URL': JSON.stringify(process.env.API_URL),
+          'process.env.DEFAULT_LANGUAGE ': JSON.stringify(process.env.DEFAULT_LANGUAGE)
+        })
+      ]
     })
     const { output } = await bundle.generate({
       format: 'es',
@@ -149,5 +171,42 @@ module.exports = class PageService {
     )
 
     return minifiedCodes.join('')
+  }
+
+  generateCss = async () => {
+    const css = await fs.readFile(`${stylesDirectory}/${this.environment}/app.css`, 'utf8')
+    const minifiedCss = htmlMinifier.minify(css, { collapseWhitespace: true, minifyCSS: true })
+
+    return minifiedCss
+  }
+
+  hydrationPage = async (component, endpoint, entity) => {
+    const whereStatement = {}
+    whereStatement.endpoint = endpoint
+    whereStatement.deletedAt = { $exists: false }
+    const resource = await Resource.findOne(whereStatement)
+
+    if (!resource) return
+
+    const model = mongooseDb[resource.model]
+    const data = await model.find({}).lean().exec()
+    component.setAttribute('data', JSON.stringify(data))
+  }
+
+  getPage = async (environment, entity, languageAlias) => {
+    const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
+    const page = await fs.readFile(pagePath, 'utf8')
+    const stats = await fs.stat(pagePath)
+    console.log(`Last modified: ${stats.mtime}`)
+
+    const window = new Window()
+    const document = window.document
+    document.write((page).toString())
+
+    document.body.querySelectorAll('[data]').forEach(element => {
+      console.log(element.getAttribute('endpoint'))
+    })
+
+    return page
   }
 }

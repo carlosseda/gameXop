@@ -32,12 +32,6 @@ exports.findAll = async (req, res) => {
   const offset = (page - 1) * limit
 
   req.imageService.getThumbnails(limit, offset).then(result => {
-    result.meta = {
-      total: result.count,
-      pages: Math.ceil(result.count / limit),
-      currentPage: page
-    }
-
     res.status(200).send(result)
   }).catch(err => {
     res.status(500).send({

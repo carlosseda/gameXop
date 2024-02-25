@@ -175,7 +175,7 @@ class UploadImageButton extends HTMLElement {
     }
 
     const file = document.createElement('img')
-    file.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${image.filename}`
+    file.src = `${process.env.API_URL}/api/admin/image-gallery/${image.filename}`
 
     const deleteButton = document.createElement('button')
     deleteButton.classList.add('delete-button')

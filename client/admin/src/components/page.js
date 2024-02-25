@@ -30,6 +30,7 @@ class PageComponent extends HTMLElement {
     const routes = {
       '/admin': 'dashboard.html',
       '/admin/generador-de-administracion': 'admin-page-generator.html',
+      '/admin/generador-de-recursos-api': 'api-resource-generator.html',
       '/admin/menus': 'menus.html',
       '/admin/usuarios': 'users.html',
       '/admin/faqs': 'faqs.html',

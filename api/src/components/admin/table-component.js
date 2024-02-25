@@ -58,7 +58,7 @@ class Table extends HTMLElement {
       return
     }
 
-    let endpoint = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}`
+    let endpoint = `${process.env.API_URL}${this.getAttribute('endpoint')}`
 
     const query = [
       this.parent ? `parent=${this.parent.id}` : null,
@@ -466,7 +466,7 @@ class Table extends HTMLElement {
           this.shadow.querySelector('.table').innerHTML = ''
           const table = this.shadow.querySelector('.table')
 
-          let url = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/sortable`
+          let url = `${process.env.API_URL}${this.getAttribute('endpoint')}/sortable`
 
           const query = [
             this.parent ? `parent=${this.parent.id}` : null,
@@ -484,7 +484,7 @@ class Table extends HTMLElement {
 
       if (event.target.closest('.edit-button')) {
         const editButton = event.target.closest('.edit-button')
-        let endpoint = import.meta.env.VITE_API_URL + this.getAttribute('endpoint') + '/' + editButton.dataset.id
+        let endpoint = process.env.API_URL + this.getAttribute('endpoint') + '/' + editButton.dataset.id
 
         const query = [
           this.parent ? `parent=${this.parent.id}` : null,
@@ -525,7 +525,7 @@ class Table extends HTMLElement {
       if (event.target.closest('.remove-button')) {
         const removeButton = event.target.closest('.remove-button')
 
-        let element = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/${removeButton.dataset.id}`
+        let element = `${process.env.API_URL}${this.getAttribute('endpoint')}/${removeButton.dataset.id}`
 
         const query = [
           this.parent ? `parent=${this.parent.id}` : null,
@@ -608,7 +608,7 @@ class Table extends HTMLElement {
             }
 
             try {
-              const url = `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}/update-order`
+              const url = `${process.env.API_URL}${this.getAttribute('endpoint')}/update-order`
 
               const response = fetch(url, {
                 method: 'POST',
@@ -667,7 +667,7 @@ class Table extends HTMLElement {
             break
         }
 
-        const endpoint = this.queryString ? `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?page=${page}&${this.queryString}` : `${import.meta.env.VITE_API_URL}${this.getAttribute('endpoint')}?page=${page}`
+        const endpoint = this.queryString ? `${process.env.API_URL}${this.getAttribute('endpoint')}?page=${page}&${this.queryString}` : `${process.env.API_URL}${this.getAttribute('endpoint')}?page=${page}`
 
         try {
           const response = await fetch(endpoint)

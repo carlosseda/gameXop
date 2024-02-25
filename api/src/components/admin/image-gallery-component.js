@@ -315,10 +315,6 @@ class ImageGallery extends HTMLElement {
         }
       }
     })
-
-    this.shadow.querySelector('input[type="file"]').addEventListener('change', async event => {
-      this.uploadImage(event.target.files[0])
-    })
   }
 
   async openGallery () {
@@ -354,7 +350,7 @@ class ImageGallery extends HTMLElement {
     try {
       const imageGallery = this.shadow.querySelector('.image-gallery')
       imageGallery.innerHTML = ''
-      const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`)
+      const result = await fetch(`${process.env.API_URL}/api/admin/image-gallery`)
       const data = await result.json()
 
       const uploadImage = document.createElement('div')
@@ -367,6 +363,10 @@ class ImageGallery extends HTMLElement {
       input.setAttribute('id', 'file')
       input.setAttribute('name', 'file')
       input.setAttribute('accept', 'image/*')
+
+      input.addEventListener('change', async event => {
+        this.uploadImage(event.target.files[0])
+      })
 
       label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" /></svg>'
 
@@ -381,7 +381,7 @@ class ImageGallery extends HTMLElement {
 
         imageContainer.classList.add('image')
         imageContainer.setAttribute('data-filename', filename)
-        image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}`
+        image.src = `${process.env.API_URL}/api/admin/image-gallery/${filename}`
 
         imageContainer.appendChild(image)
         imageGallery.appendChild(imageContainer)
@@ -395,7 +395,7 @@ class ImageGallery extends HTMLElement {
     const formData = new FormData()
     formData.append('file', file)
 
-    const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/image-gallery`, {
+    const result = await fetch(`${process.env.API_URL}/api/admin/image-gallery`, {
       method: 'POST',
       body: formData
     })
@@ -412,7 +412,7 @@ class ImageGallery extends HTMLElement {
 
       imageContainer.classList.add('image', 'selected')
       imageContainer.setAttribute('data-filename', filename)
-      image.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/${filename}`
+      image.src = `${process.env.API_URL}/api/admin/image-gallery/${filename}`
 
       imageContainer.addEventListener('click', () => {
         this.shadow.querySelectorAll('.image').forEach(item => {

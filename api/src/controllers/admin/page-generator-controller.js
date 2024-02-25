@@ -6,8 +6,8 @@ exports.create = async (req, res) => {
   try {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.create(req.body)
-    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
     await req.localeSeoService.createUrl(data, 'admin')
+    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
 
     res.status(200).send(data)
   } catch (err) {
@@ -95,7 +95,7 @@ exports.update = async (req, res) => {
   try {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.findByIdAndUpdate(id, req.body, { new: true })
-    req.localeSeoService.createUrl(data, 'admin')
+    await req.localeSeoService.createUrl(data, 'admin')
     await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
 
     if (data) {

@@ -79,25 +79,17 @@ module.exports = class PageService {
 
   loadComponents = async (structure, document, parent = null) => {
     for (const [component, attributes] of Object.entries(structure)) {
-      if (Array.isArray(attributes)) {
-        const multipleComponents = attributes
-        for (const attributes of multipleComponents) {
-          await this.createElement(document, component, attributes, parent)
-        }
-      } else {
-        await this.createElement(document, component, attributes, parent)
+      const components = Array.isArray(attributes) ? attributes : [attributes]
+      for (const attribute of components) {
+        await this.createElement(document, component, attribute, parent)
       }
     }
   }
 
   createElement = async (document, component, attributes, parent) => {
     const element = document.createElement(component)
-
-    if (parent) {
-      parent.appendChild(element)
-    } else {
-      document.body.appendChild(element)
-    }
+    const container = parent || document.body
+    container.appendChild(element)
 
     for (let [key, value] of Object.entries(attributes)) {
       if (key === 'slot' && typeof value === 'object' && value !== null) {
@@ -117,11 +109,19 @@ module.exports = class PageService {
   }
 
   importComponentsScripts = async (structure) => {
-    // todo
     for (const [component, attributes] of Object.entries(structure)) {
-      const componentPath = path.join(componentsDirectory, this.environment, `${component}.js`)
-      const relativePath = path.relative(componentsDirectory, componentPath).replace(/\\/g, '/')
-      this.importContents += `import './${relativePath}'\n`
+      if (attributes.slot && typeof attributes.slot === 'object' && attributes.slot !== null) await this.importComponentsScripts(attributes.slot)
+
+      if (Array.isArray(attributes)) {
+        const multipleComponents = attributes
+        for (const component of multipleComponents) {
+          if (component.slot) await this.importComponentsScripts(component.slot)
+        }
+      } else {
+        const componentPath = path.join(componentsDirectory, this.environment, `${component}.js`)
+        const relativePath = path.relative(componentsDirectory, componentPath).replace(/\\/g, '/')
+        this.importContents += `import './${relativePath}'\n`
+      }
     }
   }
 

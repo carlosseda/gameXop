@@ -8,6 +8,7 @@ const cors = require('cors')
 const fs = require('fs')
 const app = express()
 const userAgentMiddleware = require('./src/middlewares/user-agent')
+const resourceMiddleware = require('./src/middlewares/resource')
 const exposeServiceMiddleware = require('./src/middlewares/expose-services')
 // const apiTrackingMiddleware = require('./src/middlewares/api-tracking.js')
 
@@ -27,6 +28,7 @@ app.use(express.json({ limit: '10mb', extended: true }))
 app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 50000 }))
 
 app.use(userAgentMiddleware)
+app.use(resourceMiddleware)
 app.use(...Object.values(exposeServiceMiddleware))
 // app.use(apiTrackingMiddleware)
 

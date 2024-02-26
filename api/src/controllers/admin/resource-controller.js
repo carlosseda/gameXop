@@ -4,6 +4,7 @@ const Resource = mongooseDb.Resource
 
 exports.create = async (req, res) => {
   try {
+    req.body.lastUpdated = new Date()
     const data = await Resource.create(req.body)
     res.status(200).send(data)
   } catch (err) {
@@ -88,6 +89,7 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
+    req.body.lastUpdated = new Date()
     const data = await Resource.findByIdAndUpdate(id, req.body, { new: true })
 
     if (data) {

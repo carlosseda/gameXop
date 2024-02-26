@@ -2,7 +2,8 @@ const mongooseDb = require('../../models/mongoose')
 const LocaleSeo = mongooseDb.LocaleSeo
 
 exports.getPage = async (req, res) => {
-  const startTime = Date.now()
+  console.time('createPageHtml')
+
   const url = req.params[0] ? `/admin/${req.params[0]}` : '/admin'
 
   const adminPage = await LocaleSeo.findOne({ url })
@@ -13,6 +14,8 @@ exports.getPage = async (req, res) => {
   // }
 
   const page = await req.pageService.getPage('admin', adminPage.entity, req.userLanguage)
+
+  console.timeEnd('createPageHtml')
 
   // const page = await pageService.generatePage(adminPage.dataValues, req.cookies)
   // const log = createLog(req, adminPage.dataValues.localeSeoId, startTime)

@@ -8,7 +8,7 @@ class Table extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
-    this.data = []
+    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : []
   }
 
   async connectedCallback () {
@@ -32,7 +32,8 @@ class Table extends HTMLElement {
     })
 
     if (!this.getAttribute('subtable')) {
-      this.loadData().then(() => this.render())
+      // this.loadData().then(() => this.render())
+      this.render()
     }
   }
 

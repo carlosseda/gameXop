@@ -1,8 +1,9 @@
 require('dotenv').config()
+const moment = require('moment')
 const mongooseDb = require('../models/mongoose')
 const Resource = mongooseDb.Resource
 const process = require('process')
-const { Window, Browser } = require('happy-dom')
+const { Window } = require('happy-dom')
 const { rollup } = require('rollup')
 const { nodeResolve } = require('@rollup/plugin-node-resolve')
 const replace = require('@rollup/plugin-replace')
@@ -108,7 +109,7 @@ module.exports = class PageService {
       if (key === 'slot' && typeof value === 'object' && value !== null) {
         await this.loadComponents(value, document, element)
       } else {
-        if (key === 'data') this.hydrationPage(element, value)
+        if (key === 'data') this.hydrationPage(element, attributes)
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value).replace(/"/g, "'")
         element.setAttribute(key, value)
       }
@@ -180,33 +181,90 @@ module.exports = class PageService {
     return minifiedCss
   }
 
-  hydrationPage = async (component, endpoint, entity) => {
-    const whereStatement = {}
-    whereStatement.endpoint = endpoint
-    whereStatement.deletedAt = { $exists: false }
-    const resource = await Resource.findOne(whereStatement)
+  hydrationPage = async (component, attributes) => {
+    const resourceWhereStatement = {}
+    resourceWhereStatement.endpoint = attributes.data
+    resourceWhereStatement.deletedAt = { $exists: false }
+    const resource = await Resource.findOne(resourceWhereStatement)
 
     if (!resource) return
 
+    const select = attributes.select ? attributes.select : ''
+    const limit = attributes.paginate ? attributes.paginate : 0
+
+    const whereStatement = {}
+    whereStatement.deletedAt = { $exists: false }
+
     const model = mongooseDb[resource.model]
-    const data = await model.find({}).lean().exec()
-    component.setAttribute('data', JSON.stringify(data))
+    const result = await model.find(whereStatement).select(select).limit(limit).lean().exec()
+
+    if (attributes.paginate) {
+      const count = await model.countDocuments(whereStatement)
+      const response = {
+        rows: result.map(doc => ({
+          ...doc,
+          id: doc._id,
+          _id: undefined,
+          createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+          updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+        })),
+        meta: {
+          total: count,
+          pages: Math.ceil(count / limit),
+          currentPage: 1
+        }
+      }
+
+      component.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+    } else {
+      const response = result.map(doc => ({
+        ...doc,
+        id: doc._id,
+        _id: undefined,
+        createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+        updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+      }))
+
+      component.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+    }
   }
 
   getPage = async (environment, entity, languageAlias) => {
+    const resources = await Resource.find().lean().exec()
+
     const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
     const page = await fs.readFile(pagePath, 'utf8')
     const stats = await fs.stat(pagePath)
-    console.log(`Last modified: ${stats.mtime}`)
 
     const window = new Window()
     const document = window.document
     document.write((page).toString())
 
+    let cache = false
+
     document.body.querySelectorAll('[data]').forEach(element => {
-      console.log(element.getAttribute('endpoint'))
+      const resource = resources.find(item => item.endpoint === element.getAttribute('endpoint'))
+      if (resource && resource.lastUpdated > stats.mtime) {
+        cache = true
+
+        const whereStatement = {}
+        whereStatement.deletedAt = { $exists: false }
+
+        mongooseDb[resource.model].find(whereStatement).lean().exec().then(data => {
+          element.setAttribute('data', JSON.stringify(data).replace(/"/g, "'"))
+        })
+      }
     })
 
+    if (cache) {
+      this.renewPage(environment, entity, languageAlias, document.documentElement.outerHTML)
+    }
+
     return page
+  }
+
+  renewPage = async (environment, entity, languageAlias, page) => {
+    const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
+    fs.writeFile(pagePath, page)
   }
 }

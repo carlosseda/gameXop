@@ -32,6 +32,8 @@
           "table-component": {
             "slot": "table",
             "data": "/api/admin/users",
+            "select": "name email createdAt updatedAt",
+            "paginate": "10",
             "endpoint": "/api/admin/users",
             "structure": {
               "headers": [

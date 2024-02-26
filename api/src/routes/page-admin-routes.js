@@ -3,7 +3,7 @@ module.exports = (app) => {
   const authCookie = require('../middlewares/auth-cookie.js')
   const controller = require('../controllers/admin/page-controller.js')
 
-  // router.get('/*', [authCookie.verifyUserCookie], controller.getPage)
+  router.get('/*', [authCookie.verifyUserCookie], controller.getPage)
 
-  // app.use('/admin', router)
+  app.use('/admin', router)
 }

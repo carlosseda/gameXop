@@ -183,14 +183,14 @@ module.exports = class PageService {
 
   hydrationPage = async (component, attributes) => {
     const resourceWhereStatement = {}
-    resourceWhereStatement.endpoint = attributes.data
+    resourceWhereStatement.endpoint = attributes.endpoint
     resourceWhereStatement.deletedAt = { $exists: false }
     const resource = await Resource.findOne(resourceWhereStatement)
 
     if (!resource) return
 
-    const select = attributes.select ? attributes.select : ''
-    const limit = attributes.paginate ? attributes.paginate : 0
+    const select = attributes.select ?? ''
+    const limit = attributes.paginate ?? 0
 
     const whereStatement = {}
     whereStatement.deletedAt = { $exists: false }
@@ -242,19 +242,52 @@ module.exports = class PageService {
 
     let cache = false
 
-    document.body.querySelectorAll('[data]').forEach(element => {
+    await Promise.all(Array.from(document.body.querySelectorAll('[data]')).map(async element => {
       const resource = resources.find(item => item.endpoint === element.getAttribute('endpoint'))
-      if (resource && resource.lastUpdated > stats.mtime) {
+
+      if (resource && new Date(resource.lastUpdated).getTime() > new Date(stats.mtime).getTime()) {
         cache = true
+
+        const select = element.getAttribute('select') ?? ''
+        const limit = element.getAttribute('paginate') ?? 0
 
         const whereStatement = {}
         whereStatement.deletedAt = { $exists: false }
 
-        mongooseDb[resource.model].find(whereStatement).lean().exec().then(data => {
-          element.setAttribute('data', JSON.stringify(data).replace(/"/g, "'"))
-        })
+        const model = mongooseDb[resource.model]
+        const result = await model.find(whereStatement).select(select).limit(limit).lean().exec()
+
+        if (element.getAttribute('paginate')) {
+          const count = await model.countDocuments(whereStatement)
+          const response = {
+            rows: result.map(doc => ({
+              ...doc,
+              id: doc._id,
+              _id: undefined,
+              createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+              updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+            })),
+            meta: {
+              total: count,
+              pages: Math.ceil(count / limit),
+              currentPage: 1
+            }
+          }
+
+          element.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+        } else {
+          const response = result.map(doc => ({
+            ...doc,
+            id: doc._id,
+            _id: undefined,
+            createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+            updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+          }))
+
+          element.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+        }
       }
-    })
+    }))
 
     if (cache) {
       this.renewPage(environment, entity, languageAlias, document.documentElement.outerHTML)

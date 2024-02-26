@@ -8,13 +8,18 @@ class Table extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
-    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : []
   }
 
   async connectedCallback () {
     this.parent = this.getAttribute('parent') ? JSON.parse(this.getAttribute('parent')) : null
     this.language = this.getAttribute('language') || null
     this.structure = JSON.parse(this.getAttribute('structure').replaceAll("'", '"'))
+
+    const data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
+    this.data = data.rows || []
+    this.total = data.meta ? data.meta.total : 0
+    this.currentPage = data.meta ? data.meta.currentPage : 1
+    this.lastPage = data.meta ? data.meta.pages : 1
 
     document.addEventListener('newFilter', this.handleNewFilter.bind(this))
 

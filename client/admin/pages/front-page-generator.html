@@ -1,0 +1,65 @@
+<delete-element-modal-component></delete-element-modal-component>
+<image-gallery-component></image-gallery-component>
+<message-component></message-component>
+
+<header-component>
+  <row-component template-columns="8fr 2fr" element-distribution="1,2" justify-contents="flex-start,flex-end">
+    <logo-component title="GameXop"></logo-component>
+    <menu-component></menu-component>
+    <user-area-component></user-area-component>
+  </row-component>
+</header-component>
+
+<main-component>
+  <crud-component>
+    <!-- <table-filter
+      slot='filter'
+      url='/api/admin/users'
+    /> -->
+
+    <table-component
+      slot="table"
+      endpoint="/api/admin/front-page-generator"
+      structure="{
+        'headers': [
+          {'label': 'Entidad', 'field': 'entity'},
+          {'label': 'Fecha de creación', 'field': 'createdAt'},
+          {'label': 'Fecha de actualización', 'field': 'updatedAt'}
+        ],
+        'recordButtons': ['edit', 'remove'],
+        'tableButtons': ['filterButton']
+      }"/>
+    </table-component>
+
+    <form-component
+      slot="form"
+      endpoint="/api/admin/front-page-generator"
+      structure="{
+        'tabs': [
+          {'name': 'general', 'label': 'General'},
+          {'name': 'structure', 'label': 'Estructura'}
+        ],
+        'inputs': {
+          'general': {
+            'noLocale': [
+              {'name': 'id', 'element':'input', 'type': 'hidden'},
+              {'name': 'entity', 'element':'input', 'type': 'text', 'label': 'Entidad', 'width': 'full-width'}
+            ],
+            'locale': [
+              {'name': 'localeSeo', 'element':'input', 'type': 'hidden'},
+              {'name': 'url', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'},
+              {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título de la página', 'width': 'half-width'},
+              {'name': 'description', 'element':'input', 'type': 'text', 'label': 'Descripción de la página', 'width': 'full-width'}    
+            ]
+          },
+          'structure': {
+            'noLocale': [
+              {'name': 'structure', 'element':'textarea', 'label': 'Estructura', 'width': 'full-width'}
+            ]
+          }
+        }
+      }"/>
+    </form-component>
+    
+  </crud-component>
+</main-component>

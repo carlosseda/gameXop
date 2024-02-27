@@ -1,0 +1,50 @@
+{
+  "tracking-component": {},
+  "font-loader-component": {
+    "font": "Lato:wght@400;700"
+  },
+  "modal-checkout-component": {},
+  "header-component": {
+    "slot": {
+      "row-component": {
+        "template-columns": "8fr 2fr", 
+        "element-distribution": "1,2", 
+        "justify-contents": "flex-start,flex-end",
+        "slot": {
+          "logo-component": {},
+          "search-component": {},
+          "cart-component": {}
+        }
+      }
+    }
+  },
+  "main-component":{
+    "slot": {
+      "featured-gallery-component": {},
+      "category-filter-component": {
+        "data": true,
+        "endpoint": "/api/front/product-categories",
+        "fetch": "/"
+      },
+      "product-gallery-component": {
+        "data": true,
+        "endpoint": "/api/front/products",
+        "fetch": "/"
+      }
+    }
+  },
+  "footer-component": {
+    "slot": {
+      "faqs-component": {
+        "data": true,
+        "endpoint": "/api/front/faqs",
+        "fetch": "/"
+      },
+      "social-networks-component": {
+        "data": true,
+        "endpoint": "/api/front/social-networks",
+        "fetch": "/"
+      }
+    }
+  }
+}

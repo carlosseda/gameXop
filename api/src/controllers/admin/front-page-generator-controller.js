@@ -1,14 +1,17 @@
 const moment = require('moment')
 const mongooseDb = require('../../models/mongoose')
-const Menu = mongooseDb.Menu
+const FrontPage = mongooseDb.FrontPage
 
 exports.create = async (req, res) => {
   try {
-    let data = await Menu.create(req.body)
-    data = data.toObject()
-    data.id = data._id
+    if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
+    const data = await FrontPage.create(req.body)
+    await req.localeSeoService.createUrl(data, 'front')
+    await req.pageService.createStaticPageHtml(data, 'front', req.body.structure)
+
     res.status(200).send(data)
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })
@@ -29,14 +32,14 @@ exports.findAll = async (req, res) => {
   }
 
   try {
-    const result = await Menu.find(whereStatement)
+    const result = await FrontPage.find(whereStatement)
       .skip(offset)
       .limit(limit)
       .sort({ createdAt: -1 })
       .lean()
       .exec()
 
-    const count = await Menu.countDocuments(whereStatement)
+    const count = await FrontPage.countDocuments(whereStatement)
 
     const response = {
       rows: result.map(doc => ({
@@ -65,10 +68,12 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findById(id).lean().exec()
+    const data = await FrontPage.findById(id).lean().exec()
+    data.structure = JSON.stringify(data.structure)
 
     if (data) {
       data.id = data._id
+      delete data._id
     }
 
     if (data) {
@@ -89,18 +94,22 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findByIdAndUpdate(id, req.body, { new: true }).lean().exec()
+    if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
+    const data = await FrontPage.findByIdAndUpdate(id, req.body, { new: true })
+    await req.localeSeoService.createUrl(data, 'front')
+    await req.pageService.createStaticPageHtml(data, 'front', req.body.structure, req.headers.cookie)
 
     if (data) {
-      data.id = data._id
-
-      res.status(200).send(data)
+      res.status(200).send({
+        message: 'El elemento ha sido actualizado correctamente.'
+      })
     } else {
       res.status(404).send({
         message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
       })
     }
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: 'Algún error ha surgido al actualizar la id=' + id
     })
@@ -111,7 +120,8 @@ exports.delete = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Menu.findByIdAndUpdate(id, { deletedAt: new Date() })
+    const data = await FrontPage.findByIdAndUpdate(id, { deletedAt: new Date() })
+    req.localeSeoService.deleteUrl(data)
 
     if (data) {
       res.status(200).send({
@@ -125,36 +135,6 @@ exports.delete = async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al borrar la id=' + id
-    })
-  }
-}
-
-exports.getMenuItems = async (req, res) => {
-  const name = req.params.name
-  const environment = 'admin'
-
-  try {
-    const result = await Menu.findOne({ name, environment }).lean().exec()
-
-    if (!result) {
-      return res.status(404).send({
-        message: `No se puede encontrar el menú con el nombre=${name}.`
-      })
-    }
-
-    const response =
-      (result.items && result.items[req.userLanguage])
-        ? result.items[req.userLanguage].filter(item => !item.deletedAt).map(row => ({
-          url: row.urlExternal || row.urlInternal,
-          title: row.title,
-          description: row.description
-        }))
-        : null
-
-    res.status(200).send(response)
-  } catch (err) {
-    res.status(500).send({
-      message: 'Algún error ha surgido al recuperar el menú con el nombre=' + name
     })
   }
 }

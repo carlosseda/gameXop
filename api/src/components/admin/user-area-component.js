@@ -5,8 +5,18 @@ class UserArea extends HTMLElement {
   }
 
   connectedCallback () {
-    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
-    this.render()
+    this.loadData().then(() => this.render())
+  }
+
+  async loadData () {
+    const url = `${process.env.API_URL}${this.getAttribute('endpoint')}`
+
+    try {
+      const response = await fetch(url)
+      this.data = await response.json()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render () {

@@ -3,7 +3,11 @@
     "font": "Lato:wght@400;700"
   },
   "delete-element-modal-component": {},
-  "image-gallery-component": {},
+  "image-gallery-component": {
+    "data": true,
+    "endpoint": "/api/admin/image-gallery",
+    "fetch": "/"
+  },
   "message-component": {},
   "header-component": {
     "slot": {
@@ -21,9 +25,7 @@
             "fetch": "/display/main-menu"
           },
           "user-area-component": {
-            "data": true,
-            "endpoint": "/api/admin/users",
-            "fetch": "/user-area"
+            "endpoint": "/api/admin/users/user-area"
           }
         }
       }

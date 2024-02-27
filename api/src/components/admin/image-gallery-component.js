@@ -6,11 +6,12 @@ class ImageGallery extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
     this.unsubscribe = null
-    this.image = {}
   }
 
   connectedCallback () {
     document.addEventListener('openGallery', this.handleOpenGallery.bind(this))
+
+    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
     this.render()
   }
 
@@ -350,8 +351,6 @@ class ImageGallery extends HTMLElement {
     try {
       const imageGallery = this.shadow.querySelector('.image-gallery')
       imageGallery.innerHTML = ''
-      const result = await fetch(`${process.env.API_URL}/api/admin/image-gallery`)
-      const data = await result.json()
 
       const uploadImage = document.createElement('div')
       const label = document.createElement('label')
@@ -375,7 +374,7 @@ class ImageGallery extends HTMLElement {
 
       imageGallery.appendChild(uploadImage)
 
-      data.filenames.forEach(filename => {
+      this.data.filenames.forEach(filename => {
         const imageContainer = document.createElement('div')
         const image = document.createElement('img')
 

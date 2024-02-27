@@ -2,22 +2,11 @@ class UserArea extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.user = []
   }
 
   connectedCallback () {
-    this.loadData().then(() => this.render())
-  }
-
-  async loadData () {
-    const url = `${process.env.API_URL}/api/admin/users/user-area`
-
-    try {
-      const response = await fetch(url)
-      this.user = await response.json()
-    } catch (error) {
-      console.log(error)
-    }
+    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
+    this.render()
   }
 
   render () {
@@ -72,11 +61,11 @@ class UserArea extends HTMLElement {
         </div>
       `
 
-    if (this.user.images.avatar?.resizedFilename) {
+    if (this.data.images.avatar?.resizedFilename) {
       const image = document.createElement('img')
-      image.src = `${process.env.API_URL}/api/admin/image-gallery/image/${this.user.images.avatar.resizedFilename}`
-      image.alt = this.user.images.avatar.alt
-      image.title = this.user.images.avatar.title
+      image.src = `${process.env.API_URL}/api/admin/image-gallery/image/${this.data.images.avatar.resizedFilename}`
+      image.alt = this.data.images.avatar.alt
+      image.title = this.data.images.avatar.title
       this.shadow.querySelector('.user-avatar').innerHTML = ''
       this.shadow.querySelector('.user-avatar').appendChild(image)
     }

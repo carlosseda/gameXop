@@ -10,12 +10,10 @@ class Menu extends HTMLElement {
   }
 
   async loadData () {
-    const url = `${import.meta.env.VITE_API_URL}/admin/menus/display/${this.getAttribute('menu')}`
-
+    const url = `${import.meta.env.VITE_API_URL}/api/admin/menus/display/${this.getAttribute('menu')}`
     try {
       const response = await fetch(url)
-      const data = await response.json()
-      this.menuItems = Object.values(data)
+      this.data = await response.json()
     } catch (error) {
       console.log(error)
     }
@@ -147,20 +145,16 @@ class Menu extends HTMLElement {
 
     const menuList = this.shadow.querySelector('ul')
 
-    this.menuItems.forEach(menuItem => {
+    this.data.forEach(menuItem => {
       const li = document.createElement('li')
       const link = document.createElement('a')
 
-      if (menuItem.localeSeo.url) { link.setAttribute('href', `${menuItem.localeSeo.url}`) }
+      if (menuItem.url) { link.setAttribute('href', `${menuItem.url}`) }
 
-      if (menuItem.customUrl) { link.setAttribute('href', `${menuItem.customUrl}`) }
-
-      link.textContent = menuItem.name
+      link.textContent = menuItem.title
 
       li.appendChild(link)
-
       this.createSubMenu(menuItem, li)
-
       menuList.appendChild(li)
     })
 

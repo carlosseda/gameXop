@@ -2,23 +2,11 @@ class Menu extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.menuItems = []
   }
 
   connectedCallback () {
-    this.loadData().then(() => this.render())
-  }
-
-  async loadData () {
-    const url = `${process.env.API_URL}/api/admin/menus/display/${this.getAttribute('menu')}`
-
-    try {
-      const response = await fetch(url)
-      const data = await response.json()
-      this.menuItems = Object.values(data)
-    } catch (error) {
-      console.log(error)
-    }
+    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
+    this.render()
   }
 
   render () {
@@ -147,20 +135,16 @@ class Menu extends HTMLElement {
 
     const menuList = this.shadow.querySelector('ul')
 
-    this.menuItems.forEach(menuItem => {
+    this.data.forEach(menuItem => {
       const li = document.createElement('li')
       const link = document.createElement('a')
 
-      if (menuItem.localeSeo.url) { link.setAttribute('href', `${menuItem.localeSeo.url}`) }
+      if (menuItem.url) { link.setAttribute('href', `${menuItem.url}`) }
 
-      if (menuItem.customUrl) { link.setAttribute('href', `${menuItem.customUrl}`) }
-
-      link.textContent = menuItem.name
+      link.textContent = menuItem.title
 
       li.appendChild(link)
-
       this.createSubMenu(menuItem, li)
-
       menuList.appendChild(li)
     })
 

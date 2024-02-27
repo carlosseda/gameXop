@@ -13,7 +13,7 @@ exports.getPage = async (req, res) => {
   //   return res.status(404).send(errorPage)
   // }
 
-  const page = await req.pageService.getPage('admin', adminPage.entity, req.userLanguage)
+  const page = await req.pageService.getPage('admin', adminPage.entity, req.userLanguage, req.headers.cookie)
 
   console.timeEnd('createPageHtml')
 

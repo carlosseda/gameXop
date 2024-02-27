@@ -15,8 +15,16 @@
           "logo-component": {
             "title": "GameXop"
           },
-          "menu-component": {},
-          "user-area-component": {}
+          "menu-component": {
+            "data": true,
+            "endpoint": "/api/admin/menus",
+            "fetch": "/display/main-menu"
+          },
+          "user-area-component": {
+            "data": true,
+            "endpoint": "/api/admin/users",
+            "fetch": "/user-area"
+          }
         }
       }
     }
@@ -32,9 +40,9 @@
           "table-component": {
             "slot": "table",
             "data": true,
+            "endpoint": "/api/admin/users",
             "select": "name email createdAt updatedAt",
             "paginate": "10",
-            "endpoint": "/api/admin/users",
             "structure": {
               "headers": [
                 {"label": "Nombre", "field": "name"},

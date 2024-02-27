@@ -27,11 +27,7 @@ exports.findOne = async (req, res) => {
 }
 
 exports.findAll = async (req, res) => {
-  const page = req.query.page || 1
-  const limit = req.query.size || 20
-  const offset = (page - 1) * limit
-
-  req.imageService.getThumbnails(limit, offset).then(result => {
+  req.imageService.getThumbnails().then(result => {
     res.status(200).send(result)
   }).catch(err => {
     res.status(500).send({

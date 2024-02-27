@@ -69,7 +69,7 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await User.findById(id).lean().exec()
+    const data = await User.findById(id).select('name email createdAt updatedAt').lean().exec()
     data.images = data.images?.adminImages ? data.images.adminImages : []
 
     if (data) {
@@ -147,7 +147,7 @@ exports.delete = async (req, res) => {
 exports.userArea = async (req, res) => {
   const id = req.session.user.id
 
-  const data = await User.findById(id).lean().exec()
+  const data = await User.findById(id).select('name email').lean().exec()
   data.images = data.images?.thumbnail[req.userLanguage] ? data.images.thumbnail[req.userLanguage] : []
 
   if (data) {

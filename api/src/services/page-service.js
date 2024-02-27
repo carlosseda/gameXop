@@ -1,4 +1,5 @@
 require('dotenv').config()
+const fetch = require('node-fetch')
 const moment = require('moment')
 const mongooseDb = require('../models/mongoose')
 const Resource = mongooseDb.Resource
@@ -16,14 +17,11 @@ const componentsDirectory = `${path.dirname(require.main.filename)}/src/componen
 const pagesDirectory = `${path.dirname(require.main.filename)}/src/pages`
 
 module.exports = class PageService {
-  constructor () {
-    this.environment = null
-  }
-
-  createStaticPageHtml = async (page, environment, structure) => {
+  createStaticPageHtml = async (page, environment, structure, cookie) => {
     console.time('createPageHtml')
 
     if (Object.keys(structure).length === 0 || typeof structure !== 'object') return
+    this.cookie = cookie
     this.environment = environment
     this.entity = page.entity
 
@@ -152,7 +150,7 @@ module.exports = class PageService {
           preventAssignment: true,
           'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
           'process.env.API_URL': JSON.stringify(process.env.API_URL),
-          'process.env.DEFAULT_LANGUAGE ': JSON.stringify(process.env.DEFAULT_LANGUAGE)
+          'process.env.DEFAULT_LANGUAGE': JSON.stringify(process.env.DEFAULT_LANGUAGE)
         })
       ]
     })
@@ -182,13 +180,62 @@ module.exports = class PageService {
   }
 
   hydrationPage = async (component, attributes) => {
-    const resourceWhereStatement = {}
-    resourceWhereStatement.endpoint = attributes.endpoint
-    resourceWhereStatement.deletedAt = { $exists: false }
-    const resource = await Resource.findOne(resourceWhereStatement)
+    const resource = await Resource.findOne({
+      endpoint: attributes.endpoint,
+      deletedAt: { $exists: false }
+    })
 
     if (!resource) return
 
+    const data = attributes.fetch
+      ? await this.fetchData(attributes)
+      : await this.getAllData(resource, attributes)
+
+    component.setAttribute('data', data)
+  }
+
+  getPage = async (environment, entity, languageAlias) => {
+    const resources = await Resource.find({
+      deletedAt: { $exists: false }
+    }).lean().exec()
+
+    const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
+    const page = await fs.readFile(pagePath, 'utf8')
+    const stats = await fs.stat(pagePath)
+
+    const window = new Window()
+    const document = window.document
+    document.write((page).toString())
+
+    let cache = false
+
+    await Promise.all(Array.from(document.body.querySelectorAll('[data]')).map(async element => {
+      const resource = resources.find(item => item.endpoint === element.getAttribute('endpoint'))
+
+      if (resource && new Date(resource.lastUpdated).getTime() > new Date(stats.mtime).getTime()) {
+        cache = true
+
+        const attributes = Array.from(element.attributes).reduce((obj, attr) => {
+          obj[attr.name] = attr.value
+          return obj
+        }, {})
+
+        const data = attributes.fetch
+          ? await this.fetchData(attributes)
+          : await this.getAllData(resource, attributes)
+
+        element.setAttribute('data', data)
+      }
+    }))
+
+    if (cache) {
+      this.renewPageCache(environment, entity, languageAlias, document.documentElement.outerHTML)
+    }
+
+    return document.documentElement.outerHTML
+  }
+
+  getAllData = async (resource, attributes) => {
     const select = attributes.select ?? ''
     const limit = attributes.paginate ?? 0
 
@@ -196,7 +243,12 @@ module.exports = class PageService {
     whereStatement.deletedAt = { $exists: false }
 
     const model = mongooseDb[resource.model]
-    const result = await model.find(whereStatement).select(select).limit(limit).lean().exec()
+    const result = await model.find(whereStatement)
+      .select(select)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
 
     if (attributes.paginate) {
       const count = await model.countDocuments(whereStatement)
@@ -215,7 +267,7 @@ module.exports = class PageService {
         }
       }
 
-      component.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+      return JSON.stringify(response).replace(/"/g, "'")
     } else {
       const response = result.map(doc => ({
         ...doc,
@@ -225,78 +277,26 @@ module.exports = class PageService {
         updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
       }))
 
-      component.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+      return JSON.stringify(response).replace(/"/g, "'")
     }
   }
 
-  getPage = async (environment, entity, languageAlias) => {
-    const resources = await Resource.find().lean().exec()
-
-    const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
-    const page = await fs.readFile(pagePath, 'utf8')
-    const stats = await fs.stat(pagePath)
-
-    const window = new Window()
-    const document = window.document
-    document.write((page).toString())
-
-    let cache = false
-
-    await Promise.all(Array.from(document.body.querySelectorAll('[data]')).map(async element => {
-      const resource = resources.find(item => item.endpoint === element.getAttribute('endpoint'))
-
-      if (resource && new Date(resource.lastUpdated).getTime() > new Date(stats.mtime).getTime()) {
-        cache = true
-
-        const select = element.getAttribute('select') ?? ''
-        const limit = element.getAttribute('paginate') ?? 0
-
-        const whereStatement = {}
-        whereStatement.deletedAt = { $exists: false }
-
-        const model = mongooseDb[resource.model]
-        const result = await model.find(whereStatement).select(select).limit(limit).lean().exec()
-
-        if (element.getAttribute('paginate')) {
-          const count = await model.countDocuments(whereStatement)
-          const response = {
-            rows: result.map(doc => ({
-              ...doc,
-              id: doc._id,
-              _id: undefined,
-              createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
-              updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
-            })),
-            meta: {
-              total: count,
-              pages: Math.ceil(count / limit),
-              currentPage: 1
-            }
-          }
-
-          element.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
-        } else {
-          const response = result.map(doc => ({
-            ...doc,
-            id: doc._id,
-            _id: undefined,
-            createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
-            updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
-          }))
-
-          element.setAttribute('data', JSON.stringify(response).replace(/"/g, "'"))
+  fetchData = async (attributes) => {
+    const response = await fetch(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Cookie: this.cookie
         }
-      }
-    }))
+      })
 
-    if (cache) {
-      this.renewPage(environment, entity, languageAlias, document.documentElement.outerHTML)
-    }
+    const data = await response.json()
 
-    return page
+    return JSON.stringify(data).replace(/"/g, "'")
   }
 
-  renewPage = async (environment, entity, languageAlias, page) => {
+  renewPageCache = async (environment, entity, languageAlias, page) => {
     const pagePath = path.join(pagesDirectory, environment, entity, languageAlias, 'index.html')
     fs.writeFile(pagePath, page)
   }

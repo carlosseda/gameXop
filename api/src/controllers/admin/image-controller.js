@@ -64,6 +64,7 @@ exports.delete = async (req, res) => {
 
   try {
     await req.imageService.deleteImages(filename)
+    await Image.deleteOne({ filename })
     res.status(200).send({
       message: 'El elemento ha sido borrado correctamente'
     })

@@ -431,14 +431,11 @@ class ImageGallery extends HTMLElement {
       imageContainer.setAttribute('data-filename', filename)
       image.src = `${import.meta.env.VITE_API_URL}/api/admin/images/${filename}`
 
-      imageContainer.addEventListener('click', () => {
-        this.shadow.querySelectorAll('.image').forEach(item => {
-          item.classList.remove('selected')
-        })
+      const deleteButton = document.createElement('button')
+      deleteButton.classList.add('delete-button')
+      deleteButton.innerHTML = 'X'
 
-        imageContainer.classList.add('selected')
-      })
-
+      imageContainer.appendChild(deleteButton)
       imageContainer.appendChild(image)
 
       const uploadImage = this.shadow.querySelector('.upload-image')

@@ -65,7 +65,7 @@ module.exports = class ImageService {
           heightPx: 135
         })
 
-        const imageUploadPromise = new Promise(async (resolve) => {
+        const imageUploadPromise = new Promise((resolve) => {
           const imageConfigurationPromises = []
 
           for (const [mediaQuery, imageConfiguration] of Object.entries(images[image].imageConfigurations)) {
@@ -125,7 +125,7 @@ module.exports = class ImageService {
             imageConfigurationPromises.push(resizePromise)
           }
 
-          await Promise.all(imageConfigurationPromises)
+          Promise.all(imageConfigurationPromises)
           resolve()
         })
 

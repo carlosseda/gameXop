@@ -1,15 +1,10 @@
 const moment = require('moment')
 const mongooseDb = require('../../models/mongoose')
-const Resource = mongooseDb.Resource
-const ResourceService = require('../../services/resource-service')
+const {{modelName}} = mongooseDb.{{modelName}}
 
 exports.create = async (req, res) => {
   try {
-    const resourceService = new ResourceService()
-    const resource = await resourceService.create(req.body)
-
-    req.body.lastUpdated = new Date()
-    const data = await Resource.create(req.body)
+    const data = await {{modelName}}.create(req.body)
     res.status(200).send(data)
   } catch (err) {
     res.status(500).send({
@@ -32,14 +27,14 @@ exports.findAll = async (req, res) => {
   }
 
   try {
-    const result = await Resource.find(whereStatement)
+    const result = await {{modelName}}.find(whereStatement)
       .skip(offset)
       .limit(limit)
       .sort({ createdAt: -1 })
       .lean()
       .exec()
 
-    const count = await Resource.countDocuments(whereStatement)
+    const count = await {{modelName}}.countDocuments(whereStatement)
 
     const response = {
       rows: result.map(doc => ({
@@ -68,7 +63,7 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Resource.findById(id).lean().exec()
+    const data = await {{modelName}}.findById(id).lean().exec()
 
     if (data) {
       data.id = data._id
@@ -93,20 +88,17 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const resourceService = new ResourceService()
-    const resource = await resourceService.create(req.body)
-    // req.body.lastUpdated = new Date()
-    // const data = await Resource.findByIdAndUpdate(id, req.body, { new: true })
+    const data = await {{modelName}}.findByIdAndUpdate(id, req.body, { new: true })
 
-    // if (data) {
-    //   res.status(200).send({
-    //     message: 'El elemento ha sido actualizado correctamente.'
-    //   })
-    // } else {
-    //   res.status(404).send({
-    //     message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
-    //   })
-    // }
+    if (data) {
+      res.status(200).send({
+        message: 'El elemento ha sido actualizado correctamente.'
+      })
+    } else {
+      res.status(404).send({
+        message: `No se puede actualizar el elemento con la id=${id}. Tal vez no se ha encontrado el elemento o el cuerpo de la petición está vacío.`
+      })
+    }
   } catch (err) {
     res.status(500).send({
       message: 'Algún error ha surgido al actualizar la id=' + id
@@ -118,7 +110,7 @@ exports.delete = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Resource.findByIdAndUpdate(id, { deletedAt: new Date() })
+    const data = await {{modelName}}.findByIdAndUpdate(id, { deletedAt: new Date() })
 
     if (data) {
       res.status(200).send({

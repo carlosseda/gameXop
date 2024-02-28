@@ -6,7 +6,7 @@
   "image-gallery-component": {
     "data": true,
     "endpoint": "/api/admin/images",
-    "fetch": "/"
+    "paginate": "30"
   },
   "message-component": {},
   "header-component": {

@@ -216,7 +216,7 @@ class ProductGallery extends HTMLElement {
       const imageContainer = document.createElement('div')
       imageContainer.classList.add('image')
       const productImageElement = document.createElement('img')
-      productImageElement.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${product.images['home-product-gallery'].filename}`
+      productImageElement.src = `${import.meta.env.VITE_API_URL}/api/admin/images/image/${product.images['home-product-gallery'].filename}`
       productImageElement.alt = product.images['home-product-gallery'].alt
       productImageElement.title = product.images['home-product-gallery'].title
       imageContainer.appendChild(productImageElement)
@@ -251,7 +251,7 @@ class ProductGallery extends HTMLElement {
 
         product.platforms.forEach(platform => {
           const productPlatform = document.createElement('img')
-          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${platform.filename}`
+          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/images/image/${platform.filename}`
           productPlatform.alt = platform.alt
           productPlatform.alt = platform.title
           productPlatforms.appendChild(productPlatform)
@@ -286,7 +286,7 @@ class ProductGallery extends HTMLElement {
 
         product.platforms.forEach(platform => {
           const productPlatform = document.createElement('img')
-          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${platform.filename}`
+          productPlatform.src = `${import.meta.env.VITE_API_URL}/api/admin/images/image/${platform.filename}`
           productPlatform.alt = platform.alt
           productPlatform.alt = platform.title
           productPlatforms.appendChild(productPlatform)

@@ -11,7 +11,12 @@ class ImageGallery extends HTMLElement {
   connectedCallback () {
     document.addEventListener('openGallery', this.handleOpenGallery.bind(this))
 
-    this.data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
+    const data = this.getAttribute('data') ? JSON.parse(this.getAttribute('data').replaceAll("'", '"')) : null
+    this.data = data.rows || []
+    this.total = data.meta ? data.meta.total : 0
+    this.currentPage = data.meta ? data.meta.currentPage : 1
+    this.lastPage = data.meta ? data.meta.pages : 1
+
     this.render()
   }
 
@@ -205,6 +210,31 @@ class ImageGallery extends HTMLElement {
             border: 0.2rem solid #4CAF50;
           }
 
+          .delete-button {
+            background-color: hsl(0, 100%, 50%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            height: 20px;
+            opacity: 0;
+            position: absolute;
+            right: 0.2rem;
+            top: 0.2rem;
+            transition: opacity 0.3s ease;
+            width: 20px;
+            z-index: 2001;
+          }
+
+          .image:hover .delete-button {
+            opacity: 1;
+          }
+
+          .delete-button:hover {
+            background-color: hsl(0, 100%, 30%);
+          }
+
           .image-gallery-information{
             display: flex;
             flex-direction: column;
@@ -302,10 +332,6 @@ class ImageGallery extends HTMLElement {
         this.closeGallery()
       }
 
-      if (event.target.closest('.tabs-container-menu li')) {
-        this.changeTab(event.target.closest('.tabs-container-menu li'))
-      }
-
       if (event.target.closest('.image')) {
         this.selectImage(event.target.closest('.image'))
       }
@@ -314,6 +340,10 @@ class ImageGallery extends HTMLElement {
         if (event.target.classList.contains('active')) {
           this.createThumbnail()
         }
+      }
+
+      if (event.target.closest('.delete-button')) {
+        this.deleteImage(event.target.closest('.image').dataset.filename)
       }
     })
   }
@@ -331,20 +361,6 @@ class ImageGallery extends HTMLElement {
       imageElement.classList.add('selected')
       this.shadow.querySelector('.modal-footer button').classList.add('active')
     }
-  }
-
-  async changeTab (tab) {
-    this.shadow.querySelectorAll('.tabs-container-menu li').forEach(item => {
-      item.classList.remove('active')
-    })
-
-    tab.classList.add('active')
-
-    this.shadow.querySelectorAll('.tabs-container-content .tab').forEach((item) => {
-      item.classList.remove('active')
-    })
-
-    this.shadow.querySelector(`.tabs-container-content .tab#${tab.id}`).classList.add('active')
   }
 
   async getThumbnails () {
@@ -374,13 +390,17 @@ class ImageGallery extends HTMLElement {
 
       imageGallery.appendChild(uploadImage)
 
-      this.data.filenames.forEach(filename => {
+      this.data.forEach(file => {
         const imageContainer = document.createElement('div')
         const image = document.createElement('img')
 
         imageContainer.classList.add('image')
-        imageContainer.setAttribute('data-filename', filename)
-        image.src = `${process.env.API_URL}/api/admin/image-gallery/${filename}`
+        imageContainer.setAttribute('data-filename', file.filename)
+        image.src = `${process.env.API_URL}/api/admin/images/${file.filename}`
+
+        const deleteButton = document.createElement('button')
+        deleteButton.classList.add('delete-button')
+        deleteButton.innerHTML = 'X'
 
         imageContainer.appendChild(image)
         imageGallery.appendChild(imageContainer)
@@ -394,7 +414,7 @@ class ImageGallery extends HTMLElement {
     const formData = new FormData()
     formData.append('file', file)
 
-    const result = await fetch(`${process.env.API_URL}/api/admin/image-gallery`, {
+    const result = await fetch(`${process.env.API_URL}/api/admin/images`, {
       method: 'POST',
       body: formData
     })
@@ -411,7 +431,7 @@ class ImageGallery extends HTMLElement {
 
       imageContainer.classList.add('image', 'selected')
       imageContainer.setAttribute('data-filename', filename)
-      image.src = `${process.env.API_URL}/api/admin/image-gallery/${filename}`
+      image.src = `${process.env.API_URL}/api/admin/images/${filename}`
 
       imageContainer.addEventListener('click', () => {
         this.shadow.querySelectorAll('.image').forEach(item => {
@@ -441,6 +461,20 @@ class ImageGallery extends HTMLElement {
     image.classList.add('selected')
 
     this.shadow.querySelector('.modal-footer button').classList.add('active')
+  }
+
+  async deleteImage (filename) {
+    const result = await fetch(`${process.env.API_URL}/api/admin/images/${filename}`, {
+      method: 'DELETE'
+    })
+
+    if (result.status === 200) {
+      this.shadow.querySelector(`.image[data-filename="${filename}"`).remove()
+
+      if (store.getState().images.imageGallery.filename === filename) {
+        store.dispatch(removeImage(store.getState().images.imageGallery))
+      }
+    }
   }
 
   async createThumbnail () {

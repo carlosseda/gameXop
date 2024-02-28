@@ -73,7 +73,7 @@ class UserArea extends HTMLElement {
 
     if (this.data.images.avatar?.resizedFilename) {
       const image = document.createElement('img')
-      image.src = `${process.env.API_URL}/api/admin/image-gallery/image/${this.data.images.avatar.resizedFilename}`
+      image.src = `${process.env.API_URL}/api/admin/images/image/${this.data.images.avatar.resizedFilename}`
       image.alt = this.data.images.avatar.alt
       image.title = this.data.images.avatar.title
       this.shadow.querySelector('.user-avatar').innerHTML = ''

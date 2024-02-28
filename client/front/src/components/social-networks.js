@@ -54,7 +54,7 @@ class socialNetworks extends HTMLElement {
       socialNetworkLink.target = '_blank'
 
       const socialNetworkImage = document.createElement('img')
-      socialNetworkImage.src = `${import.meta.env.VITE_API_URL}/api/admin/image-gallery/image/${socialNetwork.filename}`
+      socialNetworkImage.src = `${import.meta.env.VITE_API_URL}/api/admin/images/image/${socialNetwork.filename}`
       socialNetworkImage.alt = socialNetwork.alt
       socialNetworkImage.title = socialNetwork.title
 

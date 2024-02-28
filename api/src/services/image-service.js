@@ -151,16 +151,4 @@ module.exports = class ImageService {
       return 0
     }
   }
-
-  getThumbnails = async () => {
-    const images = {}
-    let files = await fs.readdir(path.join(__dirname, '../storage/images/gallery/thumbnail'))
-    files = files.filter(file => file !== '.gitignore')
-
-    images.filenames = await fs.readdir(path.join(__dirname, '../storage/images/gallery/thumbnail'))
-    images.filenames = images.filenames.filter(file => file !== '.gitignore')
-    images.count = files.length
-
-    return images
-  }
 }

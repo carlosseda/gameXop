@@ -5,7 +5,7 @@
   "delete-element-modal-component": {},
   "image-gallery-component": {
     "data": true,
-    "endpoint": "/api/admin/image-gallery",
+    "endpoint": "/api/admin/images",
     "fetch": "/"
   },
   "message-component": {},

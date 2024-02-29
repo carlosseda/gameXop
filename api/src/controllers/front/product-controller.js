@@ -4,6 +4,7 @@ const ProductSpecification = mongooseDb.ProductSpecification
 
 exports.findAll = async (req, res) => {
   try {
+    const language = req.query.language ?? req.userLanguage
     const whereStatement = {}
     whereStatement.deletedAt = { $exists: false }
 
@@ -15,18 +16,18 @@ exports.findAll = async (req, res) => {
 
     const response = result.map(doc => ({
       id: doc._id,
-      url: doc.links[req.userLanguage] || null,
-      title: doc.locales[req.userLanguage].title,
-      images: doc.images?.[req.session.screenWidth]?.[req.userLanguage] || [],
+      url: doc.links[language] || null,
+      title: doc.locales[language].title,
+      images: doc.images?.xs?.[language] || [],
       discountPercentage: doc.price.discountPercentage || null,
       priceAfterDiscount: doc.price.discountPercentage ? doc.price.basePrice * doc.price.multiplier : null,
       endsAt: doc.price.endsAt ? moment(doc.price.endsAt).format('DD-MM-YY') : null,
       price: doc.price.basePrice,
       categories: doc.categories,
       platforms: doc.platforms.map(platform => ({
-        filename: platform.images[req.session.screenWidth][req.userLanguage].icon.filename,
-        title: platform.images[req.session.screenWidth][req.userLanguage].icon.title,
-        alt: platform.images[req.session.screenWidth][req.userLanguage].icon.alt || null
+        filename: platform.images.xs[language].icon.filename,
+        title: platform.images.xs[language].icon.title,
+        alt: platform.images.xs[language].icon.alt || null
       }))
     }))
 

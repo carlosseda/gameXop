@@ -7,7 +7,7 @@ exports.create = async (req, res) => {
     if (req.body.structure) req.body.structure = JSON.parse(req.body.structure.replace(/'/g, '"'))
     const data = await AdminPage.create(req.body)
     await req.localeSeoService.createUrl(data, 'admin')
-    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure)
+    await req.pageService.createStaticPageHtml(data, 'admin', req.body.structure, req.headers.cookie)
 
     res.status(200).send(data)
   } catch (err) {

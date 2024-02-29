@@ -5,13 +5,15 @@ const ResourceService = require('../../services/resource-service')
 
 exports.create = async (req, res) => {
   try {
-    const resourceService = new ResourceService()
-    const resource = await resourceService.create(req.body)
+    // const resourceService = new ResourceService()
+    // const resource = await resourceService.create(req.body)
 
     req.body.lastUpdated = new Date()
+    console.log(req.body)
     const data = await Resource.create(req.body)
     res.status(200).send(data)
   } catch (err) {
+    console.log(err)
     res.status(500).send({
       message: err.errors || 'Algún error ha surgido al insertar el dato.'
     })

@@ -466,6 +466,7 @@ class ImageGallery extends HTMLElement {
 
     if (result.status === 200) {
       this.shadow.querySelector(`.image[data-filename="${filename}"`).remove()
+      this.shadow.querySelector('.modal-footer button').classList.remove('active')
 
       if (store.getState().images.imageGallery.filename === filename) {
         store.dispatch(removeImage(store.getState().images.imageGallery))

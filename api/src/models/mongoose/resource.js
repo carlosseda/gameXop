@@ -4,7 +4,6 @@ module.exports = (mongoose) => {
       entity: String,
       endpoint: String,
       model: String,
-      schema: Object,
       lastUpdated: Date,
       deletedAt: Date
     },

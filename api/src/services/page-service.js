@@ -282,7 +282,8 @@ module.exports = class PageService {
   }
 
   fetchData = async (attributes) => {
-    const response = await fetch(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}`,
+    console.log(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}?language=${this.languageAlias}`)
+    const response = await fetch(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}?language=${this.languageAlias}`,
       {
         headers: {
           Accept: 'application/json',

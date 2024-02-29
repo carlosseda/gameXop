@@ -1,8 +1,6 @@
 module.exports = (mongoose) => {
   const schema = mongoose.Schema(
-    {
-      {{schema}}
-    },
+    {{schema}},
     { timestamps: true }
   )
 

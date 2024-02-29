@@ -657,7 +657,7 @@ class Form extends HTMLElement {
             const input = document.createElement('upload-image-button-component')
             input.id = languageAlias ? `${formElement.name}-${languageAlias}` : formElement.name
             input.setAttribute('name', formElement.name)
-            languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', import.meta.env.VITE_DEFAULT_LANGUAGE)
+            languageAlias ? input.setAttribute('language-alias', languageAlias) : input.setAttribute('language-alias', 'all')
             input.setAttribute('quantity', formElement.quantity)
             input.setAttribute('image-configurations', JSON.stringify(formElement.imageConfigurations))
 

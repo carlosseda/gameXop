@@ -28,12 +28,12 @@ module.exports = class ResourceService {
       const controllerFile = controllerTemplate
         .replace(/{{modelName}}/g, modelName)
 
+      console.log(data.schema)
+
       const modelFile = modelTemplate
         .replace(/{{modelName}}/g, modelName)
         .replace(/{{entityName}}/g, entityName)
-        .replace(/{{schema}}/g, JSON.stringify(data.schema, null, 2))
-
-      console.log(modelFile)
+        .replace(/{{schema}}/g, data.schema)
 
       // fs.writeFileSync(`${routeDirectory}/${routeFilename}`, routeFile)
       // fs.writeFileSync(`${controllerDirectory}/${controllerFilename}`, controllerFile)

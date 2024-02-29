@@ -15,8 +15,6 @@ module.exports = class ImageService {
             filename = image.originalname.replace(/ |_|/g, '-')
           }
 
-          const tmpPath = path.join(__dirname, `../storage/tmp/${image.originalname}`)
-
           const newFilename = await fs.access(path.join(__dirname, `../storage/images/gallery/original/${path.parse(filename).name}.webp`)).then(async () => {
             // TODO Dar al usuario la opción de sobreescribir la imagen
             return `${path.parse(filename).name}-${new Date().getTime()}.webp`
@@ -24,16 +22,14 @@ module.exports = class ImageService {
             return `${path.parse(filename).name}.webp`
           })
 
-          await sharp(tmpPath)
+          await sharp(image.buffer)
             .webp({ lossless: true })
             .toFile(path.join(__dirname, `../storage/images/gallery/original/${newFilename}`))
 
-          await sharp(tmpPath)
+          await sharp(image.buffer)
             .resize(135, 135)
             .webp({ lossless: true })
             .toFile(path.join(__dirname, `../storage/images/gallery/thumbnail/${newFilename}`))
-
-          await fs.unlink(tmpPath)
 
           result.push(newFilename)
         } catch (error) {
@@ -104,22 +100,31 @@ module.exports = class ImageService {
               resizedImages[mediaQuery] = {}
             }
 
-            if (!resizedImages[mediaQuery][images[image].languageAlias]) {
-              resizedImages[mediaQuery][images[image].languageAlias] = {}
-            }
-
-            if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
-              if (images[image] === 'single') {
-                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
-              } else {
-                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
+            if (images[image].languageAlias === 'all') {
+              if (!resizedImages[mediaQuery][images[image].name]) {
+                if (images[image].quantity === 'single') {
+                  resizedImages[mediaQuery][images[image].name] = {}
+                  resizedImages[mediaQuery][images[image].name] = imageResize
+                } else {
+                  resizedImages[mediaQuery][images[image].name] = []
+                  resizedImages[mediaQuery][images[image].name].push(imageResize)
+                }
               }
-            }
-
-            if (images[image].quantity === 'single') {
-              resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
             } else {
-              resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
+              if (!resizedImages[mediaQuery][images[image].languageAlias]) {
+                resizedImages[mediaQuery][images[image].languageAlias] = {}
+              }
+
+              if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
+                if (images[image].quantity === 'single') {
+                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
+                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
+                } else {
+                  console.log(imageResize)
+                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
+                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
+                }
+              }
             }
 
             imageConfigurationPromises.push(resizePromise)

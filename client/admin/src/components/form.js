@@ -816,6 +816,11 @@ class Form extends HTMLElement {
         formElementInput.append(select)
       }
 
+      if (formElement.element === 'page-generator') {
+        const input = document.createElement('page-generator-component')
+        formElementInput.append(input)
+      }
+
       if (formElement.element === 'dependants') {
         const dependantsContainer = document.createElement('div')
         dependantsContainer.classList.add('dependants-container')

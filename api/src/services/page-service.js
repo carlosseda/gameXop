@@ -78,7 +78,7 @@ module.exports = class PageService {
 
         this.body = document.createElement('body')
 
-        await this.loadComponents(structure, document)
+        await this.loadComponents(structure, document, languageAlias)
         return document
       } catch (err) {
         console.log(err)
@@ -88,30 +88,45 @@ module.exports = class PageService {
     return documents
   }
 
-  loadComponents = async (structure, document, parent = null) => {
+  loadComponents = async (structure, document, languageAlias, parent = null) => {
     for (const [component, attributes] of Object.entries(structure)) {
       const components = Array.isArray(attributes) ? attributes : [attributes]
 
       for (const attribute of components) {
-        await this.createElement(document, component, attribute, parent)
+        await this.createElement(document, languageAlias, component, attribute, parent)
       }
     }
   }
 
-  createElement = async (document, component, attributes, parent) => {
+  createElement = async (document, languageAlias, component, attributes, parent) => {
     const element = document.createElement(component)
     const container = parent || document.body
     container.appendChild(element)
 
     for (let [key, value] of Object.entries(attributes)) {
       if (key === 'slot' && typeof value === 'object' && value !== null) {
-        await this.loadComponents(value, document, element)
+        await this.loadComponents(value, document, languageAlias, element)
       } else {
-        if (key === 'data') this.hydrationPage(element, attributes)
+        if (key === 'data') this.hydrationPage(languageAlias, element, attributes)
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value).replace(/"/g, "'")
         element.setAttribute(key, value)
       }
     }
+  }
+
+  hydrationPage = async (languageAlias, component, attributes) => {
+    const resource = await Resource.findOne({
+      endpoint: attributes.endpoint,
+      deletedAt: { $exists: false }
+    })
+
+    if (!resource) return
+
+    const data = attributes.fetch
+      ? await this.fetchData(languageAlias, attributes)
+      : await this.getAllData(resource, attributes)
+
+    component.setAttribute('data', data)
   }
 
   generateJsBundle = async (structure) => {
@@ -179,21 +194,6 @@ module.exports = class PageService {
     return minifiedCss
   }
 
-  hydrationPage = async (component, attributes) => {
-    const resource = await Resource.findOne({
-      endpoint: attributes.endpoint,
-      deletedAt: { $exists: false }
-    })
-
-    if (!resource) return
-
-    const data = attributes.fetch
-      ? await this.fetchData(attributes)
-      : await this.getAllData(resource, attributes)
-
-    component.setAttribute('data', data)
-  }
-
   getPage = async (environment, entity, languageAlias) => {
     const resources = await Resource.find({
       deletedAt: { $exists: false }
@@ -221,7 +221,7 @@ module.exports = class PageService {
         }, {})
 
         const data = attributes.fetch
-          ? await this.fetchData(attributes)
+          ? await this.fetchData(languageAlias, attributes)
           : await this.getAllData(resource, attributes)
 
         element.setAttribute('data', data)
@@ -281,9 +281,8 @@ module.exports = class PageService {
     }
   }
 
-  fetchData = async (attributes) => {
-    console.log(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}?language=${this.languageAlias}`)
-    const response = await fetch(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}?language=${this.languageAlias}`,
+  fetchData = async (languageAlias, attributes) => {
+    const response = await fetch(`${process.env.API_URL}${attributes.endpoint}${attributes.fetch ?? ''}?language=${languageAlias}`,
       {
         headers: {
           Accept: 'application/json',

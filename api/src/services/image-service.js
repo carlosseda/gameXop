@@ -102,11 +102,13 @@ module.exports = class ImageService {
 
             if (images[image].languageAlias === 'all') {
               if (!resizedImages[mediaQuery][images[image].name]) {
+                if (!resizedImages[mediaQuery][images[image].name]) {
+                  resizedImages[mediaQuery][images[image].name] = (images[image].quantity === 'single') ? {} : []
+                }
+
                 if (images[image].quantity === 'single') {
-                  resizedImages[mediaQuery][images[image].name] = {}
                   resizedImages[mediaQuery][images[image].name] = imageResize
                 } else {
-                  resizedImages[mediaQuery][images[image].name] = []
                   resizedImages[mediaQuery][images[image].name].push(imageResize)
                 }
               }
@@ -116,14 +118,13 @@ module.exports = class ImageService {
               }
 
               if (!resizedImages[mediaQuery][images[image].languageAlias][images[image].name]) {
-                if (images[image].quantity === 'single') {
-                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = {}
-                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
-                } else {
-                  console.log(imageResize)
-                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = []
-                  resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
-                }
+                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = (images[image].quantity === 'single') ? {} : []
+              }
+
+              if (images[image].quantity === 'single') {
+                resizedImages[mediaQuery][images[image].languageAlias][images[image].name] = imageResize
+              } else {
+                resizedImages[mediaQuery][images[image].languageAlias][images[image].name].push(imageResize)
               }
             }
 

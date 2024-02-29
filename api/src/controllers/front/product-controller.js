@@ -25,9 +25,9 @@ exports.findAll = async (req, res) => {
       price: doc.price.basePrice,
       categories: doc.categories,
       platforms: doc.platforms.map(platform => ({
-        filename: platform.images.xs[language].icon.filename,
-        title: platform.images.xs[language].icon.title,
-        alt: platform.images.xs[language].icon.alt || null
+        filename: platform.images.xs.icon.filename,
+        title: platform.images.xs.icon.title,
+        alt: platform.images.xs.icon.alt || null
       }))
     }))
 

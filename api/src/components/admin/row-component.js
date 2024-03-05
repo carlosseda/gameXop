@@ -2,6 +2,7 @@ class Row extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
+    this.height = this.getAttribute('height') || '100px'
     this.columns = this.getAttribute('template-columns') || '1fr'
     this.rowGap = this.getAttribute('row-gap') || '1rem'
     this.elementDistribution = this.getAttribute('element-distribution') || null
@@ -27,11 +28,11 @@ class Row extends HTMLElement {
             display: grid;
             gap: ${this.rowGap};
             grid-template-columns: ${this.columns};
+            height: ${this.height};
             width: 100%;
           }
 
           .column{
-            align-items: center;
             display: flex;
             gap: ${this.columnGap};
           }

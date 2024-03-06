@@ -16,19 +16,19 @@ class PageGenerator extends HTMLElement {
         name: 'header-component',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
-        form: {
+        options: {
           structure: {
             tabs: [
-              { name: 'general', label: 'General' }
+              { name: 'styles', label: 'Estilos' }
             ],
             inputs: {
-              general: [
-                { name: 'backgroundColor', element: 'input', type: 'color', label: 'Background Color', value: 'transparent' },
-                { name: 'height', element: 'input', type: 'text', label: 'Height', value: '5vh' },
-                { name: 'paddingTop', element: 'input', type: 'text', label: 'Padding Top', value: '0' },
-                { name: 'paddingBottom', element: 'input', type: 'text', label: 'Padding Bottom', value: '0' },
-                { name: 'paddingLeft', element: 'input', type: 'text', label: 'Padding Left', value: '0' },
-                { name: 'paddingRight', element: 'input', type: 'text', label: 'Padding Right', value: '0' }
+              styles: [
+                { name: 'backgroundColor', element: 'input', type: 'color', label: 'Background Color', width: 'full-width', value: 'transparent' },
+                { name: 'height', element: 'input', type: 'text', label: 'Height', value: '5vh', width: 'full-width' },
+                { name: 'paddingTop', element: 'input', type: 'text', label: 'Padding Top', width: 'one-quarter-width', value: '0' },
+                { name: 'paddingBottom', element: 'input', type: 'text', label: 'Padding Bottom', width: 'one-quarter-width', value: '0' },
+                { name: 'paddingLeft', element: 'input', type: 'text', label: 'Padding Left', width: 'one-quarter-width', value: '0' },
+                { name: 'paddingRight', element: 'input', type: 'text', label: 'Padding Right', width: 'one-quarter-width', value: '0' }
               ]
             }
           }
@@ -50,7 +50,22 @@ class PageGenerator extends HTMLElement {
         label: 'Fila',
         name: 'row-component',
         slot: true,
-        screenSizes: ['xs', 'sm', 'md', 'lg']
+        screenSizes: ['xs', 'sm', 'md', 'lg'],
+        options: {
+          structure: {
+            tabs: [
+              { name: 'styles', label: 'Estilos' }
+            ],
+            inputs: {
+              styles: [
+                { name: 'height', element: 'input', type: 'text', label: 'Height', value: '50px', width: 'full-width' },
+                { name: 'columns', element: 'input', type: 'text', label: 'Columns', value: '8fr 2fr', width: 'full-width' },
+                { name: 'columnGap', element: 'input', type: 'text', label: 'Column Gap', value: '1rem', width: 'full-width' },
+                { name: 'rowGap', element: 'input', type: 'text', label: 'Row Gap', value: '1rem', width: 'full-width' }
+              ]
+            }
+          }
+        }
       }
     ]
     this.uuidSlot = ''
@@ -104,7 +119,7 @@ class PageGenerator extends HTMLElement {
 
         .tabs-container-buttons{
           display: flex;
-          gap: 0.5rem;
+          gap: 1rem;
           padding: 0 0.5rem;
         }
 
@@ -227,7 +242,7 @@ class PageGenerator extends HTMLElement {
           width: 2rem;
         }
 
-        .component-modal{
+        .modal{
           align-items: center;
           background-color: hsl(0 0% 0% / 50%);
           display: flex;
@@ -243,30 +258,51 @@ class PageGenerator extends HTMLElement {
           z-index: 5000;
         }
 
-        .component-modal.active{
+        .modal.active{
           opacity: 1;
           visibility: visible;
         }
 
-        .component-modal-container{
+        .modal-container{
           background-color: white;
           box-sizing: border-box;
-          display: grid;
-          gap: 1rem;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
           height: 80%;
           padding: 1rem;
           width: 80%;
         }
 
-        .component-modal-container:has(form){
+        .modal-container .modal-container-header{
           display: flex;
-          flex-direction: column;
-          width: 40%;
+          justify-content: flex-end;
+          width: 100%;
         }
 
-        .component-modal-container .component{
+        .modal-container-header .close-button{
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+
+        .modal-container-header .close-button svg{
+          fill: hsl(236 55% 25%);
+          height: 2rem;
+          width: 2rem;
+        }
+
+        .modal-container-header .close-button svg:hover{
+          fill: hsl(272 40% 35%);
+        }
+
+        .modal-container-body{
+          display: grid;
+          gap: 1rem;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
+          height: 90%;
+        }
+
+        .modal-container-body .component{
           align-items: center;
           background-color: hsl(272 40% 35%);
           border: 1px solid hsl(0 0% 50%);
@@ -276,35 +312,233 @@ class PageGenerator extends HTMLElement {
           justify-content: center;
         }
 
-        .component-modal-container .component:hover{
+        .modal-container-body .component:hover{
           background-color: hsl(272 40% 45%);
         }
 
-        .component-modal-container .component h3{
+        .modal-container-body .component h3{
           color: hsl(0 0% 100%);
           font-family: 'Lato', sans-serif;
           font-size: 1rem;
           margin: 0;
         }
+
+        .modal-container:has(pre){
+          display: flex;
+          flex-direction: column;
+          width: 40%;
+        }
+
+        .modal-container:has(pre) .modal-container-body{
+          display: flex;
+          flex-direction: column;
+        }
+
+        .modal-container-body pre{
+          background-color:hsl(226deg 64% 66%);
+          box-sizing: border-box;
+          color: hsl(0, 0%, 100%);
+          height: 2.2rem;
+          font-family: 'Lato' , sans-serif;
+          font-size: 1rem;
+          font-weight: 600;
+          height: 100%;
+          overflow: auto;
+          padding: 1rem;
+          width: 100%;
+        }
+
+        .modal-container:has(.preview.xs){
+          width: 390px;
+        }
+
+        .modal-container:has(.preview.sm){
+          width: 768px;
+        }
+
+        .modal-container:has(.preview.md){
+          height: 100%;
+          width: 1024px;
+        }
+
+        .modal-container:has(.preview.lg){
+          height: 100%;
+          width: 1920px;
+        }
+
+        .modal-container:has(.preview) .modal-container-body{
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          width: 100%;
+        }
+
+        .modal-container:has(form){
+          width: 30%;
+        }
+
+        .modal-container:has(form) .modal-container-body{
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .modal-container-body .tabs-container-menu{
+          background-color: hsl(236 55% 25%);
+          margin-top: 1rem;
+        }
+
+        .modal-container-body .tabs-container-menu li{
+          color: hsl(0 0% 100%);
+        }
+
+        .modal-container-body .tab-panel.active{
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1%;
+          padding: 1rem 0;
+          width: 100%;
+        }
+
+        .modal-container-body .form-element{
+          margin-bottom: 1em;
+          width: 100%;
+        }
+
+        .modal-container-body .form-element.hidden{
+          display: none;
+        }
+
+        .modal-container-body .form-element.full-width {
+          flex: 0 0 100%;
+        }
+
+        .modal-container-body .form-element.half-width {
+          flex: 0 0 49.5%;
+        }
+
+        .modal-container-body .form-element.one-third-width {
+          flex: 0 0 32.65%;
+        }
+
+        .modal-container-body .form-element.one-quarter-width {
+          flex: 0 0 24.25%;
+        }
+
+        .modal-container-body .form-element-label{
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+          width: 100%;
+        }
+        
+        .modal-container-body .form-element-label label,
+        .modal-container-body .form-element-label span{
+          color: hsl(0, 0%, 0%);
+          font-family: 'Lato' , sans-serif;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: color 0.5s;
+        }
+
+        .modal-container-body .form-element-label label.invalid::after{
+          content: '*';
+          color: hsl(0, 100%, 50%);
+          font-size: 1.5rem;
+          margin-left: 0.2rem;
+        }
+
+        .modal-container-body .form-element-label,
+        .modal-container-body .form-element-input{
+          width: 100%;
+        }
+
+        .modal-container-body input[type="submit"]{
+          background-color: hsl(135 45% 40%);
+          border: none;
+          color: hsl(0 0% 100%);
+          cursor: pointer;
+          font-family: 'Lato' , sans-serif;
+          font-size: 1rem;
+          font-weight: 600;
+          outline: inherit;
+          padding: 0.5rem 0;
+        }
+        
+        .modal-container-body .form-element-input input, 
+        .modal-container-body .form-element-input textarea,
+        .modal-container-body .form-element-input select {
+          background-color:hsl(226deg 64% 66%);
+          border: none;
+          border-bottom: 0.1em solid hsl(0, 0%, 100%);
+          border-radius: 0;
+          box-sizing: border-box;
+          color: hsl(0, 0%, 100%);
+          height: 2.2rem;
+          font-family: 'Lato' , sans-serif;
+          font-size: 1rem;
+          font-weight: 600;
+          padding: 0 0.5rem;
+          width: 100%;
+        }
+
+        .modal-container-body .form-element-input input:focus,
+        .modal-container-body .form-element-input textarea:focus,
+        .modal-container-body .form-element-input select:focus{
+          outline: none;
+          border-bottom: 0.1rem solid hsl(207, 85%, 69%);
+        }
+
+        .modal-container-body .form-element-input input.invalid,
+        .modal-container-body .form-element-input textarea.invalid{
+          border-bottom: 0.2rem solid hsl(0, 100%, 50%);
+        }
+
+        .modal-container-body .form-element-input textarea{
+          height: 50vh;
+          padding: 0.5rem;
+        }
       </style>
     `
 
-    const componentModal = document.createElement('div')
-    componentModal.classList.add('component-modal')
-    this.shadow.append(componentModal)
-
-    const componentModalContainer = document.createElement('div')
-    componentModalContainer.classList.add('component-modal-container')
-    componentModal.append(componentModalContainer)
-
-    const pageGenerator = document.createElement('div')
-    pageGenerator.classList.add('page-generator')
-    this.shadow.append(pageGenerator)
-
+    const pageGenerator = this.createPage()
+    const modalContainer = this.createModal()
     this.createTabsContent(pageGenerator)
     this.renderTabs(pageGenerator)
     this.renderButtons(pageGenerator)
-    this.renderComponentModal(componentModalContainer)
+    this.renderComponentModal(modalContainer)
+  }
+
+  createPage = () => {
+    const pageGenerator = document.createElement('div')
+    pageGenerator.classList.add('page-generator')
+    this.shadow.append(pageGenerator)
+    return pageGenerator
+  }
+
+  createModal = () => {
+    const modal = document.createElement('div')
+    modal.classList.add('modal')
+    this.shadow.append(modal)
+
+    const modalContainer = document.createElement('div')
+    modalContainer.classList.add('modal-container')
+    modal.append(modalContainer)
+
+    const modalContainerHeader = document.createElement('div')
+    modalContainerHeader.classList.add('modal-container-header')
+    modalContainer.append(modalContainerHeader)
+
+    const closeButton = document.createElement('button')
+    closeButton.classList.add('close-button')
+    closeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>'
+    modalContainerHeader.append(closeButton)
+
+    const modalContainerBody = document.createElement('div')
+    modalContainerBody.classList.add('modal-container-body')
+    modalContainer.append(modalContainerBody)
+
+    return modalContainer
   }
 
   createTabsContent = (pageGenerator) => {
@@ -327,6 +561,20 @@ class PageGenerator extends HTMLElement {
       tabsContainerItemsUl.append(tabsContainerItemsLi)
     })
 
+    const tabsContainerButtons = document.createElement('div')
+    tabsContainerButtons.classList.add('tabs-container-buttons')
+    tabsCointainerMenu.append(tabsContainerButtons)
+
+    const jsonButton = document.createElement('div')
+    jsonButton.classList.add('json-button')
+    jsonButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>code-json</title><path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.73 3,20.1 3,19V15A2,2 0 0,0 1,13H0V11H1A2,2 0 0,0 3,9V5A2,2 0 0,1 5,3M19,3A2,2 0 0,1 21,5V9A2,2 0 0,0 23,11H24V13H23A2,2 0 0,0 21,15V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,12A2,2 0 0,1 19,10V5H17V3H19M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15M8,15A1,1 0 0,1 9,16A1,1 0 0,1 8,17A1,1 0 0,1 7,16A1,1 0 0,1 8,15M16,15A1,1 0 0,1 17,16A1,1 0 0,1 16,17A1,1 0 0,1 15,16A1,1 0 0,1 16,15Z" /></svg>'
+    tabsContainerButtons.append(jsonButton)
+
+    const previewButton = document.createElement('div')
+    previewButton.classList.add('preview-button')
+    previewButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>monitor-eye</title><path d="M3 4V16H21V4H3M3 2H21C22.1 2 23 2.89 23 4V16C23 16.53 22.79 17.04 22.41 17.41C22.04 17.79 21.53 18 21 18H14V20H16V22H8V20H10V18H3C2.47 18 1.96 17.79 1.59 17.41C1.21 17.04 1 16.53 1 16V4C1 2.89 1.89 2 3 2M10.84 8.93C11.15 8.63 11.57 8.45 12 8.45C12.43 8.46 12.85 8.63 13.16 8.94C13.46 9.24 13.64 9.66 13.64 10.09C13.64 10.53 13.46 10.94 13.16 11.25C12.85 11.56 12.43 11.73 12 11.73C11.57 11.73 11.15 11.55 10.84 11.25C10.54 10.94 10.36 10.53 10.36 10.09C10.36 9.66 10.54 9.24 10.84 8.93M10.07 12C10.58 12.53 11.28 12.82 12 12.82C12.72 12.82 13.42 12.53 13.93 12C14.44 11.5 14.73 10.81 14.73 10.09C14.73 9.37 14.44 8.67 13.93 8.16C13.42 7.65 12.72 7.36 12 7.36C11.28 7.36 10.58 7.65 10.07 8.16C9.56 8.67 9.27 9.37 9.27 10.09C9.27 10.81 9.56 11.5 10.07 12M6 10.09C6.94 7.7 9.27 6 12 6C14.73 6 17.06 7.7 18 10.09C17.06 12.5 14.73 14.18 12 14.18C9.27 14.18 6.94 12.5 6 10.09Z" /></svg>'
+    tabsContainerButtons.append(previewButton)
+
     const tabsContainerContent = document.createElement('div')
     tabsContainerContent.classList.add('tabs-container-content')
     pageGenerator.append(tabsContainerContent)
@@ -334,7 +582,7 @@ class PageGenerator extends HTMLElement {
     Object.keys(this.structure).forEach(screenSize => {
       const tabPanel = document.createElement('div')
       tabPanel.classList.add('tab-panel')
-      tabPanel.setAttribute('data-tab', screenSize)
+      tabPanel.dataset.tab = screenSize
       tabsContainerContent.append(tabPanel)
       const page = document.createElement('div')
       page.classList.add('page')
@@ -352,11 +600,11 @@ class PageGenerator extends HTMLElement {
     })
   }
 
-  renderTabs = (pageGenerator) => {
-    pageGenerator.querySelector('.tab-item').classList.add('active')
-    pageGenerator.querySelector('.tab-panel').classList.add('active')
+  renderTabs = (container) => {
+    container.querySelector('.tab-item').classList.add('active')
+    container.querySelector('.tab-panel').classList.add('active')
 
-    pageGenerator.addEventListener('click', (event) => {
+    container.addEventListener('click', (event) => {
       if (event.target.closest('.tab-item')) {
         if (event.target.closest('.tab-item').classList.contains('active')) {
           return
@@ -368,10 +616,8 @@ class PageGenerator extends HTMLElement {
         tabClicked.classList.add('active')
         tabActive.classList.remove('active')
 
-        console.log(tabClicked.closest('.page-generator'))
-
-        tabClicked.closest('.page-generator').querySelector(`.tab-panel.active[data-tab="${tabActive.dataset.tab}"]`).classList.remove('active')
-        tabClicked.closest('.page-generator').querySelector(`.tab-panel[data-tab="${tabClicked.dataset.tab}"]`).classList.add('active')
+        tabClicked.closest(`.${container.classList.value}`).querySelector(`.tab-panel.active[data-tab="${tabActive.dataset.tab}"]`).classList.remove('active')
+        tabClicked.closest(`.${container.classList.value}`).querySelector(`.tab-panel[data-tab="${tabClicked.dataset.tab}"]`).classList.add('active')
       }
     })
   }
@@ -387,32 +633,37 @@ class PageGenerator extends HTMLElement {
 
     pageGenerator.addEventListener('click', (event) => {
       if (event.target.closest('.add-button')) {
+        const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
         const addButton = event.target.closest('.add-button')
+        const components = this.components.filter(component => component.screenSizes.includes(size))
 
         if (addButton.parentElement.dataset.uuid) {
           this.uuidSlot = addButton.parentElement.dataset.uuid
         }
 
-        const addComponentModal = this.shadow.querySelector('.component-modal')
-        addComponentModal.classList.add('active')
-        const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
-        const components = this.components.filter(component => component.screenSizes.includes(size))
-        const componentModalContainer = this.shadow.querySelector('.component-modal-container')
-        componentModalContainer.innerHTML = ''
-        this.showComponents(componentModalContainer, components)
+        const modal = this.shadow.querySelector('.modal')
+        modal.classList.add('active')
+        const modalContainerBody = this.shadow.querySelector('.modal-container-body')
+        modalContainerBody.innerHTML = ''
+
+        this.showComponents(modalContainerBody, components)
       }
 
       if (event.target.closest('.edit-button')) {
+        const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
         const editButton = event.target.closest('.edit-button')
-        this.uuidOptions = editButton.dataset.uuid
-
         const component = this.components.find(component => component.name === editButton.dataset.component)
-        const optionsComponentModal = this.shadow.querySelector('.component-modal')
-        optionsComponentModal.classList.add('active')
-        const optionsComponentModalContainer = this.shadow.querySelector('.component-modal-container')
+        this.uuidOptions = {
+          uuid: editButton.dataset.uuid,
+          size
+        }
 
-        optionsComponentModalContainer.innerHTML = ''
-        this.showComponentOptions(optionsComponentModalContainer, component, this.uuidOptions)
+        const modal = this.shadow.querySelector('.modal')
+        modal.classList.add('active')
+        const modalContainerBody = this.shadow.querySelector('.modal-container-body')
+        modalContainerBody.innerHTML = ''
+
+        this.showComponentOptions(modalContainerBody, component)
       }
 
       if (event.target.closest('.remove-button')) {
@@ -424,15 +675,38 @@ class PageGenerator extends HTMLElement {
         this.removeComponent(this.structure[size], uuid)
         console.log(this.mapToObject(this.structure.xs))
       }
+
+      if (event.target.closest('.json-button')) {
+        const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
+
+        const modal = this.shadow.querySelector('.modal')
+        modal.classList.add('active')
+        const modalContainerBody = this.shadow.querySelector('.modal-container-body')
+        modalContainerBody.innerHTML = ''
+
+        this.showJson(modalContainerBody, size)
+      }
+
+      if (event.target.closest('.preview-button')) {
+        const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
+        const structure = this.mapToObject(this.structure[size])
+
+        const modal = this.shadow.querySelector('.modal')
+        modal.classList.add('active')
+        const modalContainerBody = this.shadow.querySelector('.modal-container-body')
+        modalContainerBody.innerHTML = ''
+
+        this.showPreview(modalContainerBody, structure, size)
+      }
     })
   }
 
-  showComponents = (componentModalContainer, components) => {
+  showComponents = (modalContainer, components) => {
     components.forEach(component => {
       const componentContainer = document.createElement('div')
       componentContainer.classList.add('component')
       componentContainer.dataset.component = component.name
-      componentModalContainer.append(componentContainer)
+      modalContainer.append(componentContainer)
 
       const componentTitle = document.createElement('h3')
       componentTitle.textContent = component.label
@@ -440,29 +714,50 @@ class PageGenerator extends HTMLElement {
     })
   }
 
-  showComponentOptions = (componentModalContainer, component, uuid) => {
+  showComponentOptions = (modalContainer, component) => {
     const form = document.createElement('form')
     form.classList.add('component-options-form')
-    componentModalContainer.append(form)
+    modalContainer.append(form)
 
-    component.form.structure.tabs.forEach(tab => {
+    const tabsCointainerMenu = document.createElement('div')
+    tabsCointainerMenu.classList.add('tabs-container-menu')
+    form.append(tabsCointainerMenu)
+
+    const tabsContainerItems = document.createElement('div')
+    tabsContainerItems.classList.add('tabs-container-items')
+    tabsCointainerMenu.append(tabsContainerItems)
+
+    const tabsContainerItemsUl = document.createElement('ul')
+    tabsContainerItems.append(tabsContainerItemsUl)
+
+    component.options.structure.tabs.forEach(tab => {
+      const tabsContainerItemsLi = document.createElement('li')
+      tabsContainerItemsLi.classList.add('tab-item')
+      tabsContainerItemsLi.dataset.tab = tab.name
+      tabsContainerItemsLi.textContent = tab.label
+      tabsContainerItemsUl.append(tabsContainerItemsLi)
+
       const tabContainer = document.createElement('div')
-      tabContainer.classList.add('tab-container')
+      tabContainer.classList.add('tab-panel')
       tabContainer.dataset.tab = tab.name
       form.append(tabContainer)
 
-      if (tab.name === 'general') {
-        tabContainer.classList.add('active')
-      }
+      component.options.structure.inputs[tab.name].forEach(input => {
+        const formElementContainer = document.createElement('div')
+        formElementContainer.classList.add('form-element', input.width)
+        tabContainer.append(formElementContainer)
 
-      component.form.structure.inputs[tab.name].forEach(input => {
-        const inputContainer = document.createElement('div')
-        inputContainer.classList.add('input-container')
-        tabContainer.append(inputContainer)
+        const labelContainer = document.createElement('div')
+        labelContainer.classList.add('form-element-label')
+        formElementContainer.append(labelContainer)
 
         const label = document.createElement('label')
         label.textContent = input.label
-        inputContainer.append(label)
+        labelContainer.append(label)
+
+        const inputContainer = document.createElement('div')
+        inputContainer.classList.add('form-element-input')
+        formElementContainer.append(inputContainer)
 
         const inputElement = document.createElement(input.element)
         inputElement.type = input.type
@@ -472,37 +767,96 @@ class PageGenerator extends HTMLElement {
       })
     })
 
-    const submitButton = document.createElement('button')
-    submitButton.classList.add('apply-options-button')
-    submitButton.textContent = 'Aplicar'
-    componentModalContainer.append(submitButton)
+    const applyButton = document.createElement('input')
+    applyButton.type = 'submit'
+    applyButton.classList.add('apply-options-button')
+    applyButton.textContent = 'Aplicar cambios'
+    modalContainer.append(applyButton)
+
+    modalContainer.querySelector('.tab-item').classList.add('active')
+    modalContainer.querySelector('.tab-panel').classList.add('active')
+    this.renderTabs(modalContainer)
+
+    const optionsValue = this.getOptionsInStructure(this.structure[this.uuidOptions.size], this.uuidOptions.uuid)
+
+    if (optionsValue) {
+      for (const [key, value] of Object.entries(optionsValue)) {
+        const input = form.querySelector(`[name="${key}"]`)
+        input.value = value
+      }
+    }
   }
 
-  renderComponentModal = (componentModalContainer) => {
-    componentModalContainer.addEventListener('click', (event) => {
+  showJson = (modalContainer, size) => {
+    const json = JSON.stringify(this.mapToObject(this.structure[size]), null, 2)
+
+    const jsonContainer = document.createElement('pre')
+    jsonContainer.textContent = json
+    modalContainer.append(jsonContainer)
+  }
+
+  showPreview = (modalContainer, structure, size) => {
+    const preview = document.createElement('div')
+    preview.classList.add('preview', size)
+    modalContainer.append(preview)
+
+    this.renderStructure(preview, structure)
+  }
+
+  renderStructure = (container, structure) => {
+    for (const [key, outerValue] of Object.entries(structure)) {
+      if (key === 'slot') {
+        for (const [innerKey, innerValue] of Object.entries(outerValue)) {
+          const component = document.createElement(innerKey)
+          container.append(component)
+
+          if (outerValue.options) {
+            component.setAttribute('options', JSON.stringify(outerValue.options))
+          }
+
+          this.renderStructure(component, innerValue)
+        }
+      }
+
+      if (outerValue instanceof Object) {
+        const component = document.createElement(key)
+        container.append(component)
+
+        if (outerValue.options) {
+          component.setAttribute('options', JSON.stringify(outerValue.options))
+        }
+
+        this.renderStructure(component, outerValue)
+      }
+    }
+  }
+
+  renderComponentModal = (modalContainer) => {
+    modalContainer.addEventListener('click', (event) => {
+      if (event.target.closest('.close-button')) {
+        this.shadow.querySelector('.modal').classList.remove('active')
+      }
+
       if (event.target.closest('.component')) {
         const component = this.components.find(component => component.name === event.target.closest('.component').dataset.component)
         this.addComponent(component)
 
-        const addComponentModal = this.shadow.querySelector('.component-modal')
-        addComponentModal.classList.remove('active')
+        this.shadow.querySelector('.modal').classList.remove('active')
       }
 
       if (event.target.closest('.apply-options-button')) {
-        const optionsComponentModal = this.shadow.querySelector('.component-modal')
-        optionsComponentModal.classList.remove('active')
-
         const form = this.shadow.querySelector('.component-options-form')
         const formData = new FormData(form)
-        let options = {}
+        const options = {}
 
         formData.forEach((value, key) => {
           options[key] = value
         })
 
-        options = JSON.stringify(options)
-        this.shadow.querySelector(`[data-uuid="${this.uuidOptions}"]:not(button)`).setAttribute('options', options)
-        this.uuidOptions = ''
+        this.updateOptionsInStructure(this.structure[this.uuidOptions.size], this.uuidOptions.uuid, options)
+
+        this.uuidOptions = {}
+        this.shadow.querySelector('.modal').classList.remove('active')
       }
     })
   }
@@ -537,7 +891,7 @@ class PageGenerator extends HTMLElement {
     removeButton.innerHTML = "<svg viewBox='0 0 24 24'><path d='M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z'></path></svg>"
     componentDetailsContainer.append(removeButton)
 
-    const newComponent = document.createElement(component.name)
+    const newComponent = document.createElement('div')
     newComponent.dataset.uuid = uuid
     componentContainer.append(newComponent)
 
@@ -558,25 +912,15 @@ class PageGenerator extends HTMLElement {
       event.stopPropagation()
     })
 
-    if (this.uuidSlot) {
-      const slot = tabActive.querySelector(`[data-uuid="${this.uuidSlot}"]:not(button)`)
-      slot.before(componentContainer)
-    } else {
-      addComponent.before(componentContainer)
-    }
-
     const size = tabActive.dataset.tab
 
     if (this.uuidSlot) {
-      this.findUUIDInStructure(this.structure[size], this.uuidSlot, component, newComponent)
+      const slot = tabActive.querySelector(`[data-uuid="${this.uuidSlot}"]:not(button)`)
+      slot.before(componentContainer)
+      this.createSlotInStructure(this.structure[size], this.uuidSlot, newComponent.dataset.uuid, component)
     } else {
-      this.structure[size].set(component.name, {
-        uuid: newComponent.dataset.uuid
-      })
-
-      if (component.slot) {
-        this.structure[size].get(component.name).slot = new Map()
-      }
+      addComponent.before(componentContainer)
+      this.createComponentInStructure(this.structure[size], newComponent.dataset.uuid, component)
     }
 
     this.uuidSlot = ''
@@ -594,11 +938,21 @@ class PageGenerator extends HTMLElement {
     })
   }
 
-  findUUIDInStructure (structure, uuid, component, newComponent) {
+  createComponentInStructure = (structure, uuid, component) => {
+    structure.set(component.name, {
+      uuid
+    })
+
+    if (component.slot) {
+      structure.get(component.name).slot = new Map()
+    }
+  }
+
+  createSlotInStructure = (structure, parentUuid, uuid, component) => {
     structure.forEach((value, key) => {
-      if (value.uuid && value.uuid === uuid) {
+      if (value.uuid && value.uuid === parentUuid) {
         value.slot.set(component.name, {
-          uuid: newComponent.dataset.uuid
+          uuid
         })
 
         if (component.slot) {
@@ -607,7 +961,35 @@ class PageGenerator extends HTMLElement {
       }
 
       if (value.slot) {
-        this.findUUIDInStructure(value.slot, uuid, component, newComponent)
+        this.createSlotInStructure(value.slot, parentUuid, uuid, component)
+      }
+    })
+  }
+
+  getOptionsInStructure = (structure, uuid) => {
+    // eslint-disable-next-line no-unused-vars
+    for (const [key, value] of structure) {
+      if (value.uuid && value.uuid === uuid) {
+        return value.options
+      }
+
+      if (value.slot) {
+        const result = this.updateOptionsInStructure(value.slot, uuid)
+        if (result) {
+          return result
+        }
+      }
+    }
+  }
+
+  updateOptionsInStructure = (structure, uuid, options) => {
+    structure.forEach((value, key) => {
+      if (value.uuid && value.uuid === uuid) {
+        value.options = options
+      }
+
+      if (value.slot) {
+        this.updateOptionsInStructure(value.slot, uuid, options)
       }
     })
   }

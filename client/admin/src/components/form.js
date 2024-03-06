@@ -220,12 +220,12 @@ class Form extends HTMLElement {
 
           input[type="submit"]{
             background: none;
-            color: inherit;
             border: none;
-            padding: 0;
-            font: inherit;
             cursor: pointer;
+            color: inherit;
+            font: inherit;
             outline: inherit;
+            padding: 0;
           }
           
           .form-element-input input, 

@@ -2,12 +2,26 @@ class Row extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.height = this.getAttribute('height') || '50px'
-    this.columns = this.getAttribute('template-columns') || '1fr'
-    this.rowGap = this.getAttribute('row-gap') || '1rem'
-    this.elementDistribution = this.getAttribute('element-distribution') || null
-    this.columnGap = this.getAttribute('column-gap') || '1rem'
-    this.justifyContents = this.getAttribute('justify-contents') || null
+
+    this.defaultOptions = {
+      height: '50px',
+      columns: '8fr 2fr',
+      columnGap: '1rem',
+      rowGap: '1rem',
+      elementDistribution: '1,2',
+      justifyContents: 'flex-start,flex-end'
+    }
+    this.options = {}
+  }
+
+  static get observedAttributes () {
+    return ['options']
+  }
+
+  attributeChangedCallback (name, oldValue, newValue) {
+    this.options = JSON.parse(newValue)
+    this.render()
+    this.applyLayout()
   }
 
   connectedCallback () {
@@ -16,6 +30,8 @@ class Row extends HTMLElement {
   }
 
   render () {
+    this.options = Object.assign({}, this.defaultOptions, this.options)
+
     this.shadow.innerHTML =
       /* html */`
         <style>
@@ -26,15 +42,15 @@ class Row extends HTMLElement {
 
           .row{
             display: grid;
-            gap: ${this.rowGap};
-            grid-template-columns: ${this.columns};
-            height: ${this.height};
+            gap: ${this.options.rowGap};
+            grid-template-columns: ${this.options.columns};
+            height: ${this.options.height};
             width: 100%;
           }
 
           .column{
             display: flex;
-            gap: ${this.columnGap};
+            gap: ${this.options.columnGap};
           }
         </style>
         <div class="row">
@@ -44,9 +60,9 @@ class Row extends HTMLElement {
   }
 
   applyLayout () {
-    if (this.elementDistribution) {
-      const elementDistribution = this.elementDistribution.split(',').map(Number)
-      const justifyContents = this.justifyContents ? this.justifyContents.split(',') : []
+    if (this.options.elementDistribution) {
+      const elementDistribution = this.options.elementDistribution.split(',').map(Number)
+      const justifyContents = this.options.justifyContents ? this.options.justifyContents.split(',') : []
       const slotElements = this.shadowRoot.querySelector('slot').assignedNodes({ flatten: true }).filter(el => el.nodeType === Node.ELEMENT_NODE)
 
       const slot = this.shadowRoot.querySelector('slot')

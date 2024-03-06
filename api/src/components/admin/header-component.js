@@ -2,6 +2,26 @@ class Header extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
+    this.defaultOptions = {
+      backgroundColor: 'transparent',
+      height: '5vh',
+      paddingTop: '0',
+      paddingBottom: '0',
+      paddingLeft: '0',
+      paddingRight: '0'
+    }
+    this.options = {}
+  }
+
+  static get observedAttributes () {
+    return ['options']
+  }
+
+  attributeChangedCallback (name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      this.options = newValue
+      this.render()
+    }
   }
 
   connectedCallback () {
@@ -9,17 +29,21 @@ class Header extends HTMLElement {
   }
 
   render () {
+    this.options = Object.assign({}, this.defaultOptions, this.options)
+
     this.shadow.innerHTML =
       /* html */`
       <style>
         header{
-          align-items: center;
-          background-color: hsla(0, 0%, 0%);
+          background-color: ${this.options.backgroundColor};
           box-sizing: border-box;
-          display: flex;
-          justify-content: space-between;
-          min-height: 5vh;
-          padding: 0.5rem 2rem;
+          height: ${this.options.height};
+          min-height: ${this.options.height};
+          padding-top: ${this.options.paddingTop};
+          padding-bottom: ${this.options.paddingBottom};
+          padding-left: ${this.options.paddingLeft};
+          padding-right: ${this.options.paddingRight};
+          width: 100%;
         }
       </style>
       <header>

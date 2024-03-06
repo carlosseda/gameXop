@@ -2,6 +2,8 @@ class Main extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
+    this.padding = this.getAttribute('padding') || '0'
+    this.gap = this.getAttribute('gap') || '2rem'
   }
 
   connectedCallback () {
@@ -15,9 +17,9 @@ class Main extends HTMLElement {
           main{
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: ${this.gap};
             height: 100%;
-            padding: 2rem;
+            padding: ${this.padding};
           }
         </style>
         <main>

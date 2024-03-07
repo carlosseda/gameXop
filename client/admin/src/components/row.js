@@ -8,8 +8,8 @@ class Row extends HTMLElement {
       columns: '8fr 2fr',
       columnGap: '1rem',
       rowGap: '1rem',
-      elementDistribution: '1,2',
-      justifyContents: 'flex-start,flex-end'
+      elementDistribution: '1 2',
+      justifyContents: 'flex-start flex-end'
     }
     this.options = {}
   }
@@ -61,8 +61,8 @@ class Row extends HTMLElement {
 
   applyLayout () {
     if (this.options.elementDistribution) {
-      const elementDistribution = this.options.elementDistribution.split(',').map(Number)
-      const justifyContents = this.options.justifyContents ? this.options.justifyContents.split(',') : []
+      const elementDistribution = this.options.elementDistribution.split(' ').map(Number)
+      const justifyContents = this.options.justifyContents ? this.options.justifyContents.split(' ') : []
       const slotElements = this.shadowRoot.querySelector('slot').assignedNodes({ flatten: true }).filter(el => el.nodeType === Node.ELEMENT_NODE)
 
       const slot = this.shadowRoot.querySelector('slot')

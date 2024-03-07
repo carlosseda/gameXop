@@ -10,6 +10,68 @@ class PageGenerator extends HTMLElement {
       md: new Map(),
       lg: new Map()
     }
+    this.rowOptions = [
+      {
+        columns: '1fr'
+      },
+      {
+        columns: '1fr 1fr'
+      },
+      {
+        columns: '1fr 1fr 1fr'
+      },
+      {
+        columns: '1fr 1fr 1fr 1fr'
+      },
+      {
+        columns: '1fr 1fr 1fr 1fr 1fr'
+      },
+      {
+        columns: '1fr 1fr 1fr 1fr 1fr 1fr'
+      },
+      {
+        columns: '3fr 7fr'
+      },
+      {
+        columns: '7fr 3fr'
+      },
+      {
+        columns: '2fr 8fr'
+      },
+      {
+        columns: '8fr 2fr'
+      },
+      {
+        columns: '1fr 9fr'
+      },
+      {
+        columns: '9fr 1fr'
+      },
+      {
+        columns: '2fr 6fr 2fr'
+      },
+      {
+        columns: '1fr 8fr 1fr'
+      },
+      {
+        columns: '2fr 2fr 6fr'
+      },
+      {
+        columns: '6fr 2fr 2fr'
+      },
+      {
+        columns: '1fr 1fr 8fr'
+      },
+      {
+        columns: '8fr 1fr 1fr'
+      },
+      {
+        columns: '1fr 1fr 1fr 7fr'
+      },
+      {
+        columns: '7fr 1fr 1fr 1fr'
+      }
+    ]
     this.components = [
       {
         label: 'Header',
@@ -267,13 +329,15 @@ class PageGenerator extends HTMLElement {
           background-color: white;
           box-sizing: border-box;
           height: 80%;
-          padding: 1rem;
           width: 80%;
         }
 
         .modal-container .modal-container-header{
+          background-color: hsl(236 55% 25%);
+          box-sizing: border-box;
           display: flex;
           justify-content: flex-end;
+          padding: 0.5rem;
           width: 100%;
         }
 
@@ -285,13 +349,9 @@ class PageGenerator extends HTMLElement {
         }
 
         .modal-container-header .close-button svg{
-          fill: hsl(236 55% 25%);
+          fill: hsl(0 0% 100%);
           height: 2rem;
           width: 2rem;
-        }
-
-        .modal-container-header .close-button svg:hover{
-          fill: hsl(272 40% 35%);
         }
 
         .modal-container-body{
@@ -299,7 +359,7 @@ class PageGenerator extends HTMLElement {
           gap: 1rem;
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
-          height: 90%;
+          padding: 1rem;
         }
 
         .modal-container-body .component{
@@ -321,6 +381,28 @@ class PageGenerator extends HTMLElement {
           font-family: 'Lato', sans-serif;
           font-size: 1rem;
           margin: 0;
+        }
+
+        .modal-container:has(.row-option) .modal-container-body{
+          gap: 5rem;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          grid-template-rows: repeat(auto-fill, minmax(80px, 1fr));
+        }
+
+        .modal-container-body .row-option{
+          cursor: pointer;
+          display: grid;
+          gap: 1rem;
+          height: 100px;
+          width: 100%;
+        }
+
+        .modal-container-body .row-option .column{
+          background-color: hsl(236 55% 25%);
+        }
+
+        .modal-container-body .row-option:hover .column{
+          background-color: hsl(135 45% 40%);
         }
 
         .modal-container:has(pre){
@@ -370,6 +452,7 @@ class PageGenerator extends HTMLElement {
           display: flex;
           flex-direction: column;
           height: 100%;
+          padding: 0;
           width: 100%;
         }
 
@@ -819,6 +902,25 @@ class PageGenerator extends HTMLElement {
     modalContainer.append(preview)
 
     this.renderStructure(preview, structure)
+  }
+
+  showRowOptions = (modalContainer) => {
+    this.rowOptions.forEach(option => {
+      const rowOption = document.createElement('div')
+      rowOption.classList.add('row-option')
+      rowOption.dataset.columns = option.columns
+      rowOption.style.gridTemplateColumns = option.columns
+
+      const numberColumns = option.columns.split(' ').length
+
+      for (let i = 0; i < numberColumns; i++) {
+        const column = document.createElement('div')
+        column.classList.add('column')
+        rowOption.append(column)
+      }
+
+      modalContainer.append(rowOption)
+    })
   }
 
   renderStructure = (container, structure) => {

@@ -1,20 +1,21 @@
 const multer = require('multer')
 
-const storage = multer.memoryStorage()
+const uploadMiddleware = (req, res, next) => {
+  const storage = multer.memoryStorage()
+  const upload = multer({ storage })
+  const uploadFiles = upload.fields([
+    { name: 'file', maxCount: 1 }
+  ])
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'src/storage/tmp/')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname)
-//   }
-// })
+  uploadFiles(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(500).send({ error: err.message })
+    } else if (err) {
+      res.status(500).send({ error: err.message })
+    }
 
-const upload = multer({ storage })
+    next()
+  })
+}
 
-const uploadFiles = upload.fields([
-  { name: 'file', maxCount: 1 }
-])
-
-module.exports = uploadFiles
+module.exports = uploadMiddleware

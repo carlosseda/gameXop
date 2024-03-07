@@ -9,11 +9,7 @@ module.exports = class ImageService {
     for (const key in images) {
       for (const image of images[key]) {
         try {
-          let filename = image.originalname
-
-          if (filename.includes(' ')) {
-            filename = image.originalname.replace(/ |_|/g, '-')
-          }
+          const filename = image.originalname.replace(/ |_|/g, '-')
 
           const newFilename = await fs.access(path.join(__dirname, `../storage/images/gallery/original/${path.parse(filename).name}.webp`)).then(async () => {
             // TODO Dar al usuario la opción de sobreescribir la imagen

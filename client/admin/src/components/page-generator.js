@@ -220,7 +220,6 @@ class PageGenerator extends HTMLElement {
           border: 1px solid hsl(0 0% 50%);
           box-sizing: border-box;
           margin-bottom: 0.5rem;
-          padding: 1rem;
           width: 100%;
         }
 
@@ -234,8 +233,8 @@ class PageGenerator extends HTMLElement {
           align-items: center;
           background-color: hsl(0 0% 0% / 50%);
           box-sizing: border-box;
-          display: flex;
-          justify-content: space-between;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
           gap: 1rem;
           padding: 0.5rem;
           width: 100%;
@@ -247,6 +246,7 @@ class PageGenerator extends HTMLElement {
           font-size: 1rem;
           font-weight: 600;
           margin: 0;
+          text-align: center;
         }
 
         .component-details .component-details-buttons{
@@ -258,6 +258,7 @@ class PageGenerator extends HTMLElement {
           background-color: transparent;
           border: none;
           cursor: pointer;
+          justify-self: right;
           padding: 0;
         }
 
@@ -268,6 +269,13 @@ class PageGenerator extends HTMLElement {
 
         .component-details button svg path{
           fill: hsl(0 0% 100%);
+        }
+
+        .component-body{
+          box-sizing: border-box;
+          display: flex;
+          justify-content: center;
+          padding: 1rem;
         }
 
         .add-component{
@@ -285,10 +293,6 @@ class PageGenerator extends HTMLElement {
           background-color: hsl(135 45% 30%);
           border: none;
           cursor: pointer;
-        }
-
-        .component .add-button{
-          width: 100%;
         }
 
         .add-button:hover{
@@ -309,6 +313,8 @@ class PageGenerator extends HTMLElement {
 
         .row .column{
           border: 1px dashed hsl(0deg 0% 100%);
+          display: flex;
+          justify-content: center;
           padding: 2rem;
         }
 
@@ -1068,7 +1074,13 @@ class PageGenerator extends HTMLElement {
     componentTitle.textContent = component.label
     componentDetailsContainer.append(componentTitle)
 
+    const collapseButton = document.createElement('button')
+    collapseButton.classList.add('collapse-button')
+    collapseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.78,11.78L18.36,13.19L12,6.83L5.64,13.19L4.22,11.78L12,4L19.78,11.78Z" /></svg>'
+    componentDetailsContainer.append(collapseButton)
+
     const newComponent = document.createElement('div')
+    newComponent.classList.add('component-body')
     newComponent.dataset.uuid = uuid
     componentContainer.append(newComponent)
 

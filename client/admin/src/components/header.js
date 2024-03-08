@@ -4,7 +4,7 @@ class Header extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
     this.defaultOptions = {
       backgroundColor: 'transparent',
-      height: '5vh',
+      height: null,
       paddingTop: '0',
       paddingBottom: '0',
       paddingLeft: '0',

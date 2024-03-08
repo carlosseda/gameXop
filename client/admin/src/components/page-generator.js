@@ -10,7 +10,7 @@ class PageGenerator extends HTMLElement {
       md: new Map(),
       lg: new Map()
     }
-    this.rowOptions = [
+    this.columnOptions = [
       {
         columns: '1fr'
       },
@@ -76,6 +76,7 @@ class PageGenerator extends HTMLElement {
       {
         label: 'Header',
         name: 'header-component',
+        category: 'section',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
         options: {
@@ -99,18 +100,21 @@ class PageGenerator extends HTMLElement {
       {
         label: 'Main',
         name: 'main-component',
+        category: 'section',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg']
       },
       {
         label: 'Footer',
         name: 'footer-component',
+        category: 'section',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg']
       },
       {
         label: 'Fila',
         name: 'row-component',
+        category: 'row',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
         options: {
@@ -123,6 +127,26 @@ class PageGenerator extends HTMLElement {
                 { name: 'height', element: 'input', type: 'text', label: 'Height', value: '50px', width: 'full-width' },
                 { name: 'columnGap', element: 'input', type: 'text', label: 'Column Gap', value: '1rem', width: 'full-width' },
                 { name: 'rowGap', element: 'input', type: 'text', label: 'Row Gap', value: '1rem', width: 'full-width' }
+              ]
+            }
+          }
+        }
+      },
+      {
+        label: 'Columna',
+        name: 'column-component',
+        category: 'row',
+        slot: true,
+        screenSizes: ['xs', 'sm', 'md', 'lg'],
+        options: {
+          structure: {
+            tabs: [
+              { name: 'styles', label: 'Estilos' }
+            ],
+            inputs: {
+              styles: [
+                { name: 'justifyContent', element: 'input', type: 'text', label: 'Justificación', value: 'flex-start', width: 'full-width' },
+                { name: 'gap', element: 'input', type: 'text', label: 'Gap', value: '1rem', width: 'full-width' }
               ]
             }
           }
@@ -216,7 +240,6 @@ class PageGenerator extends HTMLElement {
         }
 
         .page .component{
-          background-color: hsl(236 55% 25%);
           border: 1px solid hsl(0 0% 50%);
           box-sizing: border-box;
           margin-bottom: 0.5rem;
@@ -231,7 +254,7 @@ class PageGenerator extends HTMLElement {
 
         .page .component .component-details{
           align-items: center;
-          background-color: hsl(0 0% 0% / 50%);
+          background-color: hsl(272 40% 35%);
           box-sizing: border-box;
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
@@ -272,10 +295,20 @@ class PageGenerator extends HTMLElement {
         }
 
         .component-body{
+          background-color: hsl(0 0% 95%);
           box-sizing: border-box;
           display: flex;
           justify-content: center;
           padding: 1rem;
+        }
+
+        .add-slot{
+          box-sizing: border-box;
+          border: none;
+          display: flex;
+          justify-content: center;
+          padding: 1rem;
+          width: 100%;
         }
 
         .add-component{
@@ -289,17 +322,20 @@ class PageGenerator extends HTMLElement {
           width: 100%;
         }
 
-        .add-button{
+        .add-button,
+        .add-to-column{
           background-color: hsl(135 45% 30%);
           border: none;
           cursor: pointer;
         }
 
-        .add-button:hover{
+        .add-button:hover
+        .add-to-column:hover{
           background-color: hsl(135 45% 40%);
         }
 
-        .add-button svg{
+        .add-button svg,
+        .add-to-column svg{
           height: 2rem;
           fill: white;
           width: 2rem;
@@ -311,11 +347,15 @@ class PageGenerator extends HTMLElement {
           width: 100%;
         }
 
-        .row .column{
-          border: 1px dashed hsl(0deg 0% 100%);
+        .row > .column{
+          border: 1px solid hsl(0 0% 50%);
           display: flex;
-          justify-content: center;
-          padding: 2rem;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .column > .component-body{
+          gap: 1rem;
         }
 
         .modal{
@@ -397,13 +437,13 @@ class PageGenerator extends HTMLElement {
           margin: 0;
         }
 
-        .modal-container:has(.row-option) .modal-container-body{
+        .modal-container:has(.column-option) .modal-container-body{
           gap: 5rem;
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           grid-template-rows: repeat(auto-fill, minmax(80px, 1fr));
         }
 
-        .modal-container-body .row-option{
+        .modal-container-body .column-option{
           cursor: pointer;
           display: grid;
           gap: 1rem;
@@ -411,11 +451,11 @@ class PageGenerator extends HTMLElement {
           width: 100%;
         }
 
-        .modal-container-body .row-option .column{
+        .modal-container-body .column-option .column{
           background-color: hsl(236 55% 25%);
         }
 
-        .modal-container-body .row-option:hover .column{
+        .modal-container-body .column-option:hover .column{
           background-color: hsl(135 45% 40%);
         }
 
@@ -720,23 +760,15 @@ class PageGenerator extends HTMLElement {
   }
 
   renderButtons = (pageGenerator) => {
-    pageGenerator.addEventListener('mouseover', event => {
-      if (!event.target.closest('.component')) {
-        this.shadow.querySelectorAll('.component .component-details').forEach(componentDetails => {
-          componentDetails.classList.remove('active')
-        })
-      }
-    })
-
     pageGenerator.addEventListener('click', (event) => {
       if (event.target.closest('.add-button')) {
         const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
         const addButton = event.target.closest('.add-button')
         const components = this.components.filter(component => component.screenSizes.includes(size))
 
-        if (addButton.parentElement.dataset.uuid) {
+        if (addButton.closest('.component')?.dataset.uuid) {
           this.component = {
-            parentUuid: addButton.parentElement.dataset.uuid
+            parentUuid: addButton.closest('.component').dataset.uuid
           }
         }
 
@@ -774,11 +806,11 @@ class PageGenerator extends HTMLElement {
         this.removeComponentInStructure(this.structure[size], uuid)
       }
 
-      if (event.target.closest('.row-button')) {
+      if (event.target.closest('.columns-button')) {
         const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
-        const rowButton = event.target.closest('.row-button')
+        const columnsButton = event.target.closest('.columns-button')
         this.component = {
-          uuid: rowButton.dataset.uuid,
+          uuid: columnsButton.dataset.uuid,
           size
         }
 
@@ -918,21 +950,21 @@ class PageGenerator extends HTMLElement {
   }
 
   showRowOptions = (modalContainer) => {
-    this.rowOptions.forEach(option => {
-      const rowOption = document.createElement('div')
-      rowOption.classList.add('row-option')
-      rowOption.dataset.columns = option.columns
-      rowOption.style.gridTemplateColumns = option.columns
+    this.columnOptions.forEach(option => {
+      const columnOption = document.createElement('div')
+      columnOption.classList.add('column-option')
+      columnOption.dataset.columns = option.columns
+      columnOption.style.gridTemplateColumns = option.columns
 
       const numberColumns = option.columns.split(' ').length
 
       for (let i = 0; i < numberColumns; i++) {
         const column = document.createElement('div')
         column.classList.add('column')
-        rowOption.append(column)
+        columnOption.append(column)
       }
 
-      modalContainer.append(rowOption)
+      modalContainer.append(columnOption)
     })
   }
 
@@ -941,11 +973,14 @@ class PageGenerator extends HTMLElement {
     options.columns = columns
     this.updateOptionsInStructure(this.structure[this.component.size], this.component.uuid, options)
 
-    const row = this.shadow.querySelector(`[data-uuid="${this.component.uuid}"]:not(button)`)
+    const componentElement = this.shadow.querySelector(`[data-uuid="${this.component.uuid}"]:not(button)`)
+    const row = componentElement.querySelector('.component-body')
     row.classList.add('row')
     row.style.gridTemplateColumns = columns
     row.innerHTML = ''
+    componentElement.querySelector('.add-slot')?.remove()
 
+    const component = this.components.find(component => component.name === 'column-component')
     const countColumns = columns.split(' ').length
 
     for (let i = 0; i < countColumns; i++) {
@@ -954,12 +989,42 @@ class PageGenerator extends HTMLElement {
       row.append(column)
 
       const uuid = Math.random().toString(36).substring(7)
-      column.dataset.uuid = `${this.component.uuid}-${uuid}`
+      column.dataset.uuid = uuid
+
+      const columnDetailsContainer = document.createElement('div')
+      columnDetailsContainer.classList.add('component-details')
+      column.append(columnDetailsContainer)
+
+      const columnDetailsButtons = document.createElement('div')
+      columnDetailsButtons.classList.add('component-details-buttons')
+      columnDetailsContainer.append(columnDetailsButtons)
+
+      const editButton = document.createElement('button')
+      editButton.classList.add('edit-button')
+      editButton.dataset.component = component.name
+      editButton.dataset.uuid = uuid
+      editButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z' /></svg>"
+      columnDetailsButtons.append(editButton)
+
+      const columnTitle = document.createElement('span')
+      columnTitle.textContent = component.label
+      columnDetailsContainer.append(columnTitle)
+
+      const collapseButton = document.createElement('button')
+      collapseButton.classList.add('collapse-button')
+      collapseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.78,11.78L18.36,13.19L12,6.83L5.64,13.19L4.22,11.78L12,4L19.78,11.78Z" /></svg>'
+      columnDetailsContainer.append(collapseButton)
+
+      const columnBody = document.createElement('div')
+      columnBody.classList.add('component-body')
+      column.append(columnBody)
 
       const addButton = document.createElement('button')
-      addButton.classList.add('add-button')
+      addButton.classList.add('add-to-column')
       addButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>'
       column.append(addButton)
+
+      this.createSlotInStructure(this.structure[this.component.size], this.component.uuid, uuid, component)
     }
 
     this.component = {}
@@ -1021,8 +1086,8 @@ class PageGenerator extends HTMLElement {
         this.shadow.querySelector('.modal').classList.remove('active')
       }
 
-      if (event.target.closest('.row-option')) {
-        const rowOption = event.target.closest('.row-option')
+      if (event.target.closest('.column-option')) {
+        const rowOption = event.target.closest('.column-option')
         const columns = rowOption.dataset.columns
 
         this.updateRowComponent(columns)
@@ -1036,8 +1101,11 @@ class PageGenerator extends HTMLElement {
     const tabActive = this.shadow.querySelector('.tab-panel.active')
     const addComponent = tabActive.querySelector('.add-component')
 
+    const uuid = Math.random().toString(36).substring(7)
+
     const componentContainer = document.createElement('div')
     componentContainer.classList.add('component')
+    componentContainer.dataset.uuid = uuid
 
     const componentDetailsContainer = document.createElement('div')
     componentDetailsContainer.classList.add('component-details')
@@ -1047,11 +1115,9 @@ class PageGenerator extends HTMLElement {
     componentDetailsButtons.classList.add('component-details-buttons')
     componentDetailsContainer.append(componentDetailsButtons)
 
-    const uuid = Math.random().toString(36).substring(7)
-
     if (component.name === 'row-component') {
       const rowButton = document.createElement('button')
-      rowButton.classList.add('row-button')
+      rowButton.classList.add('columns-button')
       rowButton.dataset.uuid = uuid
       rowButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4 5V18H21V5H4M14 7V16H11V7H14M6 7H9V16H6V7M19 16H16V7H19V16Z' /></svg>"
       componentDetailsButtons.append(rowButton)
@@ -1079,42 +1145,30 @@ class PageGenerator extends HTMLElement {
     collapseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.78,11.78L18.36,13.19L12,6.83L5.64,13.19L4.22,11.78L12,4L19.78,11.78Z" /></svg>'
     componentDetailsContainer.append(collapseButton)
 
-    const newComponent = document.createElement('div')
-    newComponent.classList.add('component-body')
-    newComponent.dataset.uuid = uuid
-    componentContainer.append(newComponent)
-
     if (component.slot) {
+      const newComponent = document.createElement('div')
+      newComponent.classList.add('component-body')
+      componentContainer.append(newComponent)
+
+      const addSlotContainer = document.createElement('div')
+      addSlotContainer.classList.add('add-slot')
+      componentContainer.append(addSlotContainer)
+
       const addButton = document.createElement('button')
       addButton.classList.add('add-button')
       addButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>'
-      newComponent.append(addButton)
+      addSlotContainer.append(addButton)
     }
-
-    // componentContainer.addEventListener('mouseover', event => {
-    //   this.shadow.querySelectorAll('.component .component-details').forEach(componentDetails => {
-    //     componentDetails.classList.remove('active')
-    //   })
-
-    //   componentContainer.querySelector('.component-details').classList.add('active')
-
-    //   event.stopPropagation()
-    // })
 
     const size = tabActive.dataset.tab
 
     if (this.component.parentUuid) {
-      const slot = tabActive.querySelector(`[data-uuid="${this.component.parentUuid}"]:not(button)`)
-      slot.before(componentContainer)
-
-      if (this.component.parentUuid.includes('-')) {
-        this.component.parentUuid = this.component.parentUuid.split('-')[0]
-      }
-
-      this.createSlotInStructure(this.structure[size], this.component.parentUuid, newComponent.dataset.uuid, component)
+      const slot = tabActive.querySelector(`[data-uuid="${this.component.parentUuid}"]:not(button) .component-body`)
+      slot.appendChild(componentContainer)
+      this.createSlotInStructure(this.structure[size], this.component.parentUuid, uuid, component)
     } else {
       addComponent.before(componentContainer)
-      this.createComponentInStructure(this.structure[size], newComponent.dataset.uuid, component)
+      this.createComponentInStructure(this.structure[size], uuid, component)
     }
 
     this.component = {}

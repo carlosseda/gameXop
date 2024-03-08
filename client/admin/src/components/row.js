@@ -4,12 +4,12 @@ class Row extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
 
     this.defaultOptions = {
-      height: '50px',
       columns: '8fr 2fr',
-      columnGap: '1rem',
-      rowGap: '1rem',
-      elementDistribution: '1 2',
-      justifyContents: 'flex-start flex-end'
+      gap: '1rem',
+      paddingTop: '1rem',
+      paddingBottom: '1rem',
+      paddingLeft: '1rem',
+      paddingRight: '1rem'
     }
     this.options = {}
   }
@@ -21,12 +21,10 @@ class Row extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     this.options = JSON.parse(newValue)
     this.render()
-    this.applyLayout()
   }
 
   connectedCallback () {
     this.render()
-    this.applyLayout()
   }
 
   render () {
@@ -41,52 +39,21 @@ class Row extends HTMLElement {
           }
 
           .row{
+            box-sizing: border-box;
             display: grid;
-            gap: ${this.options.rowGap};
+            gap: ${this.options.gap};
             grid-template-columns: ${this.options.columns};
-            height: ${this.options.height};
+            padding-top: ${this.options.paddingTop};
+            padding-bottom: ${this.options.paddingBottom};
+            padding-left: ${this.options.paddingLeft};
+            padding-right: ${this.options.paddingRight};
             width: 100%;
-          }
-
-          .column{
-            display: flex;
-            gap: ${this.options.columnGap};
           }
         </style>
         <div class="row">
           <slot></slot>
         </div>
       `
-  }
-
-  applyLayout () {
-    if (this.options.elementDistribution) {
-      const elementDistribution = this.options.elementDistribution.split(' ').map(Number)
-      const justifyContents = this.options.justifyContents ? this.options.justifyContents.split(' ') : []
-      const slotElements = this.shadowRoot.querySelector('slot').assignedNodes({ flatten: true }).filter(el => el.nodeType === Node.ELEMENT_NODE)
-
-      const slot = this.shadowRoot.querySelector('slot')
-      const divs = elementDistribution.map((_, index) => {
-        const div = document.createElement('div')
-        div.classList.add('column')
-        div.style.justifyContent = justifyContents[index] ? justifyContents[index].trim() : 'flex-start'
-        slot.parentElement.insertBefore(div, slot)
-        return div
-      })
-
-      let columnIndex = 0
-
-      elementDistribution.forEach((count, index) => {
-        for (let i = 0; i < count; i++) {
-          if (slotElements[columnIndex]) {
-            divs[index].appendChild(slotElements[columnIndex])
-            columnIndex++
-          }
-        }
-      })
-
-      slot.remove()
-    }
   }
 }
 

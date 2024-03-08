@@ -972,6 +972,7 @@ class PageGenerator extends HTMLElement {
     const options = {}
     options.columns = columns
     this.updateOptionsInStructure(this.structure[this.component.size], this.component.uuid, options)
+    this.component.parentUuid = this.component.uuid
 
     const componentElement = this.shadow.querySelector(`[data-uuid="${this.component.uuid}"]:not(button)`)
     const row = componentElement.querySelector('.component-body')
@@ -984,68 +985,39 @@ class PageGenerator extends HTMLElement {
     const countColumns = columns.split(' ').length
 
     for (let i = 0; i < countColumns; i++) {
-      const column = document.createElement('div')
-      column.classList.add('column')
-      row.append(column)
-
-      const uuid = Math.random().toString(36).substring(7)
-      column.dataset.uuid = uuid
-
-      const columnDetailsContainer = document.createElement('div')
-      columnDetailsContainer.classList.add('component-details')
-      column.append(columnDetailsContainer)
-
-      const columnDetailsButtons = document.createElement('div')
-      columnDetailsButtons.classList.add('component-details-buttons')
-      columnDetailsContainer.append(columnDetailsButtons)
-
-      const editButton = document.createElement('button')
-      editButton.classList.add('edit-button')
-      editButton.dataset.component = component.name
-      editButton.dataset.uuid = uuid
-      editButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z' /></svg>"
-      columnDetailsButtons.append(editButton)
-
-      const columnTitle = document.createElement('span')
-      columnTitle.textContent = component.label
-      columnDetailsContainer.append(columnTitle)
-
-      const collapseButton = document.createElement('button')
-      collapseButton.classList.add('collapse-button')
-      collapseButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.78,11.78L18.36,13.19L12,6.83L5.64,13.19L4.22,11.78L12,4L19.78,11.78Z" /></svg>'
-      columnDetailsContainer.append(collapseButton)
-
-      const columnBody = document.createElement('div')
-      columnBody.classList.add('component-body')
-      column.append(columnBody)
-
-      const addButton = document.createElement('button')
-      addButton.classList.add('add-to-column')
-      addButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>'
-      column.append(addButton)
-
-      this.createSlotInStructure(this.structure[this.component.size], this.component.uuid, uuid, component)
+      this.addComponent(component)
     }
-
-    this.component = {}
   }
 
   renderStructure = (container, structure) => {
     for (const [key, outerValue] of Object.entries(structure)) {
       if (key === 'slot') {
         for (const [innerKey, innerValue] of Object.entries(outerValue)) {
-          const component = document.createElement(innerKey)
-          container.append(component)
+          if (Array.isArray(innerValue)) {
+            for (const item of innerValue) {
+              const component = document.createElement(innerKey)
+              container.append(component)
 
-          if (outerValue.options) {
-            component.setAttribute('options', JSON.stringify(outerValue.options))
+              if (item.options) {
+                component.setAttribute('options', JSON.stringify(item.options))
+              }
+
+              this.renderStructure(component, item)
+            }
+          } else {
+            const component = document.createElement(innerKey)
+            container.append(component)
+
+            if (outerValue.options) {
+              component.setAttribute('options', JSON.stringify(outerValue.options))
+            }
+
+            this.renderStructure(component, innerValue)
           }
-
-          this.renderStructure(component, innerValue)
         }
       }
 
-      if (outerValue instanceof Object) {
+      if (outerValue instanceof Object && key !== 'slot') {
         const component = document.createElement(key)
         container.append(component)
 
@@ -1068,6 +1040,7 @@ class PageGenerator extends HTMLElement {
         const component = this.components.find(component => component.name === event.target.closest('.component').dataset.component)
         this.addComponent(component)
 
+        this.component = {}
         this.shadow.querySelector('.modal').classList.remove('active')
       }
 
@@ -1092,6 +1065,7 @@ class PageGenerator extends HTMLElement {
 
         this.updateRowComponent(columns)
 
+        this.component = {}
         this.shadow.querySelector('.modal').classList.remove('active')
       }
     })
@@ -1170,8 +1144,6 @@ class PageGenerator extends HTMLElement {
       addComponent.before(componentContainer)
       this.createComponentInStructure(this.structure[size], uuid, component)
     }
-
-    this.component = {}
   }
 
   removeComponentInStructure (structure, uuid) {
@@ -1199,17 +1171,36 @@ class PageGenerator extends HTMLElement {
   createSlotInStructure = (structure, parentUuid, uuid, component) => {
     structure.forEach((value, key) => {
       if (value.uuid && value.uuid === parentUuid) {
-        value.slot.set(component.name, {
-          uuid
-        })
+        const currentValue = value.slot.get(component.name)
+        let newValue
+
+        if (currentValue === undefined) {
+          newValue = { uuid }
+        } else if (Array.isArray(currentValue)) {
+          newValue = [...currentValue, { uuid }]
+        } else {
+          newValue = [currentValue, { uuid }]
+        }
+
+        value.slot.set(component.name, newValue)
 
         if (component.slot) {
-          value.slot.get(component.name).slot = new Map()
+          if (Array.isArray(value.slot.get(component.name))) {
+            for (const item of value.slot.get(component.name)) {
+              item.slot = new Map()
+            }
+          } else {
+            value.slot.get(component.name).slot = new Map()
+          }
         }
       }
 
       if (value.slot) {
         this.createSlotInStructure(value.slot, parentUuid, uuid, component)
+      }
+
+      if (Array.isArray(value)) {
+        this.createSlotInStructure(value, parentUuid, uuid, component)
       }
     })
   }
@@ -1248,7 +1239,11 @@ class PageGenerator extends HTMLElement {
       if (value instanceof Map) {
         object[key] = this.mapToObject(value)
       } else if (value instanceof Object) {
-        object[key] = this.mapToObject(new Map(Object.entries(value)))
+        if (Array.isArray(value)) {
+          object[key] = value.map(item => this.mapToObject(new Map(Object.entries(item))))
+        } else {
+          object[key] = this.mapToObject(new Map(Object.entries(value)))
+        }
       } else {
         object[key] = value
       }

@@ -8,8 +8,8 @@ class Row extends HTMLElement {
       gap: '1rem',
       paddingTop: '1rem',
       paddingBottom: '1rem',
-      paddingLeft: '1rem',
-      paddingRight: '1rem'
+      paddingLeft: '0.5rem',
+      paddingRight: '0.5rem'
     }
     this.options = {}
   }

@@ -26,7 +26,7 @@
       endpoint="/api/admin/page-generator"
       structure="{
         'headers': [
-          {'label': 'Entidad', 'field': 'entity'},
+          {'label': 'Nombre', 'field': 'entity'},
           {'label': 'Fecha de creación', 'field': 'createdAt'},
           {'label': 'Fecha de actualización', 'field': 'updatedAt'}
         ],
@@ -47,13 +47,7 @@
           'general': {
             'noLocale': [
               {'name': 'id', 'element':'input', 'type': 'hidden'},
-              {'name': 'entity', 'element':'input', 'type': 'text', 'label': 'Entidad', 'width': 'full-width'}
-            ],
-            'locale': [
-              {'name': 'localeSeo', 'element':'input', 'type': 'hidden'},
-              {'name': 'url', 'element':'input', 'type': 'text', 'label': 'Url', 'width': 'half-width'},
-              {'name': 'title', 'element':'input', 'type': 'text', 'label': 'Título de la página', 'width': 'half-width'},
-              {'name': 'description', 'element':'input', 'type': 'text', 'label': 'Descripción de la página', 'width': 'full-width'}    
+              {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
             ]
           },
           'structure': {

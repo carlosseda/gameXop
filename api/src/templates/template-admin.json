@@ -13,20 +13,34 @@
     "slot": {
       "row-component": {
         "template-columns": "8fr 2fr", 
-        "element-distribution": "1,2", 
-        "justify-contents": "flex-start,flex-end",
         "slot": {
-          "logo-component": {
-            "title": "GameXop"
-          },
-          "menu-component": {
-            "data": true,
-            "endpoint": "/api/admin/menus",
-            "fetch": "/display/main-menu"
-          },
-          "user-area-component": {
-            "endpoint": "/api/admin/users/user-area"
-          }
+          "column-component": [
+            {
+              "options": {
+                "justifyContent": "flex-start"
+              },
+              "slot": {
+                "logo-component": {
+                  "title": "GameXop"
+                }
+              }
+            },
+            {
+              "options": {
+                "justifyContent": "flex-end"
+              },
+              "slot": {
+                "menu-component": {
+                  "data": true,
+                  "endpoint": "/api/admin/menus",
+                  "fetch": "/display/main-menu"
+                },
+                "user-area-component": {
+                  "endpoint": "/api/admin/users/user-area"
+                }
+              }
+            }
+          ] 
         }
       }
     }

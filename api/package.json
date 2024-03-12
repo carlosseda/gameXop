@@ -8,6 +8,9 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "@babel/generator": "^7.23.6",
+    "@babel/parser": "^7.24.0",
+    "@babel/traverse": "^7.24.0",
     "@reduxjs/toolkit": "^2.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",

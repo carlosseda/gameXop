@@ -416,6 +416,44 @@ class PageGenerator extends HTMLElement {
           padding: 1rem;
         }
 
+        .upload-component-button input[type="file"] {
+          display: none;
+        }
+
+        .upload-component-button label {
+          align-items: center;  
+          background-color: hsl(207, 85%, 69%);
+          border: none;
+          box-sizing: border-box;
+          color: white;
+          cursor: pointer;
+          display: flex;
+          font-family: 'Lato', sans-serif;
+          font-size: 16px;
+          height: 100%;
+          justify-content: center;
+          text-align: center;
+          text-decoration: none;
+          transition-duration: 0.4s;
+          width: 100%;
+        }
+
+        .upload-component-button label:hover {
+          filter: brightness(1.2);
+        }
+
+        .upload-component-button label svg {
+          fill: white;
+          height: 4em;
+          width: 4rem;
+        }
+
+        .upload-component-button svg{
+          height: 2rem;
+          fill: hsl(0 0% 100%);
+          width: 2rem;
+        }
+
         .modal-container-body .component{
           align-items: center;
           background-color: hsl(272 40% 35%);
@@ -848,6 +886,28 @@ class PageGenerator extends HTMLElement {
   }
 
   showComponents = (modalContainer, components) => {
+    const uploadComponentContainer = document.createElement('div')
+    uploadComponentContainer.classList.add('component', 'upload-component-button')
+
+    const label = document.createElement('label')
+    const input = document.createElement('input')
+    label.setAttribute('for', 'file')
+    input.setAttribute('type', 'file')
+    input.setAttribute('id', 'file')
+    input.setAttribute('name', 'file')
+    input.setAttribute('accept', '.js')
+
+    input.addEventListener('change', (event) => {
+      this.uploadComponent(event.target.files[0])
+    })
+
+    label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" /></svg>'
+
+    uploadComponentContainer.appendChild(label)
+    uploadComponentContainer.appendChild(input)
+
+    modalContainer.append(uploadComponentContainer)
+
     components.forEach(component => {
       const componentContainer = document.createElement('div')
       componentContainer.classList.add('component')
@@ -857,6 +917,16 @@ class PageGenerator extends HTMLElement {
       const componentTitle = document.createElement('h3')
       componentTitle.textContent = component.label
       componentContainer.append(componentTitle)
+    })
+  }
+
+  uploadComponent = async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const result = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/components`, {
+      method: 'POST',
+      body: formData
     })
   }
 

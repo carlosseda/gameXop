@@ -6,31 +6,29 @@ module.exports = class ImageService {
   uploadImage = async images => {
     const result = []
 
-    for (const key in images) {
-      for (const image of images[key]) {
-        try {
-          const filename = image.originalname.replace(/ |_|/g, '-')
+    for (const image of images.file) {
+      try {
+        const filename = image.originalname.replace(/[\s_]/g, '-')
 
-          const newFilename = await fs.access(path.join(__dirname, `../storage/images/gallery/original/${path.parse(filename).name}.webp`)).then(async () => {
-            // TODO Dar al usuario la opción de sobreescribir la imagen
-            return `${path.parse(filename).name}-${new Date().getTime()}.webp`
-          }).catch(async () => {
-            return `${path.parse(filename).name}.webp`
-          })
+        const newFilename = await fs.access(path.join(__dirname, `../storage/images/gallery/original/${path.parse(filename).name}.webp`)).then(async () => {
+          // TODO Dar al usuario la opción de sobreescribir la imagen
+          return `${path.parse(filename).name}-${new Date().getTime()}.webp`
+        }).catch(async () => {
+          return `${path.parse(filename).name}.webp`
+        })
 
-          await sharp(image.buffer)
-            .webp({ lossless: true })
-            .toFile(path.join(__dirname, `../storage/images/gallery/original/${newFilename}`))
+        await sharp(image.buffer)
+          .webp({ lossless: true })
+          .toFile(path.join(__dirname, `../storage/images/gallery/original/${newFilename}`))
 
-          await sharp(image.buffer)
-            .resize(135, 135)
-            .webp({ lossless: true })
-            .toFile(path.join(__dirname, `../storage/images/gallery/thumbnail/${newFilename}`))
+        await sharp(image.buffer)
+          .resize(135, 135)
+          .webp({ quality: 80 })
+          .toFile(path.join(__dirname, `../storage/images/gallery/thumbnail/${newFilename}`))
 
-          result.push(newFilename)
-        } catch (error) {
-          console.log(error)
-        }
+        result.push(newFilename)
+      } catch (error) {
+        console.log(error)
       }
     }
 
@@ -84,7 +82,7 @@ module.exports = class ImageService {
                 const start = new Date().getTime()
                 await sharp(path.join(__dirname, `../storage/images/gallery/original/${images[image].filename}`))
                   .resize(parseInt(imageConfiguration.widthPx), parseInt(imageConfiguration.heightPx))
-                  .webp({ nearLossless: true })
+                  .webp({ quality: 80 })
                   .toFile(path.join(__dirname, `../storage/images/resized/${filename}`))
 
                 const end = new Date().getTime()

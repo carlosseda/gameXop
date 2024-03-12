@@ -4,7 +4,7 @@ class Row extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
 
     this.defaultOptions = {
-      columns: '8fr 2fr',
+      columns: '1fr',
       gap: '1rem',
       paddingTop: '1rem',
       paddingBottom: '1rem',

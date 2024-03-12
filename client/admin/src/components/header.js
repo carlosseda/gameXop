@@ -2,15 +2,17 @@ class Header extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.defaultOptions = {
-      backgroundColor: 'transparent',
-      height: null,
-      paddingTop: '0',
-      paddingBottom: '0',
-      paddingLeft: '0',
-      paddingRight: '0'
+
+    this.optionSettings = {
+      backgroundColor: { type: 'string', default: 'transparent' },
+      height: { type: 'string', default: null },
+      paddingTop: { type: 'string', default: '0' },
+      paddingBottom: { type: 'string', default: '0' },
+      paddingLeft: { type: 'string', default: '0' },
+      paddingRight: { type: 'string', default: '0' }
     }
-    this.options = {}
+
+    this.options = this.initializeOptions()
   }
 
   static get observedAttributes () {
@@ -18,17 +20,30 @@ class Header extends HTMLElement {
   }
 
   attributeChangedCallback (name, oldValue, newValue) {
-    this.options = JSON.parse(newValue)
-    this.render()
+    if (name === 'options') {
+      try {
+        const optionsUpdate = JSON.parse(newValue)
+        this.options = { ...this.initializeOptions(), ...optionsUpdate }
+      } catch (error) {
+        this.options = this.initializeOptions()
+      }
+
+      this.render()
+    }
   }
 
   connectedCallback () {
     this.render()
   }
 
-  render () {
-    this.options = Object.assign({}, this.defaultOptions, this.options)
+  initializeOptions () {
+    return Object.keys(this.optionSettings).reduce((acc, key) => {
+      acc[key] = this.optionSettings[key].default
+      return acc
+    }, {})
+  }
 
+  render () {
     this.shadow.innerHTML =
       /* html */`
       <style>

@@ -4,7 +4,8 @@ const services = {
   priceManagementService: new (require('../services/price-management-service'))(),
   productManagementService: new (require('../services/product-management-service'))(),
   localeSeoService: new (require('../services/locale-seo-service'))(),
-  pageService: new (require('../services/page-service'))()
+  pageService: new (require('../services/page-service'))(),
+  componentService: new (require('../services/component-service'))()
 }
 
 function createServiceMiddleware (serviceName) {

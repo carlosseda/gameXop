@@ -4,12 +4,17 @@ class Header extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' })
 
     this.optionSettings = {
-      backgroundColor: { type: 'string', default: 'transparent' },
-      height: { type: 'string', default: null },
-      paddingTop: { type: 'string', default: '0' },
-      paddingBottom: { type: 'string', default: '0' },
-      paddingLeft: { type: 'string', default: '0' },
-      paddingRight: { type: 'string', default: '0' }
+      label: 'Header',
+      category: 'Layout',
+      screenSizes: ['xs', 'sm', 'md', 'lg'],
+      styles: {
+        backgroundColor: { type: 'color', default: 'transparent' },
+        height: { type: 'text', default: '75px' },
+        paddingTop: { type: 'text', default: '0' },
+        paddingBottom: { type: 'text', default: '0' },
+        paddingLeft: { type: 'text', default: '0' },
+        paddingRight: { type: 'text', default: '0' }
+      }
     }
 
     this.options = this.initializeOptions()
@@ -37,8 +42,8 @@ class Header extends HTMLElement {
   }
 
   initializeOptions () {
-    return Object.keys(this.optionSettings).reduce((acc, key) => {
-      acc[key] = this.optionSettings[key].default
+    return Object.keys(this.optionSettings.styles).reduce((acc, key) => {
+      acc[key] = this.optionSettings.styles[key].default
       return acc
     }, {})
   }

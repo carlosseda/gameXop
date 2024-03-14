@@ -79,21 +79,19 @@ class PageGenerator extends HTMLElement {
         category: 'section',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
-        options: {
-          structure: {
-            tabs: [
-              { name: 'styles', label: 'Estilos' }
-            ],
-            inputs: {
-              styles: [
-                { name: 'backgroundColor', element: 'input', type: 'color', label: 'Background Color', width: 'full-width', value: 'transparent' },
-                { name: 'height', element: 'input', type: 'text', label: 'Height', value: '5vh', width: 'full-width' },
-                { name: 'paddingTop', element: 'input', type: 'text', label: 'Padding Top', width: 'one-quarter-width', value: '0' },
-                { name: 'paddingBottom', element: 'input', type: 'text', label: 'Padding Bottom', width: 'one-quarter-width', value: '0' },
-                { name: 'paddingLeft', element: 'input', type: 'text', label: 'Padding Left', width: 'one-quarter-width', value: '0' },
-                { name: 'paddingRight', element: 'input', type: 'text', label: 'Padding Right', width: 'one-quarter-width', value: '0' }
-              ]
-            }
+        optionsForm: {
+          tabs: [
+            { name: 'styles', label: 'Estilos' }
+          ],
+          inputs: {
+            styles: [
+              { name: 'backgroundColor', element: 'input', type: 'color', label: 'Background Color', width: 'full-width', value: 'transparent' },
+              { name: 'height', element: 'input', type: 'text', label: 'Height', value: '5vh', width: 'full-width' },
+              { name: 'paddingTop', element: 'input', type: 'text', label: 'Padding Top', width: 'one-quarter-width', value: '0' },
+              { name: 'paddingBottom', element: 'input', type: 'text', label: 'Padding Bottom', width: 'one-quarter-width', value: '0' },
+              { name: 'paddingLeft', element: 'input', type: 'text', label: 'Padding Left', width: 'one-quarter-width', value: '0' },
+              { name: 'paddingRight', element: 'input', type: 'text', label: 'Padding Right', width: 'one-quarter-width', value: '0' }
+            ]
           }
         }
       },
@@ -117,18 +115,16 @@ class PageGenerator extends HTMLElement {
         category: 'row',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
-        options: {
-          structure: {
-            tabs: [
-              { name: 'styles', label: 'Estilos' }
-            ],
-            inputs: {
-              styles: [
-                { name: 'height', element: 'input', type: 'text', label: 'Height', value: '50px', width: 'full-width' },
-                { name: 'columnGap', element: 'input', type: 'text', label: 'Column Gap', value: '1rem', width: 'full-width' },
-                { name: 'rowGap', element: 'input', type: 'text', label: 'Row Gap', value: '1rem', width: 'full-width' }
-              ]
-            }
+        optionsForm: {
+          tabs: [
+            { name: 'styles', label: 'Estilos' }
+          ],
+          inputs: {
+            styles: [
+              { name: 'height', element: 'input', type: 'text', label: 'Height', value: '50px', width: 'full-width' },
+              { name: 'columnGap', element: 'input', type: 'text', label: 'Column Gap', value: '1rem', width: 'full-width' },
+              { name: 'rowGap', element: 'input', type: 'text', label: 'Row Gap', value: '1rem', width: 'full-width' }
+            ]
           }
         }
       },
@@ -138,17 +134,15 @@ class PageGenerator extends HTMLElement {
         category: 'row',
         slot: true,
         screenSizes: ['xs', 'sm', 'md', 'lg'],
-        options: {
-          structure: {
-            tabs: [
-              { name: 'styles', label: 'Estilos' }
-            ],
-            inputs: {
-              styles: [
-                { name: 'justifyContent', element: 'input', type: 'text', label: 'Justificación', value: 'flex-start', width: 'full-width' },
-                { name: 'gap', element: 'input', type: 'text', label: 'Gap', value: '1rem', width: 'full-width' }
-              ]
-            }
+        optionsForm: {
+          tabs: [
+            { name: 'styles', label: 'Estilos' }
+          ],
+          inputs: {
+            styles: [
+              { name: 'justifyContent', element: 'input', type: 'text', label: 'Justificación', value: 'flex-start', width: 'full-width' },
+              { name: 'gap', element: 'input', type: 'text', label: 'Gap', value: '1rem', width: 'full-width' }
+            ]
           }
         }
       }
@@ -158,7 +152,18 @@ class PageGenerator extends HTMLElement {
   }
 
   connectedCallback () {
-    this.render()
+    this.loadData().then(() => this.render())
+  }
+
+  async loadData () {
+    const url = `${import.meta.env.VITE_API_URL}/api/admin/components`
+    try {
+      const response = await fetch(url)
+      const data = await response.json()
+      this.components = data.rows
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render () {
@@ -821,7 +826,7 @@ class PageGenerator extends HTMLElement {
       if (event.target.closest('.edit-button')) {
         const size = this.shadow.querySelector('.tab-panel.active').dataset.tab
         const editButton = event.target.closest('.edit-button')
-        const component = this.components.find(component => component.name === editButton.dataset.component)
+        const component = this.components.find(component => component.element === editButton.dataset.component)
         this.component = {
           uuid: editButton.dataset.uuid,
           size
@@ -911,7 +916,7 @@ class PageGenerator extends HTMLElement {
     components.forEach(component => {
       const componentContainer = document.createElement('div')
       componentContainer.classList.add('component')
-      componentContainer.dataset.component = component.name
+      componentContainer.dataset.component = component.element
       modalContainer.append(componentContainer)
 
       const componentTitle = document.createElement('h3')
@@ -928,6 +933,9 @@ class PageGenerator extends HTMLElement {
       method: 'POST',
       body: formData
     })
+
+    const data = await result.json()
+    console.log(data)
   }
 
   showComponentOptions = (modalContainer, component) => {
@@ -946,7 +954,7 @@ class PageGenerator extends HTMLElement {
     const tabsContainerItemsUl = document.createElement('ul')
     tabsContainerItems.append(tabsContainerItemsUl)
 
-    component.options.structure.tabs.forEach(tab => {
+    component.optionsForm.tabs.forEach(tab => {
       const tabsContainerItemsLi = document.createElement('li')
       tabsContainerItemsLi.classList.add('tab-item')
       tabsContainerItemsLi.dataset.tab = tab.name
@@ -958,7 +966,7 @@ class PageGenerator extends HTMLElement {
       tabContainer.dataset.tab = tab.name
       form.append(tabContainer)
 
-      component.options.structure.inputs[tab.name].forEach(input => {
+      component.optionsForm.inputs[tab.name].forEach(input => {
         const formElementContainer = document.createElement('div')
         formElementContainer.classList.add('form-element', input.width)
         tabContainer.append(formElementContainer)
@@ -1051,7 +1059,7 @@ class PageGenerator extends HTMLElement {
     row.innerHTML = ''
     componentElement.querySelector('.add-slot')?.remove()
 
-    const component = this.components.find(component => component.name === 'column-component')
+    const component = this.components.find(component => component.element === 'column-component')
     const countColumns = columns.split(' ').length
 
     for (let i = 0; i < countColumns; i++) {
@@ -1107,7 +1115,7 @@ class PageGenerator extends HTMLElement {
       }
 
       if (event.target.closest('.component')) {
-        const component = this.components.find(component => component.name === event.target.closest('.component').dataset.component)
+        const component = this.components.find(component => component.element === event.target.closest('.component').dataset.component)
         this.addComponent(component)
 
         this.component = {}
@@ -1159,7 +1167,7 @@ class PageGenerator extends HTMLElement {
     componentDetailsButtons.classList.add('component-details-buttons')
     componentDetailsContainer.append(componentDetailsButtons)
 
-    if (component.name === 'row-component') {
+    if (component.element === 'row-component') {
       const rowButton = document.createElement('button')
       rowButton.classList.add('columns-button')
       rowButton.dataset.uuid = uuid
@@ -1169,7 +1177,7 @@ class PageGenerator extends HTMLElement {
 
     const editButton = document.createElement('button')
     editButton.classList.add('edit-button')
-    editButton.dataset.component = component.name
+    editButton.dataset.component = component.element
     editButton.dataset.uuid = uuid
     editButton.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z' /></svg>"
     componentDetailsButtons.append(editButton)
@@ -1229,19 +1237,19 @@ class PageGenerator extends HTMLElement {
   }
 
   createComponentInStructure = (structure, uuid, component) => {
-    structure.set(component.name, {
+    structure.set(component.element, {
       uuid
     })
 
     if (component.slot) {
-      structure.get(component.name).slot = new Map()
+      structure.get(component.element).slot = new Map()
     }
   }
 
   createSlotInStructure = (structure, parentUuid, uuid, component) => {
     structure.forEach((value, key) => {
       if (value.uuid && value.uuid === parentUuid) {
-        const currentValue = value.slot.get(component.name)
+        const currentValue = value.slot.get(component.element)
         let newValue
 
         if (currentValue === undefined) {
@@ -1252,15 +1260,15 @@ class PageGenerator extends HTMLElement {
           newValue = [currentValue, { uuid }]
         }
 
-        value.slot.set(component.name, newValue)
+        value.slot.set(component.element, newValue)
 
         if (component.slot) {
-          if (Array.isArray(value.slot.get(component.name))) {
-            for (const item of value.slot.get(component.name)) {
+          if (Array.isArray(value.slot.get(component.element))) {
+            for (const item of value.slot.get(component.element)) {
               item.slot = new Map()
             }
           } else {
-            value.slot.get(component.name).slot = new Map()
+            value.slot.get(component.element).slot = new Map()
           }
         }
       }

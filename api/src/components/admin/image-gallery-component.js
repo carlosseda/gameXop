@@ -5,7 +5,6 @@ class ImageGallery extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
-    this.unsubscribe = null
   }
 
   connectedCallback () {
@@ -20,16 +19,8 @@ class ImageGallery extends HTMLElement {
     this.render()
   }
 
-  disconnectedCallback () {
-    this.unsubscribe && this.unsubscribe()
-  }
-
   handleOpenGallery (event) {
     this.openGallery()
-  }
-
-  handleShowElementGallery (event) {
-    this.showElementGallery(event.detail.image)
   }
 
   async render () {

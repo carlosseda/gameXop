@@ -1,41 +1,35 @@
 const moment = require('moment')
 const mongooseDb = require('../../models/mongoose')
-const Faq = mongooseDb.Faq
+const Component = mongooseDb.Component
 
 exports.create = async (req, res) => {
-  req.componentService.uploadComponent(req.files.file[0])
-  // try {
-  //   const data = await Faq.create(req.body)
-  //   res.status(200).send(data)
-  // } catch (err) {
-  //   res.status(500).send({
-  //     message: err.errors || 'Algún error ha surgido al insertar el dato.'
-  //   })
-  // }
+  try {
+    const component = await req.componentService.uploadComponent(req.files.file[0])
+
+    if (!component) {
+      return res.status(400).send({
+        message: 'El archivo no es un componente válido.'
+      })
+    }
+
+    await Component.create(component)
+    res.status(200).send(component)
+  } catch (err) {
+    res.status(500).send({
+      message: err.errors || 'Algún error ha surgido al insertar el dato.'
+    })
+  }
 }
 
 exports.findAll = async (req, res) => {
-  const page = req.query.page || 1
-  const limit = parseInt(req.query.size) || 10
-  const offset = (page - 1) * limit
   const whereStatement = {}
   whereStatement.deletedAt = { $exists: false }
 
-  for (const key in req.query) {
-    if (req.query[key] !== '' && key !== 'page' && key !== 'size') {
-      whereStatement[key] = { $regex: req.query[key], $options: 'i' }
-    }
-  }
-
   try {
-    const result = await Faq.find(whereStatement)
-      .skip(offset)
-      .limit(limit)
+    const result = await Component.find(whereStatement)
       .sort({ createdAt: -1 })
       .lean()
       .exec()
-
-    const count = await Faq.countDocuments(whereStatement)
 
     const response = {
       rows: result.map(doc => ({
@@ -44,12 +38,7 @@ exports.findAll = async (req, res) => {
         _id: undefined,
         createdAt: moment(doc.createdAt).format('YYYY-MM-DD HH:mm'),
         updatedAt: moment(doc.updatedAt).format('YYYY-MM-DD HH:mm')
-      })),
-      meta: {
-        total: count,
-        pages: Math.ceil(count / limit),
-        currentPage: page
-      }
+      }))
     }
 
     res.status(200).send(response)
@@ -64,7 +53,7 @@ exports.findOne = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Faq.findById(id).lean().exec()
+    const data = await Component.findById(id).lean().exec()
 
     if (data) {
       data.id = data._id
@@ -89,7 +78,7 @@ exports.update = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Faq.findByIdAndUpdate(id, req.body, { new: true })
+    const data = await Component.findByIdAndUpdate(id, req.body, { new: true })
 
     if (data) {
       res.status(200).send({
@@ -111,7 +100,7 @@ exports.delete = async (req, res) => {
   const id = req.params.id
 
   try {
-    const data = await Faq.findByIdAndUpdate(id, { deletedAt: new Date() })
+    const data = await Component.findByIdAndUpdate(id, { deletedAt: new Date() })
 
     if (data) {
       res.status(200).send({

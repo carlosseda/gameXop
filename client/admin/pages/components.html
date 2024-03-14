@@ -23,10 +23,11 @@
 
     <table-component
       slot="table"
-      endpoint="/api/admin/faqs"
+      endpoint="/api/admin/components"
       structure="{
         'headers': [
           {'label': 'Nombre', 'field': 'name'},
+          {'label': 'Elemento', 'field': 'element'},
           {'label': 'Fecha de creación', 'field': 'createdAt'},
           {'label': 'Fecha de actualización', 'field': 'updatedAt'}
         ],
@@ -37,7 +38,7 @@
 
     <form-component
       slot="form"
-      endpoint="/api/admin/faqs"
+      endpoint="/api/admin/components"
       structure="{
         'tabs': [
           {'name': 'general', 'label': 'General'}
@@ -46,11 +47,7 @@
           'general': {
             'noLocale': [
               {'name': 'id', 'element':'input', 'type': 'hidden'},
-              {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'full-width'}
-            ],
-            'locale': [
-              {'name': 'question', 'element':'input', 'type': 'text', 'label': 'Pregunta', 'width': 'full-width'},
-              {'name': 'answer', 'element':'textarea', 'label': 'Respuesta', 'width': 'full-width'}
+              {'name': 'name', 'element':'input', 'type': 'text', 'label': 'Nombre', 'width': 'half-width'}
             ]
           }
         }

@@ -1,5 +1,6 @@
 require('dotenv').config()
 const fetch = require('node-fetch')
+const moment = require('moment')
 const mongooseDb = require('../models/mongoose')
 const Resource = mongooseDb.Resource
 const process = require('process')
@@ -114,7 +115,17 @@ module.exports = class PageService {
   }
 
   hydrationPage = async (languageAlias, component, attributes) => {
-    const data = this.fetchData(languageAlias, attributes)
+    const resource = await Resource.findOne({
+      endpoint: attributes.endpoint,
+      deletedAt: { $exists: false }
+    })
+
+    if (!resource) return
+
+    const data = attributes.fetch
+      ? await this.fetchData(languageAlias, attributes)
+      : await this.getAllData(resource, attributes)
+
     component.setAttribute('data', data)
   }
 
@@ -209,7 +220,10 @@ module.exports = class PageService {
           return obj
         }, {})
 
-        const data = this.fetchData(languageAlias, attributes)
+        const data = attributes.fetch
+          ? await this.fetchData(languageAlias, attributes)
+          : await this.getAllData(resource, attributes)
+
         element.setAttribute('data', data)
       }
     }))
@@ -219,6 +233,52 @@ module.exports = class PageService {
     }
 
     return document.documentElement.outerHTML
+  }
+
+  getAllData = async (resource, attributes) => {
+    const select = attributes.select ?? ''
+    const limit = attributes.paginate ?? 0
+
+    const whereStatement = {}
+    whereStatement.deletedAt = { $exists: false }
+
+    const model = mongooseDb[resource.model]
+    const result = await model.find(whereStatement)
+      .select(select)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec()
+
+    if (attributes.paginate) {
+      const count = await model.countDocuments(whereStatement)
+      const response = {
+        rows: result.map(doc => ({
+          ...doc,
+          id: doc._id,
+          _id: undefined,
+          createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+          updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+        })),
+        meta: {
+          total: count,
+          pages: Math.ceil(count / limit),
+          currentPage: 1
+        }
+      }
+
+      return JSON.stringify(response).replace(/"/g, "'")
+    } else {
+      const response = result.map(doc => ({
+        ...doc,
+        id: doc._id,
+        _id: undefined,
+        createdAt: doc.createdAt ? moment(doc.createdAt).format('YYYY-MM-DD HH:mm') : undefined,
+        updatedAt: doc.updatedAt ? moment(doc.updatedAt).format('YYYY-MM-DD HH:mm') : undefined
+      }))
+
+      return JSON.stringify(response).replace(/"/g, "'")
+    }
   }
 
   fetchData = async (languageAlias, attributes) => {

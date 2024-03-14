@@ -3,8 +3,6 @@
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 const generate = require('@babel/generator').default
-const { Window } = require('happy-dom')
-const fs = require('fs').promises
 const path = require('path')
 const componentsDirectory = `${path.dirname(require.main.filename)}/src/components`
 
@@ -16,23 +14,25 @@ module.exports = class ComponentService {
 
       let optionSettings = ''
       let componentName = ''
-      let slot = ''
+      let slot = false
+      let data = false
+      let paginate = false
 
       traverse(ast, {
         enter (path) {
           if (path.isCallExpression() &&
-              path.get('callee').isMemberExpression() &&
-              path.get('callee.object').isIdentifier({ name: 'customElements' }) &&
-              path.get('callee.property').isIdentifier({ name: 'define' }) &&
-              path.node.arguments.length > 0 &&
-              path.get('arguments.0').isStringLiteral()) {
+          path.get('callee').isMemberExpression() &&
+          path.get('callee.object').isIdentifier({ name: 'customElements' }) &&
+          path.get('callee.property').isIdentifier({ name: 'define' }) &&
+          path.node.arguments.length > 0 &&
+          path.get('arguments.0').isStringLiteral()) {
             componentName = path.node.arguments[0].value
           }
 
           if (path.isAssignmentExpression() &&
-              path.get('left').isMemberExpression() &&
-              path.get('left.object').isThisExpression() &&
-              path.get('left.property').isIdentifier({ name: 'optionSettings' })) {
+          path.get('left').isMemberExpression() &&
+          path.get('left.object').isThisExpression() &&
+          path.get('left.property').isIdentifier({ name: 'optionSettings' })) {
             optionSettings = path.get('right').node
           }
 
@@ -42,16 +42,71 @@ module.exports = class ComponentService {
             const renderCode = generate(renderBody).code
             slot = renderCode.includes('<slot></slot>')
           }
+
+          if (path.isClassMethod({ kind: 'method' }) &&
+          path.get('key').isIdentifier({ name: 'connectedCallback' })) {
+            const connectedCallbackBody = path.get('body').node
+            const connectedCallbackCode = generate(connectedCallbackBody).code
+            data = connectedCallbackCode.includes('this.getAttribute(\'data\')')
+          }
+
+          if (path.isClassMethod({ kind: 'method' }) &&
+          path.get('key').isIdentifier({ name: 'connectedCallback' })) {
+            const connectedCallbackBody = path.get('body').node
+            const connectedCallbackCode = generate(connectedCallbackBody).code
+            paginate = connectedCallbackCode.includes('this.currentPage')
+          }
         }
       })
 
-      if (optionSettings) {
-        optionSettings = generate(optionSettings).code
+      if (!optionSettings) {
+        return null
       }
 
-      console.log(optionSettings, componentName, slot)
+      let component = generate(optionSettings).code
+      component = component.replace(/(\w+):/g, '"$1":')
+      component = component.replace(/'([^']+)'/g, '"$1"')
+      component = JSON.parse(component)
+      component.element = componentName
+      component.slot = slot
+      component.data = data
+      component.paginate = paginate
+      component.optionsForm = await this.generateOptionsForm(component)
+
+      return component
     } catch (err) {
       console.log(err)
     }
+  }
+
+  generateOptionsForm = async component => {
+    const optionsForm = {}
+    optionsForm.tabs = []
+    optionsForm.inputs = {}
+
+    if (component.styles) {
+      const tab = {
+        name: 'styles',
+        label: 'Estilos'
+      }
+
+      optionsForm.tabs.push(tab)
+      optionsForm.inputs.styles = []
+
+      Object.keys(component.styles).forEach((key) => {
+        const input = {
+          name: key,
+          label: key.replace(/([A-Z])/g, ' $1').toLowerCase(),
+          element: 'input',
+          type: component.styles[key].type,
+          value: component.styles[key].default,
+          width: 'full-width'
+        }
+
+        optionsForm.inputs.styles.push(input)
+      })
+    }
+
+    return optionsForm
   }
 }

@@ -1,4 +1,4 @@
-class Row extends HTMLElement {
+class Column extends HTMLElement {
   constructor () {
     super()
     this.shadow = this.attachShadow({ mode: 'open' })
@@ -48,4 +48,4 @@ class Row extends HTMLElement {
   }
 }
 
-customElements.define('column-component', Row)
+customElements.define('column-component', Column)
